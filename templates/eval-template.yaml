@@ -1,0 +1,31 @@
+name: "Eval Suite: [Feature Name]"
+description: "Evaluation suite for testing the [Feature Name] AI capabilities."
+
+# The core capabilities to evaluate
+capabilities:
+  - "Capability 1: e.g., accurate information retrieval"
+  - "Capability 2: e.g., tone and style adherence"
+
+# The critical failure modes to test against
+failure_modes:
+  - "Failure Mode 1: e.g., hallucination of facts"
+  - "Failure Mode 2: e.g., off-topic responses"
+
+# The evaluation metrics and criteria
+metrics:
+  - name: "Accuracy"
+    description: "Does the response contain factual errors?"
+    type: "boolean"
+  - name: "Relevance"
+    description: "Does the response directly address the user's query?"
+    type: "score" # e.g., 1-5 scale
+
+# The test cases or scenarios
+test_cases:
+  - id: "test-case-1"
+    description: "Scenario 1: e.g., User asks a complex question."
+    input: "User query here..."
+    expected_output: "Expected response or behavior here..."
+    metrics:
+      - "Accuracy"
+      - "Relevance"
