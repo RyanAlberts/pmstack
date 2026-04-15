@@ -15,7 +15,7 @@ A curated set of Claude Code skills that turn Claude into an AI product manageme
 ## Install (30 seconds)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/pmstack.git
+git clone https://github.com/RyanAlberts/pmstack.git
 cp -r pmstack/CLAUDE.md pmstack/skills/ your-project/
 ```
 
