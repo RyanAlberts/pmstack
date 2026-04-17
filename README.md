@@ -43,4 +43,4 @@ See [DECISIONS.md](./DECISIONS.md#what-id-add-next) for the roadmap. PRs welcome
 
 ---
 
-Built by [Ryan](https://linkedin.com/in/YOUR_PROFILE) — Staff PM working in Agentic AI. I write about AI product management and building with LLMs.
+Built by [Ryan](https://github.com/RyanAlberts) — Staff PM working in Agentic AI. I write about AI product management and building with LLMs.
