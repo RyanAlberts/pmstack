@@ -1,23 +1,74 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# pmstack EVAL — Claude Ultraplan (sample artifact, produced by /eval)
+#
+# WHAT THIS FILE IS
+#   A test suite design for an AI feature. It defines what to test, how to grade
+#   it, and how to run it. The runner script reads this file and produces real,
+#   reproducible scores.
+#
+# HOW A PM SHOULD READ IT
+#   - capabilities  = what we say the feature is supposed to do well
+#   - failure_modes = the things that could go wrong (each tagged P0/P1/P2)
+#   - metrics       = how we'll grade each test case (with concrete pass bars)
+#   - test_cases    = the actual scenarios — each has an input the system gets,
+#                     a description of what good behavior looks like, and which
+#                     metrics apply
+#   - target        = which AI system we're testing against (set this before running)
+#
+# HOW TO RUN IT
+#   /run-eval outputs/eval-claude-ultraplan-2026-04-24.yaml --judge-model claude-sonnet-4-6
+#
+# WHAT YOU GET
+#   outputs/eval-runs/<feature>-<run-date>/
+#     summary.md       ← read this first. Headline numbers + per-case pass/fail table.
+#     cases/<id>.json  ← per-case input, observed output, score, evidence
+#     metrics.csv      ← one row per metric, opens in Sheets
+#
+# JARGON GLOSSARY (because you shouldn't need a PhD to read this)
+#   "judge model"   = a second AI that grades the first one's answers (scoring "is this on-topic?"
+#                     can't be done deterministically — you need another reader)
+#   "P0/P1/P2"      = severity. P0 fails block release. P1 opens an issue. P2 is tracked over time.
+#   "pass_bar"      = the cutoff. e.g. ">= 0.95" means 95%+ to pass; "true" means must be true.
+#   "DAG"           = "directed acyclic graph" — fancy way to say "the dependencies form a tree,
+#                     not a circle." Used in dependency_ordering_valid below.
+#   "p50 latency"   = the median time. If 50% of requests finish in <30 sec, p50 = 30,000 ms.
+#
+# ASSUMPTIONS CALLED OUT (your job to verify)
+#   1. "Ultraplan" is interpreted as a deep-planning mode in Claude (Plan Mode + extra thinking
+#      budget). If the actual product is different, the test-case structure still works — just
+#      swap the capability list.
+#   2. Plans are evaluated against (a) curated seed repos with known structure
+#      and (b) live runs on real codebases.
+#   3. Human raters score subjective metrics (scope_drift, granularity) on 1–5 with rubrics below.
+#      LLM judges OK for triage, never as the final grade on P0 cases.
+# ─────────────────────────────────────────────────────────────────────────────
+
 name: "Eval Suite: Claude Ultraplan"
 description: >
-  Evaluation suite for Claude's deep-planning agent capability ("Ultraplan") — the mode where
-  Claude takes a high-level goal, autonomously researches the codebase, and produces a multi-phase
-  implementation plan with explicit verification gates *before* writing any code. The plan is the
-  artifact under test, not the resulting code.
-
-# --- Assumptions called out (per CLAUDE.md: state confidence, no hallucinated agency) ---
-# 1. "Ultraplan" is interpreted as an extended-thinking planning mode in Claude Code,
-#    analogous to Plan Mode + ultrathink budget. If the actual product spec differs,
-#    rerun this eval with the corrected capability list — the test-case structure still applies.
-# 2. Plans are evaluated against (a) a curated set of seed repos with known structure
-#    and (b) live runs against synthetic and real codebases.
-# 3. Human raters score subjective metrics (scope_drift, granularity) on a 1-5 scale
-#    with rubric below; LLM-judge is acceptable as a triage layer but never as final grade
-#    on P0 cases.
+  Test suite for a deep-planning AI feature. The agent takes a high-level goal,
+  researches a codebase, and produces a phased implementation plan with verification
+  gates BEFORE writing any code. The plan is what gets graded — not the resulting
+  code.
 
 owner: "AI PM, Agentic Tools"
 created: 2026-04-24
 review_cadence: "weekly during pre-launch; monthly post-launch"
+
+# ─── Target system — REQUIRED for /run-eval ──────────────────────────────────
+# Without a target, /run-eval will hard-stop. By design — evals only count
+# when the feedback loop is real.
+target:
+  type: claude-session
+  model: claude-sonnet-4-6
+  # The Ultraplan-as-Claude interpretation: a Claude session with a planning system prompt.
+  # If you're testing a different planning agent, change this to:
+  #   type: http   url: https://your-api/...   requires: [YOUR_API_KEY]
+  # or
+  #   type: script   path: ./scripts/your_planner.sh
+  system_prompt: |
+    You are a deep-planning agent. Given a high-level goal and a codebase context,
+    produce a multi-phase implementation plan with explicit verification gates for
+    each phase. Do not write code. Surface assumptions, risks, and dependencies.
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Capabilities under test
