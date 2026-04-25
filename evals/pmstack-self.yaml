@@ -193,7 +193,7 @@ skills:
         input: "Adding rate limiting to the API | eng"
       - id: brief-tc-3
         category: customer
-        input: "Pricing changes effective May 1 | customer"
+        input: "Pricing changes effective May 1: Pro tier $10/mo → $15/mo, new Team tier at $25/seat/mo, existing customers grandfathered for 12 months | customer"
       - id: brief-tc-4
         category: missing-audience
         input: "Q2 launch slipping"
