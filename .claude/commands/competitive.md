@@ -21,3 +21,5 @@ Follow the skill exactly:
 Tone: objective, analytical, direct. No marketing fluff. Cite source URLs when you make a factual claim about a competitor.
 
 If `$ARGUMENTS` is empty, ask the user for the market and stop.
+
+After writing the artifact, follow @skills/_decision-log.md to append one line to `decisions-log.md`.

@@ -9,38 +9,73 @@ A curated set of skills that turn Claude into an AI product management co-pilot.
 ### Commands
 
 - `/competitive [market]` — Structured competitive analysis in 60 seconds
-- `/compare [products...]` — **NEW** — Feature-by-feature comparison with built-in eval design
+- `/compare [products...]` — Feature-by-feature comparison with built-in eval design
 - `/prd [signal]` — Turn a customer quote into a PRD draft
 - `/metrics [feature]` — Design a measurement framework for AI products
 - `/brief [topic] [audience]` — Exec / eng / customer / board comms
 - `/eval [feature]` — Design an evaluation suite for any AI feature
-- `/run-eval [yaml]` — **NEW** — Execute an eval against a real target. Hard-stops on missing target — no fake results.
+- `/run-eval [yaml]` — Execute an eval against a real target. Hard-stops on missing target — no fake results.
+- `/sprint [signal]` — **NEW** — Full PM sprint orchestrator: `prd → metrics → eval → brief` with checkpoint approval at each step
+- `/eval-self` — **NEW** — Score pmstack against its own self-eval suite, with regression alerting against the golden set
 
-## Install (30 seconds)
+## Install (1 line)
 
 ```bash
-git clone https://github.com/RyanAlberts/pmstack.git
-cd pmstack
-./setup /path/to/your-project        # project-scoped install
-# or
-./setup --global                     # available in every Claude Code session
+curl -fsSL https://raw.githubusercontent.com/RyanAlberts/pmstack/main/install.sh | bash
 ```
 
-The installer copies `CLAUDE.md`, slash commands, Anthropic Skills, the runner script (`bin/run-eval.py`), templates, and docs.
+That installs into the current directory. To install elsewhere or globally:
 
-After install, the commands work natively in Claude Code:
+```bash
+# install into a specific project
+curl -fsSL https://raw.githubusercontent.com/RyanAlberts/pmstack/main/install.sh | bash -s -- /path/to/your-project
 
-```
-/eval Claude Ultraplan
-/run-eval outputs/eval-claude-ultraplan-2026-04-24.yaml
-/compare Cursor Windsurf
-/prd "Customers say onboarding takes 3 days"
-/brief Q2 launch exec
+# install globally (every Claude Code session)
+curl -fsSL https://raw.githubusercontent.com/RyanAlberts/pmstack/main/install.sh | bash -s -- --global
 ```
 
-For Claude.ai web / mobile / desktop, upload the `claude-skills/<name>/` folders to a Claude.ai Project — same brain, runs anywhere. See [claude-skills/README.md](./claude-skills/README.md).
+The installer clones to a temp dir, runs `./setup`, and cleans up. **No `pmstack/` folder left behind.** Read it first if you'd like: [install.sh](./install.sh).
 
-> **Manual install**: copy `CLAUDE.md`, `skills/`, `templates/`, `bin/`, `docs/`, `.claude/commands/`, and `claude-skills/` into your target.
+<details>
+<summary>Manual install (clone-and-run)</summary>
+
+```bash
+git clone https://github.com/RyanAlberts/pmstack.git && cd pmstack && ./setup /path/to/your-project
+```
+
+Or copy `CLAUDE.md`, `skills/`, `templates/`, `bin/`, `docs/`, `.claude/commands/`, and `claude-skills/` into your target by hand.
+</details>
+
+## How do I get started today?
+
+After install:
+
+**1. Open Claude Code in the installed project.**
+
+```bash
+cd /path/to/your-project
+claude
+```
+
+**2. Try the commands you'd actually use this week.**
+
+```
+/prd "Customers say onboarding takes 3 days"     # turn a quote into a spec
+/competitive AI coding assistants                 # market positioning
+/compare Cursor Windsurf                          # feature-by-feature
+/metrics agent handoff success                    # measurement framework
+/brief Q2 launch slipping exec                    # stakeholder comms
+/eval Claude Ultraplan                            # design an eval suite
+/run-eval outputs/eval-<feature>-<date>.yaml      # actually execute it
+/sprint "Customers want pricing transparency"     # full PM sprint, gated
+/eval-self                                        # score pmstack itself
+```
+
+Every command writes a markdown or YAML artifact to `outputs/` — you can paste into Notion, share a PR, or hand to a teammate.
+
+**3. On Claude.ai web / mobile?** Upload the `claude-skills/<name>/` folders to a Claude.ai Project. Same brain, runs anywhere. See [claude-skills/README.md](./claude-skills/README.md).
+
+**4. New to evals?** Read [docs/run-eval-setup.md](./docs/run-eval-setup.md) — learn-by-doing guide for `/run-eval`.
 
 ## New in v0.4
 

@@ -22,3 +22,5 @@ Follow the skill exactly:
 Tone: rigorous, methodical, focused on risk mitigation. No fluff, no hedge words.
 
 If `$ARGUMENTS` is empty, ask the user for the feature name and stop.
+
+After writing the artifact, follow @skills/_decision-log.md to append one line to `decisions-log.md`.
