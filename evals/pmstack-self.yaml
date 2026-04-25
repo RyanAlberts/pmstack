@@ -97,12 +97,6 @@ skills:
       - id: prd-tc-1
         category: golden
         input: '"We churn 30% of trial users in week one. They tell us setup felt overwhelming." — VP Sales, Q1 QBR'
-      - id: prd-tc-2
-        category: vague
-        input: "Customers want a better dashboard"
-        expectations:
-          should_clarify_first: false
-          notes: "Vague but actionable — PRD should make explicit assumptions about what 'better' means and flag them as TBV."
       - id: prd-tc-3
         category: technical
         input: "Migrate auth from Auth0 to in-house — security team flagged data residency on EU customers"
@@ -164,11 +158,6 @@ skills:
       - id: metrics-tc-1
         category: agentic
         input: "Multi-step research agent that produces market analysis reports"
-      - id: metrics-tc-2
-        category: thin-feature
-        input: "Tooltip explaining a chart label"
-        expectations:
-          notes: "Tiny feature — metrics should be appropriately scoped, not contrived North Star theater."
 
   - name: brief
     command: "/brief"

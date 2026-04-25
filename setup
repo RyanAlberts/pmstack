@@ -33,12 +33,16 @@ done
 
 if [[ "$GLOBAL" == "1" ]]; then
   TARGET="$HOME/.claude"
-  # Global install: commands live at ~/.claude/commands (no nested .claude).
+  # Global install: commands live at ~/.claude/commands and Anthropic Skills at ~/.claude/skills (no nested .claude).
   COMMANDS_DIR="$TARGET/commands"
+  AGENT_SKILLS_DIR="$TARGET/skills"
   echo "→ Installing pmstack globally to $TARGET"
 else
   # Project install: commands live at <project>/.claude/commands.
+  # Note: pmstack uses skills/ in project mode for the per-command skill source files.
+  # Anthropic Agent Skills install to .claude/skills/ in project mode (Claude Code reads both).
   COMMANDS_DIR="$TARGET/.claude/commands"
+  AGENT_SKILLS_DIR="$TARGET/.claude/skills"
   echo "→ Installing pmstack into $TARGET"
 fi
 
@@ -47,10 +51,10 @@ run() {
   if [[ "$DRY_RUN" == "0" ]]; then "$@"; fi
 }
 
-run mkdir -p "$COMMANDS_DIR" "$TARGET/skills" "$TARGET/templates" "$TARGET/outputs"
+run mkdir -p "$COMMANDS_DIR" "$AGENT_SKILLS_DIR" "$TARGET/skills" "$TARGET/templates" "$TARGET/outputs" "$TARGET/bin" "$TARGET/docs"
 
 # Slash commands — required for /eval, /prd, etc. to work.
-for cmd in eval prd competitive metrics brief; do
+for cmd in eval prd competitive metrics brief compare run-eval; do
   run cp "$SRC/.claude/commands/$cmd.md" "$COMMANDS_DIR/$cmd.md"
 done
 
@@ -60,6 +64,27 @@ for f in "$SRC"/skills/*.md; do
 done
 for f in "$SRC"/templates/*; do
   run cp "$f" "$TARGET/templates/$(basename "$f")"
+done
+
+# Anthropic Agent Skills — cross-platform (web/mobile/desktop/API/CLI).
+for d in "$SRC"/claude-skills/*/; do
+  [[ -d "$d" ]] || continue
+  name="$(basename "$d")"
+  run mkdir -p "$AGENT_SKILLS_DIR/$name"
+  for f in "$d"*; do
+    [[ -f "$f" ]] && run cp "$f" "$AGENT_SKILLS_DIR/$name/$(basename "$f")"
+  done
+done
+
+# bin/ — runner script for /run-eval. Required for actual eval execution.
+for f in "$SRC"/bin/*; do
+  [[ -f "$f" ]] && run cp "$f" "$TARGET/bin/$(basename "$f")"
+  [[ -f "$f" ]] && run chmod +x "$TARGET/bin/$(basename "$f")"
+done
+
+# docs/ — learn-by-doing guides for PMs new to evals etc.
+for f in "$SRC"/docs/*; do
+  [[ -f "$f" ]] && run cp "$f" "$TARGET/docs/$(basename "$f")"
 done
 
 # CLAUDE.md — only at project scope, never overwrite.
@@ -102,3 +127,8 @@ echo "  claude"
 echo "  > /eval Claude Ultraplan"
 echo "  > /prd \"Customers say onboarding takes 3 days\""
 echo "  > /competitive AI coding assistants"
+echo "  > /compare Cursor Windsurf"
+echo "  > /run-eval outputs/eval-<feature>-<date>.yaml   (after /eval produces one)"
+echo ""
+echo "Anthropic Agent Skills installed (work in Claude.ai web/mobile + API too):"
+echo "  Upload claude-skills/<name>/ folders to a Claude.ai Project."
