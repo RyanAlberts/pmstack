@@ -1,0 +1,220 @@
+name: "pmstack self-eval"
+description: >
+  Evaluates each pmstack skill against canonical input scenarios. Mixes deterministic
+  structural checks (file written, YAML parses, sections present) with rubric-based
+  quality scoring by a separate-family judge model (Claude Sonnet, when the target is
+  Opus/Haiku; or any model in the OpenAI/Gemini families if available).
+version: 0.3.0
+created: 2026-04-24
+maintainer: "RyanAlberts/pmstack"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Global structural metrics — every skill output must pass these
+# ─────────────────────────────────────────────────────────────────────────────
+structural_checks:
+  - id: file-written
+    description: "Skill writes a file under outputs/ matching the expected pattern."
+    severity: P0
+  - id: file-non-empty
+    description: "Output file is > 200 bytes."
+    severity: P0
+  - id: file-parses
+    description: "YAML files parse with yaml.safe_load; markdown files have non-empty H1."
+    severity: P0
+  - id: required-sections-present
+    description: "Skill-specific required sections (see per-skill spec) all appear."
+    severity: P0
+  - id: forbidden-phrases-absent
+    description: "Output does not contain forbidden phrases from CLAUDE.md (e.g., 'I apologize for the confusion', 'great question', 'absolutely', uninvited emoji)."
+    severity: P1
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Per-skill specs
+# ─────────────────────────────────────────────────────────────────────────────
+skills:
+
+  - name: eval
+    command: "/eval"
+    output_glob: "outputs/eval-*.yaml"
+    required_sections: [name, capabilities, failure_modes, metrics, test_cases]
+    quality_rubric:
+      - dim: rigor
+        question: "Are metrics measurable today, with explicit pass bars?"
+        weight: 3
+      - dim: coverage
+        question: "Does the suite include adversarial, edge, and regression cases — not just golden path?"
+        weight: 3
+      - dim: structure
+        question: "Each test case has id, description, input, expected_behavior, applicable metrics, and severity?"
+        weight: 2
+      - dim: realism
+        question: "Could a junior eng implement these tests from the spec without further questions?"
+        weight: 2
+    test_inputs:
+      - id: eval-tc-1
+        category: golden
+        input: "Customer support chatbot for an e-commerce site"
+        expectations:
+          min_capabilities: 4
+          min_failure_modes: 6
+          min_metrics: 6
+          min_test_cases: 10
+      - id: eval-tc-2
+        category: edge
+        input: "Trivial agent — just echoes the user input back"
+        expectations:
+          min_test_cases: 5
+          notes: "Skill should not pad — it's fine to produce a small but well-structured eval for a small target."
+      - id: eval-tc-3
+        category: ambiguous
+        input: ""
+        expectations:
+          should_ask: true
+          notes: "Empty arg → skill must ask for the feature, not invent one."
+
+  - name: prd
+    command: "/prd"
+    output_glob: "outputs/prd-*.md"
+    required_sections:
+      - "Problem Statement"
+      - "Proposed Solution"
+      - "Key Features"
+      - "Success Metrics"
+    quality_rubric:
+      - dim: signal_to_problem
+        question: "Does the PRD extract the underlying problem from the signal, not just restate it?"
+        weight: 3
+      - dim: scoping
+        question: "MoSCoW is specific and defensible (no 'Must Have: it should work well')?"
+        weight: 2
+      - dim: metrics
+        question: "Includes North Star + supporting + counter-metric, each measurable?"
+        weight: 3
+      - dim: voice
+        question: "Active voice, confidence levels stated, no hedge-padding?"
+        weight: 2
+    test_inputs:
+      - id: prd-tc-1
+        category: golden
+        input: '"We churn 30% of trial users in week one. They tell us setup felt overwhelming." — VP Sales, Q1 QBR'
+      - id: prd-tc-2
+        category: vague
+        input: "Customers want a better dashboard"
+        expectations:
+          should_clarify_first: false
+          notes: "Vague but actionable — PRD should make explicit assumptions about what 'better' means and flag them as TBV."
+      - id: prd-tc-3
+        category: technical
+        input: "Migrate auth from Auth0 to in-house — security team flagged data residency on EU customers"
+
+  - name: competitive
+    command: "/competitive"
+    output_glob: "outputs/competitive-*.md"
+    required_sections:
+      - "White Space"
+    required_features:
+      - "≥3 competitors named"
+      - "Comparison table present"
+      - "What I'd want to validate section"
+    quality_rubric:
+      - dim: factual_caution
+        question: "When uncertain about a competitor fact, does the analysis say so rather than fabricate?"
+        weight: 4
+      - dim: differentiation
+        question: "Is the white space concrete — a specific wedge, not 'better UX'?"
+        weight: 3
+      - dim: structure
+        question: "Comparison is matrixed; same dimensions across competitors?"
+        weight: 2
+    test_inputs:
+      - id: comp-tc-1
+        category: well-known-market
+        input: "AI coding assistants"
+      - id: comp-tc-2
+        category: niche
+        input: "Self-hosted vector databases for sub-1B-vector workloads"
+        expectations:
+          notes: "Niche market — model may not have strong knowledge. Should hedge appropriately."
+      - id: comp-tc-3
+        category: hallucination-trap
+        input: "B2B SaaS pricing optimization tools for early-stage YC companies"
+        expectations:
+          forbidden_competitor_names: []
+          notes: "Set to empty for now; populate with known-non-existent competitors after first run reveals fabrications."
+
+  - name: metrics
+    command: "/metrics"
+    output_glob: "outputs/metrics-*.md"
+    required_sections:
+      - "North Star"
+    required_features:
+      - "≥1 counter-metric"
+      - "AI-specific metrics (latency, cost, quality)"
+    quality_rubric:
+      - dim: measurability
+        question: "Every metric has a definition, source, and target — could be wired up tomorrow?"
+        weight: 3
+      - dim: balance
+        question: "Counter-metric meaningfully constrains the North Star?"
+        weight: 3
+      - dim: ai_specifics
+        question: "Includes accuracy/quality, latency, and cost — not just engagement?"
+        weight: 2
+    test_inputs:
+      - id: metrics-tc-1
+        category: agentic
+        input: "Multi-step research agent that produces market analysis reports"
+      - id: metrics-tc-2
+        category: thin-feature
+        input: "Tooltip explaining a chart label"
+        expectations:
+          notes: "Tiny feature — metrics should be appropriately scoped, not contrived North Star theater."
+
+  - name: brief
+    command: "/brief"
+    output_glob: "outputs/brief-*.md"
+    required_sections: ["TL;DR"]
+    quality_rubric:
+      - dim: tldr_first
+        question: "TL;DR delivers the so-what in one sentence?"
+        weight: 3
+      - dim: audience_fit
+        question: "Framing matches audience (exec = metric impact + 1 ask; eng = constraint→trade-off→rec; customer = outcome→path)?"
+        weight: 3
+      - dim: brevity
+        question: "Under 1 page; no padding?"
+        weight: 2
+    test_inputs:
+      - id: brief-tc-1
+        category: exec
+        input: "Q2 launch slipping by 2 weeks due to dependency on auth migration | exec"
+      - id: brief-tc-2
+        category: eng
+        input: "Adding rate limiting to the API | eng"
+      - id: brief-tc-3
+        category: customer
+        input: "Pricing changes effective May 1 | customer"
+      - id: brief-tc-4
+        category: missing-audience
+        input: "Q2 launch slipping"
+        expectations:
+          should_ask: true
+          notes: "Audience missing — skill should ask once."
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Run discipline
+# ─────────────────────────────────────────────────────────────────────────────
+run_policy:
+  default_target_model: "claude-haiku-4-5-20251001"
+  default_judge_model: "claude-sonnet-4-6"
+  judge_constraint: "Judge MUST be a different model family or version than the target."
+  cost_budget_usd_per_run: 5.00
+  cadence:
+    on_skill_change: "Re-run the affected skill before merge."
+    weekly: "Full suite, results committed to evals/results/."
+    on_model_release: "Full suite against the new model, gate adoption on no-regression."
+
+  release_gates:
+    P0_structural: "100% pass required."
+    P1_quality_rubric: ">= 80% of cases score >= 4/5 weighted average."
+    regression: "No skill drops more than 0.5 points vs. prior run on the same target model."

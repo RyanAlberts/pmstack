@@ -1,0 +1,93 @@
+{
+  "started_at": "2026-04-25T02:50:34.532626+00:00",
+  "target_model": "claude-haiku-4-5-20251001",
+  "judge_model": "claude-sonnet-4-6",
+  "max_budget_usd": 2.0,
+  "skills": {
+    "brief": {
+      "cases": [
+        {
+          "id": "brief-tc-1",
+          "category": "exec",
+          "input": "Q2 launch slipping by 2 weeks due to dependency on auth migration | exec",
+          "exit_code": 0,
+          "artifact": "outputs/brief-q2-launch-auth-migration-exec-2026-04-24.md",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "tldr_first": 5,
+            "audience_fit": 4,
+            "brevity": 3
+          },
+          "weighted_quality": 4.12
+        },
+        {
+          "id": "brief-tc-2",
+          "category": "eng",
+          "input": "Adding rate limiting to the API | eng",
+          "exit_code": 0,
+          "artifact": "outputs/brief-adding-rate-limiting-to-api-eng-2026-04-24.md",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "tldr_first": 5,
+            "audience_fit": 5,
+            "brevity": 4
+          },
+          "weighted_quality": 4.75
+        },
+        {
+          "id": "brief-tc-3",
+          "category": "customer",
+          "input": "Pricing changes effective May 1 | customer",
+          "exit_code": 0,
+          "artifact": null,
+          "structural": {
+            "file-written": false,
+            "file-non-empty": false,
+            "file-parses": false,
+            "required-sections-present": false,
+            "forbidden-phrases-absent": false
+          },
+          "quality": {
+            "tldr_first": null,
+            "audience_fit": null,
+            "brevity": null
+          },
+          "weighted_quality": null
+        },
+        {
+          "id": "brief-tc-4",
+          "category": "missing-audience",
+          "input": "Q2 launch slipping",
+          "exit_code": 0,
+          "artifact": null,
+          "structural": {
+            "file-written": false,
+            "file-non-empty": false,
+            "file-parses": false,
+            "required-sections-present": false,
+            "forbidden-phrases-absent": false
+          },
+          "quality": {
+            "tldr_first": null,
+            "audience_fit": null,
+            "brevity": null
+          },
+          "weighted_quality": null
+        }
+      ]
+    }
+  },
+  "finished_at": "2026-04-25T02:51:47.026227+00:00"
+}
