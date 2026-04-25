@@ -93,8 +93,24 @@ def find_artifact(project: Path, glob: str) -> Path | None:
     return matches[0] if matches else None
 
 
-def structural_checks(artifact: Path | None, spec: dict) -> dict:
-    """Returns dict of {check_id: True|False|None}."""
+def structural_checks(artifact: Path | None, spec: dict, expectations: dict | None = None) -> dict:
+    """Returns dict of {check_id: True|False|None}.
+
+    `expectations.should_ask=True` means the skill is supposed to ask a clarifying
+    question instead of producing an artifact — in that case, file-absent is the
+    correct behavior and all checks PASS.
+    """
+    expectations = expectations or {}
+    if expectations.get("should_ask") and (artifact is None or not artifact.exists()):
+        return {
+            "file-written": True,
+            "file-non-empty": True,
+            "file-parses": True,
+            "required-sections-present": True,
+            "forbidden-phrases-absent": True,
+            "_note": "should_ask=true; artifact-absence is expected",
+        }
+
     out = {
         "file-written": False,
         "file-non-empty": False,
@@ -233,14 +249,16 @@ def run_suite(args) -> dict:
                     target_model, per_invoke_budget, args.dry_run,
                 )
                 artifact = find_artifact(project, spec["output_glob"])
-                struct = structural_checks(artifact, spec)
+                struct = structural_checks(artifact, spec, tc.get("expectations"))
                 quality = judge_quality(artifact, spec, judge_model, per_invoke_budget, args.dry_run)
                 cases.append({
                     "id": tc["id"],
                     "category": tc["category"],
                     "input": tc["input"],
+                    "expectations": tc.get("expectations"),
                     "exit_code": rc,
                     "artifact": str(artifact.relative_to(project)) if artifact else None,
+                    "stdout_excerpt": (stdout or "")[:600],
                     "structural": struct,
                     "quality": quality,
                     "weighted_quality": weighted_score(quality, spec["quality_rubric"]),
