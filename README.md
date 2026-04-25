@@ -16,10 +16,25 @@ A curated set of Claude Code skills that turn Claude into an AI product manageme
 
 ```bash
 git clone https://github.com/RyanAlberts/pmstack.git
-cp -r pmstack/CLAUDE.md pmstack/skills/ your-project/
+cd pmstack
+./setup /path/to/your-project        # project-scoped install
+# or
+./setup --global                     # available in every Claude Code session
 ```
 
-That's it. No dependencies. No API keys. No build step.
+The installer copies `CLAUDE.md`, `skills/`, `templates/`, and the `.claude/commands/` slash commands into the target. After install, the commands work natively in Claude Code:
+
+```
+/eval Claude Ultraplan
+/prd "Customers say onboarding takes 3 days"
+/competitive AI coding assistants
+/metrics agent handoff success
+/brief Q2 launch exec
+```
+
+No dependencies. No API keys. No build step.
+
+> **Manual install** if you'd rather not run the script: copy `CLAUDE.md`, `skills/`, `templates/`, and `.claude/commands/` into your project root yourself.
 
 ## Why skills, not a framework?
 
