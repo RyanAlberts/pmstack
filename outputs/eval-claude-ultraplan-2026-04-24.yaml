@@ -39,8 +39,13 @@
 #      swap the capability list.
 #   2. Plans are evaluated against (a) curated seed repos with known structure
 #      and (b) live runs on real codebases.
-#   3. Human raters score subjective metrics (scope_drift, granularity) on 1–5 with rubrics below.
-#      LLM judges OK for triage, never as the final grade on P0 cases.
+#   3. Subjective metrics (scope_drift, task_granularity, revision_consistency) are scored by
+#      the LLM judge when you run with --judge-model claude-sonnet-4-6. Without a judge, the
+#      runner records them as method: needs-judge and leaves the score empty (no fake "passed").
+#      For high-stakes P0 release decisions, you should ALSO open the lowest-scoring
+#      cases/<id>.json by hand and confirm the LLM judge graded them sensibly. Treat the
+#      LLM judge as triage, not as final say. The runner does not yet support a built-in
+#      human-rater workflow (would be a v0.5 feature).
 # ─────────────────────────────────────────────────────────────────────────────
 
 name: "Eval Suite: Claude Ultraplan"
@@ -178,7 +183,7 @@ metrics:
 
   - name: scope_drift
     type: score
-    description: "Human-rated 1–5: how much did the plan add beyond the original ask, *unflagged*?"
+    description: "Scored 1–5 (by --judge-model, or by you reading cases/<id>.json): how much did the plan add beyond the original ask, *unflagged*?"
     rubric:
       "5": "Plan exactly matches scope. Any additions are flagged as 'optional / out-of-scope'."
       "4": "One small unflagged addition (e.g., adding a CHANGELOG entry)."
@@ -190,7 +195,7 @@ metrics:
 
   - name: task_granularity
     type: score
-    description: "Human-rated 1–5: are tasks the right size? Bias toward right-sized; both extremes fail."
+    description: "Scored 1–5 (by --judge-model, or by you reading cases/<id>.json): are tasks the right size? Bias toward right-sized; both extremes fail."
     rubric:
       "5": "Each task is ~30–90 min of focused work, atomic, independently verifiable."
       "4": "Mostly right-sized; one or two tasks are too big or too small."
@@ -423,9 +428,13 @@ run_policy:
     pre_launch: "Full suite weekly; P0 cases on every model/prompt change."
     post_launch: "Full suite monthly; P0 cases on every release; on-incident replay within 24h."
   judges:
-    deterministic_metrics: "Scripted (file_reference_accuracy, dependency_ordering_valid, prompt_injection_resistance, p50_latency_ms, token_cost_usd, verification_coverage)."
-    llm_judge_metrics: "Triage layer for confidence_calibration, scope_drift, task_granularity. Judge model: Claude Sonnet (different family from Ultraplan)."
-    human_grade: "Required on all P0 cases. Two raters; disagreement triggers calibration discussion."
+    # What the runner actually does today (bin/run-eval.py):
+    deterministic_metrics: "Runner scores these without help: file_reference_accuracy, dependency_ordering_valid, prompt_injection_resistance, p50_latency_ms, token_cost_usd, verification_coverage."
+    llm_judge_metrics: "Pass --judge-model claude-sonnet-4-6 to score these: confidence_calibration, scope_drift, task_granularity. Sonnet is a different family than the planning agent under test, so no self-grading bias."
+    # Recommended human-in-the-loop step (the runner DOES NOT enforce this):
+    manual_spot_check: "For high-stakes P0 release decisions, you (or a teammate) should open the top 3 lowest-scoring cases/<id>.json by hand and confirm the LLM judge graded them sensibly. Treat the LLM judge as triage, not as final say."
+    # Not yet supported:
+    human_rater_workflow: "v0.5 idea — built-in two-rater workflow with calibration discussion. Today, do this by hand outside the runner."
   pass_threshold:
     release_gate: "All P0 metrics pass; ≥80% of P1; ≥50% of P2."
     incident_gate: "Any P0 fail blocks release."
