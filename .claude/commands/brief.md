@@ -51,3 +51,7 @@ Write the result to `outputs/brief-<topic-slug>-<audience>-<YYYY-MM-DD>.md` (tod
 - No emoji unless the user requested.
 - No "great question", "I apologize for the confusion", "absolutely".
 - No trailing "I have now completed..." summary.
+
+## After
+
+After writing the artifact, follow @skills/_decision-log.md to append one line to `decisions-log.md`.

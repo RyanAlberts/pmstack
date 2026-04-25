@@ -23,3 +23,5 @@ Follow the skill exactly:
 Tone: clear, concise, active voice. State your confidence level instead of hedging.
 
 If `$ARGUMENTS` is empty, ask the user for the signal and stop.
+
+After writing the artifact, follow @skills/_decision-log.md to append one line to `decisions-log.md`.

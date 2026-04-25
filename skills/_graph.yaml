@@ -1,0 +1,88 @@
+# pmstack skill graph
+#
+# Declarative handoff map. Tells skills which prior outputs are useful
+# context (not required — skills still work standalone) and what default
+# orchestrators (like /sprint) should chain.
+#
+# This file is read by:
+#   - /sprint (chains skills in sequence with confirmation gates)
+#   - skill prompts themselves (each skill should glob outputs/ for relevant prior artifacts and use them as context)
+#   - decisions-log.md auto-append logic
+#
+# Edit if you want to change the canonical PM workflow.
+
+version: 0.4.1
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Skill graph — for each skill, what prior outputs help it do better work
+# ─────────────────────────────────────────────────────────────────────────────
+edges:
+  # /prd reads /competitive output if present (positioning informs problem framing)
+  prd:
+    reads_from:
+      - skill: competitive
+        glob: "outputs/competitive-*.md"
+        when: "if a positioning analysis exists for this market, use it for the Target Audience section"
+
+  # /metrics reads the most recent /prd
+  metrics:
+    reads_from:
+      - skill: prd
+        glob: "outputs/prd-*.md"
+        when: "always — North Star metric should align with the PRD's Success Metrics section"
+
+  # /eval reads /prd + /metrics
+  eval:
+    reads_from:
+      - skill: prd
+        glob: "outputs/prd-*.md"
+        when: "always — eval failure modes should map to PRD risks"
+      - skill: metrics
+        glob: "outputs/metrics-*.md"
+        when: "always — eval metrics should reuse the measurement framework"
+
+  # /brief can summarize any of the above
+  brief:
+    reads_from:
+      - skill: any
+        glob: "outputs/{prd,metrics,eval,competitive,compare}-*"
+        when: "the brief should reference the source artifacts so stakeholders can dig in"
+
+  # /compare produces both a plan and an eval YAML; eval YAML feeds /run-eval
+  compare:
+    feeds_to:
+      - run-eval
+
+  # /run-eval is terminal — produces summary.md per run
+  run-eval:
+    reads_from:
+      - skill: eval
+        glob: "outputs/eval-*.yaml"
+        when: "input — the eval design to execute"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Default orchestrators — chains a higher-level command can run
+# ─────────────────────────────────────────────────────────────────────────────
+orchestrators:
+  sprint:
+    description: "Customer signal → ready-to-ship-to-stakeholders artifacts"
+    chain: [prd, metrics, eval, brief]
+    confirm_between_steps: true
+
+  compare-and-run:
+    description: "Compare two products, then execute the resulting eval"
+    chain: [compare, run-eval]
+    confirm_between_steps: true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Decision log — every skill that ships an artifact should append here
+# ─────────────────────────────────────────────────────────────────────────────
+decision_log:
+  path: "decisions-log.md"
+  format: |
+    - YYYY-MM-DD — <skill>: <topic> — <relative-artifact-path>
+
+  rationale: >
+    Skills run statelessly. The decision log gives Claude (and you) one place
+    to look up what's already been decided, so a future skill knows the
+    PRD already exists, the metrics are already locked in, etc.
