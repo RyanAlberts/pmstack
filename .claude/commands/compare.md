@@ -26,3 +26,5 @@ Follow the three-phase sequence in `skills/feature-compare.md` exactly:
 - For Mode (b), do not pretend you can execute. Hand off cleanly.
 
 If `$ARGUMENTS` is empty or names only one product, ask the user for the second product (and any others) and stop.
+
+After writing each artifact (plan, eval YAML, findings), follow @skills/_decision-log.md to append a one-line entry to `decisions-log.md`.

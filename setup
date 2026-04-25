@@ -51,10 +51,10 @@ run() {
   if [[ "$DRY_RUN" == "0" ]]; then "$@"; fi
 }
 
-run mkdir -p "$COMMANDS_DIR" "$AGENT_SKILLS_DIR" "$TARGET/skills" "$TARGET/templates" "$TARGET/outputs" "$TARGET/bin" "$TARGET/docs"
+run mkdir -p "$COMMANDS_DIR" "$AGENT_SKILLS_DIR" "$TARGET/skills" "$TARGET/templates" "$TARGET/outputs" "$TARGET/bin" "$TARGET/docs" "$TARGET/evals/golden" "$TARGET/examples/golden"
 
 # Slash commands — required for /eval, /prd, etc. to work.
-for cmd in eval prd competitive metrics brief compare run-eval; do
+for cmd in eval prd competitive metrics brief compare run-eval sprint eval-self; do
   run cp "$SRC/.claude/commands/$cmd.md" "$COMMANDS_DIR/$cmd.md"
 done
 
@@ -80,6 +80,22 @@ done
 for f in "$SRC"/bin/*; do
   [[ -f "$f" ]] && run cp "$f" "$TARGET/bin/$(basename "$f")"
   [[ -f "$f" ]] && run chmod +x "$TARGET/bin/$(basename "$f")"
+done
+
+# evals/ — runner.py + regression-check.py + golden baseline + suite definition.
+run mkdir -p "$TARGET/evals"
+for f in "$SRC"/evals/runner.py "$SRC"/evals/regression-check.py "$SRC"/evals/pmstack-self.yaml "$SRC"/evals/README.md; do
+  [[ -f "$f" ]] && run cp "$f" "$TARGET/evals/$(basename "$f")"
+done
+[[ -f "$SRC/evals/runner.py" ]] && run chmod +x "$TARGET/evals/runner.py"
+[[ -f "$SRC/evals/regression-check.py" ]] && run chmod +x "$TARGET/evals/regression-check.py"
+for f in "$SRC"/evals/golden/*; do
+  [[ -f "$f" ]] && run cp "$f" "$TARGET/evals/golden/$(basename "$f")"
+done
+
+# examples/golden/ — anchor outputs index.
+for f in "$SRC"/examples/golden/*; do
+  [[ -f "$f" ]] && run cp "$f" "$TARGET/examples/golden/$(basename "$f")"
 done
 
 # docs/ — learn-by-doing guides for PMs new to evals etc.
@@ -124,11 +140,12 @@ echo "✓ pmstack installed."
 echo ""
 echo "Try it:"
 echo "  claude"
-echo "  > /eval Claude Ultraplan"
 echo "  > /prd \"Customers say onboarding takes 3 days\""
-echo "  > /competitive AI coding assistants"
+echo "  > /sprint \"Customers want pricing transparency\""
 echo "  > /compare Cursor Windsurf"
-echo "  > /run-eval outputs/eval-<feature>-<date>.yaml   (after /eval produces one)"
+echo "  > /eval Claude Ultraplan"
+echo "  > /run-eval outputs/eval-<feature>-<date>.yaml"
+echo "  > /eval-self                     # score pmstack itself"
 echo ""
 echo "Anthropic Agent Skills installed (work in Claude.ai web/mobile + API too):"
 echo "  Upload claude-skills/<name>/ folders to a Claude.ai Project."

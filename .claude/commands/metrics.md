@@ -21,3 +21,5 @@ Follow the skill exactly:
 Tone: data-driven, precise. Every metric must be measurable today or list the instrumentation work needed.
 
 If `$ARGUMENTS` is empty, ask the user for the feature and stop.
+
+After writing the artifact, follow @skills/_decision-log.md to append one line to `decisions-log.md`.
