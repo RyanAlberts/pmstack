@@ -33,8 +33,12 @@ done
 
 if [[ "$GLOBAL" == "1" ]]; then
   TARGET="$HOME/.claude"
+  # Global install: commands live at ~/.claude/commands (no nested .claude).
+  COMMANDS_DIR="$TARGET/commands"
   echo "→ Installing pmstack globally to $TARGET"
 else
+  # Project install: commands live at <project>/.claude/commands.
+  COMMANDS_DIR="$TARGET/.claude/commands"
   echo "→ Installing pmstack into $TARGET"
 fi
 
@@ -43,11 +47,11 @@ run() {
   if [[ "$DRY_RUN" == "0" ]]; then "$@"; fi
 }
 
-run mkdir -p "$TARGET/.claude/commands" "$TARGET/skills" "$TARGET/templates" "$TARGET/outputs"
+run mkdir -p "$COMMANDS_DIR" "$TARGET/skills" "$TARGET/templates" "$TARGET/outputs"
 
 # Slash commands — required for /eval, /prd, etc. to work.
 for cmd in eval prd competitive metrics brief; do
-  run cp "$SRC/.claude/commands/$cmd.md" "$TARGET/.claude/commands/$cmd.md"
+  run cp "$SRC/.claude/commands/$cmd.md" "$COMMANDS_DIR/$cmd.md"
 done
 
 # Skills + templates — referenced by the commands.
