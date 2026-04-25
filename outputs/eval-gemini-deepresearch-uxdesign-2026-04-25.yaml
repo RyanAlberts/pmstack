@@ -15,15 +15,20 @@
 #   Judge calls : 6 × ~4K tokens ≈ 24K tokens against Claude session
 # ─────────────────────────────────────────────────────────────────────────────
 
-name: "Gemini 2.5 Pro — deep research + UX design"
+name: "Gemini 2.0 Flash — deep research + UX design"
 description: >
   Six cases probing Gemini's deep-research synthesis and its ability to
   produce / critique UX. Judged by Claude Sonnet (different family, no
   self-grading bias).
 
+  Why flash and not pro: free-tier quota for gemini-2.5-pro is too tight
+  for a 6-case run (every call 429s on first attempt). Flash has much
+  more permissive free-tier limits and is the closer apples-to-apples
+  comparison against Claude Haiku/Sonnet anyway.
+
 target:
   type: http
-  url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent"
+  url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
   method: POST
   request_template: '{"contents":[{"parts":[{"text":"{{input}}"}]}],"generationConfig":{"maxOutputTokens":2048,"temperature":0.3}}'
   response_path: ".candidates[0].content.parts[0].text"
@@ -31,6 +36,8 @@ target:
     x-goog-api-key: "${GEMINI_API_KEY}"
   requires:
     - GEMINI_API_KEY
+  # Free tier limits are per-minute; 6s spacing keeps us under 10 RPM comfortably.
+  delay_between_cases_sec: 6
 
 capabilities:
   - "Deep research: multi-source synthesis with explicit uncertainty"
