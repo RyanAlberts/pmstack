@@ -21,3 +21,6 @@ venv/
 .claude/settings.local.json
 .claude/projects/
 .claude/worktrees/
+
+# Per-run eval execution artifacts (the parent outputs/ stays tracked for canonical examples)
+outputs/eval-runs/
