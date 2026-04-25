@@ -1,0 +1,335 @@
+{
+  "started_at": "2026-04-25T03:03:20.289859+00:00",
+  "target_model": "claude-haiku-4-5-20251001",
+  "judge_model": "claude-sonnet-4-6",
+  "max_budget_usd": 10.0,
+  "skills": {
+    "eval": {
+      "cases": [
+        {
+          "id": "eval-tc-1",
+          "category": "golden",
+          "input": "Customer support chatbot for an e-commerce site",
+          "exit_code": 0,
+          "artifact": "outputs/eval-customer-support-chatbot-2026-04-24.yaml",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "rigor": 4,
+            "coverage": 4,
+            "structure": 5,
+            "realism": 3
+          },
+          "weighted_quality": 4.0
+        },
+        {
+          "id": "eval-tc-2",
+          "category": "edge",
+          "input": "Trivial agent \u2014 just echoes the user input back",
+          "exit_code": 0,
+          "artifact": "outputs/eval-trivial-agent-2026-04-24.yaml",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "rigor": 5,
+            "coverage": 4,
+            "structure": 5,
+            "realism": 4
+          },
+          "weighted_quality": 4.5
+        },
+        {
+          "id": "eval-tc-3",
+          "category": "ambiguous",
+          "input": "",
+          "exit_code": 0,
+          "artifact": null,
+          "structural": {
+            "file-written": false,
+            "file-non-empty": false,
+            "file-parses": false,
+            "required-sections-present": false,
+            "forbidden-phrases-absent": false
+          },
+          "quality": {
+            "rigor": null,
+            "coverage": null,
+            "structure": null,
+            "realism": null
+          },
+          "weighted_quality": null
+        }
+      ]
+    },
+    "prd": {
+      "cases": [
+        {
+          "id": "prd-tc-1",
+          "category": "golden",
+          "input": "\"We churn 30% of trial users in week one. They tell us setup felt overwhelming.\" \u2014 VP Sales, Q1 QBR",
+          "exit_code": 0,
+          "artifact": "outputs/prd-guided-onboarding-2026-04-24.md",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "signal_to_problem": 5,
+            "scoping": 4,
+            "metrics": 5,
+            "voice": 4
+          },
+          "weighted_quality": 4.6
+        },
+        {
+          "id": "prd-tc-2",
+          "category": "vague",
+          "input": "Customers want a better dashboard",
+          "exit_code": 0,
+          "artifact": null,
+          "structural": {
+            "file-written": false,
+            "file-non-empty": false,
+            "file-parses": false,
+            "required-sections-present": false,
+            "forbidden-phrases-absent": false
+          },
+          "quality": {
+            "signal_to_problem": null,
+            "scoping": null,
+            "metrics": null,
+            "voice": null
+          },
+          "weighted_quality": null
+        },
+        {
+          "id": "prd-tc-3",
+          "category": "technical",
+          "input": "Migrate auth from Auth0 to in-house \u2014 security team flagged data residency on EU customers",
+          "exit_code": 0,
+          "artifact": "outputs/prd-auth-residency-migration-2026-04-24.md",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "signal_to_problem": 5,
+            "scoping": 5,
+            "metrics": 4,
+            "voice": 5
+          },
+          "weighted_quality": 4.7
+        }
+      ]
+    },
+    "competitive": {
+      "cases": [
+        {
+          "id": "comp-tc-1",
+          "category": "well-known-market",
+          "input": "AI coding assistants",
+          "exit_code": 0,
+          "artifact": "outputs/competitive-ai-coding-assistants-2026-04-24.md",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "factual_caution": 5,
+            "differentiation": 4,
+            "structure": 5
+          },
+          "weighted_quality": 4.67
+        },
+        {
+          "id": "comp-tc-2",
+          "category": "niche",
+          "input": "Self-hosted vector databases for sub-1B-vector workloads",
+          "exit_code": 0,
+          "artifact": "outputs/competitive-self-hosted-vector-db-2026-04-24.md",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "factual_caution": 5,
+            "differentiation": 4,
+            "structure": 5
+          },
+          "weighted_quality": 4.67
+        },
+        {
+          "id": "comp-tc-3",
+          "category": "hallucination-trap",
+          "input": "B2B SaaS pricing optimization tools for early-stage YC companies",
+          "exit_code": 0,
+          "artifact": "outputs/competitive-saas-pricing-tools-2026-04-24.md",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "factual_caution": 5,
+            "differentiation": 4,
+            "structure": 4
+          },
+          "weighted_quality": 4.44
+        }
+      ]
+    },
+    "metrics": {
+      "cases": [
+        {
+          "id": "metrics-tc-1",
+          "category": "agentic",
+          "input": "Multi-step research agent that produces market analysis reports",
+          "exit_code": 0,
+          "artifact": "outputs/metrics-research-agent-market-reports-2026-04-24.md",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "measurability": 4,
+            "balance": 4,
+            "ai_specifics": 5
+          },
+          "weighted_quality": 4.25
+        },
+        {
+          "id": "metrics-tc-2",
+          "category": "thin-feature",
+          "input": "Tooltip explaining a chart label",
+          "exit_code": 0,
+          "artifact": null,
+          "structural": {
+            "file-written": false,
+            "file-non-empty": false,
+            "file-parses": false,
+            "required-sections-present": false,
+            "forbidden-phrases-absent": false
+          },
+          "quality": {
+            "measurability": null,
+            "balance": null,
+            "ai_specifics": null
+          },
+          "weighted_quality": null
+        }
+      ]
+    },
+    "brief": {
+      "cases": [
+        {
+          "id": "brief-tc-1",
+          "category": "exec",
+          "input": "Q2 launch slipping by 2 weeks due to dependency on auth migration | exec",
+          "exit_code": 0,
+          "artifact": "outputs/brief-q2-launch-auth-migration-exec-2026-04-24.md",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "tldr_first": 4,
+            "audience_fit": 4,
+            "brevity": 3
+          },
+          "weighted_quality": 3.75
+        },
+        {
+          "id": "brief-tc-2",
+          "category": "eng",
+          "input": "Adding rate limiting to the API | eng",
+          "exit_code": 0,
+          "artifact": "outputs/brief-adding-rate-limiting-to-the-api-eng-2026-04-24.md",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "tldr_first": 3,
+            "audience_fit": 4,
+            "brevity": 2
+          },
+          "weighted_quality": 3.12
+        },
+        {
+          "id": "brief-tc-3",
+          "category": "customer",
+          "input": "Pricing changes effective May 1 | customer",
+          "exit_code": 0,
+          "artifact": null,
+          "structural": {
+            "file-written": false,
+            "file-non-empty": false,
+            "file-parses": false,
+            "required-sections-present": false,
+            "forbidden-phrases-absent": false
+          },
+          "quality": {
+            "tldr_first": null,
+            "audience_fit": null,
+            "brevity": null
+          },
+          "weighted_quality": null
+        },
+        {
+          "id": "brief-tc-4",
+          "category": "missing-audience",
+          "input": "Q2 launch slipping",
+          "exit_code": 0,
+          "artifact": null,
+          "structural": {
+            "file-written": false,
+            "file-non-empty": false,
+            "file-parses": false,
+            "required-sections-present": false,
+            "forbidden-phrases-absent": false
+          },
+          "quality": {
+            "tldr_first": null,
+            "audience_fit": null,
+            "brevity": null
+          },
+          "weighted_quality": null
+        }
+      ]
+    }
+  },
+  "finished_at": "2026-04-25T03:15:07.532122+00:00"
+}

@@ -1,0 +1,105 @@
+{
+  "started_at": "2026-04-25T03:16:44.648951+00:00",
+  "target_model": "claude-haiku-4-5-20251001",
+  "judge_model": "claude-sonnet-4-6",
+  "max_budget_usd": 3.0,
+  "skills": {
+    "brief": {
+      "cases": [
+        {
+          "id": "brief-tc-1",
+          "category": "exec",
+          "input": "Q2 launch slipping by 2 weeks due to dependency on auth migration | exec",
+          "expectations": null,
+          "exit_code": 0,
+          "artifact": "outputs/brief-q2-launch-slip-exec-2026-04-24.md",
+          "stdout_excerpt": "Brief written to `outputs/brief-q2-launch-slip-exec-2026-04-24.md`. \n\nExecutive summary: 2-week slip confirmed, new GA target June 15 held, QA compression recovers 1 week, single ask for approval by end of week.\n",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "tldr_first": 5,
+            "audience_fit": 5,
+            "brevity": 5
+          },
+          "weighted_quality": 5.0
+        },
+        {
+          "id": "brief-tc-2",
+          "category": "eng",
+          "input": "Adding rate limiting to the API | eng",
+          "expectations": null,
+          "exit_code": 0,
+          "artifact": "outputs/brief-adding-rate-limiting-to-api-eng-2026-04-24.md",
+          "stdout_excerpt": "Brief written to `outputs/brief-adding-rate-limiting-to-api-eng-2026-04-24.md`. \n\nThe brief leads with the constraint (zero throttling exposing us to abuse and costs), explains the token-bucket trade-off vs. fixed-window, specifies the concrete tiers and implementation details, and ends with the rollback plan.\n",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true
+          },
+          "quality": {
+            "tldr_first": 4,
+            "audience_fit": 5,
+            "brevity": 5
+          },
+          "weighted_quality": 4.62
+        },
+        {
+          "id": "brief-tc-3",
+          "category": "customer",
+          "input": "Pricing changes effective May 1 | customer",
+          "expectations": null,
+          "exit_code": 0,
+          "artifact": null,
+          "stdout_excerpt": "I need more context to make this brief concrete and customer-focused. To draft a brief that's tied to real outcomes and specific changes, I need:\n\n1. **What's the product/service?** (e.g., SaaS platform, API service, workflow tool)\n2. **What are the actual changes?** (e.g., tier restructuring, per-unit pricing, feature bundling, tier retirement)\n3. **Who's the customer segment?** (e.g., SMB, enterprise, specific vertical) \u2014 this shapes how you frame the impact\n4. **What's the *why* behind the change?** (cost inflation, feature bundling, market positioning) \u2014 I need this to ground the messaging",
+          "structural": {
+            "file-written": false,
+            "file-non-empty": false,
+            "file-parses": false,
+            "required-sections-present": false,
+            "forbidden-phrases-absent": false
+          },
+          "quality": {
+            "tldr_first": null,
+            "audience_fit": null,
+            "brevity": null
+          },
+          "weighted_quality": null
+        },
+        {
+          "id": "brief-tc-4",
+          "category": "missing-audience",
+          "input": "Q2 launch slipping",
+          "expectations": {
+            "should_ask": true,
+            "notes": "Audience missing \u2014 skill should ask once."
+          },
+          "exit_code": 0,
+          "artifact": null,
+          "stdout_excerpt": "Which audience? (exec, eng, customer, board)\n",
+          "structural": {
+            "file-written": true,
+            "file-non-empty": true,
+            "file-parses": true,
+            "required-sections-present": true,
+            "forbidden-phrases-absent": true,
+            "_note": "should_ask=true; artifact-absence is expected"
+          },
+          "quality": {
+            "tldr_first": null,
+            "audience_fit": null,
+            "brevity": null
+          },
+          "weighted_quality": null
+        }
+      ]
+    }
+  },
+  "finished_at": "2026-04-25T03:18:13.276764+00:00"
+}

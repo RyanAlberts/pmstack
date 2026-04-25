@@ -1,0 +1,23 @@
+# pmstack source repo .gitignore
+# Note: outputs/ and evals/results/ are intentionally NOT ignored —
+# they hold canonical example artifacts and historical eval scores.
+# Per-file ignores below if a specific file should not be checked in.
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.python-version
+.venv/
+venv/
+
+# Editor/OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Local Claude Code state that should never leak into a public repo
+.claude/settings.local.json
+.claude/projects/
+.claude/worktrees/
