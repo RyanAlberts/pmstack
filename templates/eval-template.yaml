@@ -1,5 +1,67 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# pmstack eval — produced by /eval, executed by /run-eval
+#
+# HOW TO USE
+#   /run-eval <path-to-this-file>
+#   Example: /run-eval outputs/eval-customer-chatbot-2026-04-24.yaml
+#
+# WHAT YOU GET
+#   outputs/eval-runs/<feature-slug>-<run-date>/
+#     summary.md        — top-level findings + metrics table you can paste into a doc
+#     cases/<id>.json   — per-case input, observed output, score, evidence
+#     metrics.csv       — one row per metric; opens cleanly in Sheets/Excel
+#
+# ─────────────── PROCEDURE ───────────────
+#
+#   ┌───────────────┐    ┌────────────────┐    ┌────────────────┐    ┌────────────┐
+#   │ This eval YAML│───▶│   /run-eval    │───▶│  Target system │───▶│  Outputs   │
+#   │  (the design) │    │ validates      │    │  invoked once  │    │ summary.md │
+#   │               │    │ target config  │    │  per test case │    │ + per-case │
+#   └───────────────┘    └────────┬───────┘    └────────────────┘    └────────────┘
+#                                 │
+#                          target missing or
+#                          unreachable?
+#                                 │
+#                                 ▼
+#                          STOP — clear error,
+#                          no fake results
+#
+# ────────── WHAT YOU (THE PM) NEED TO DO ──────────
+#   1. Read the `target` section below. Confirm it points at the system you
+#      actually want to evaluate. If it doesn't, edit it.
+#   2. If `target.type` is `http` or `script`, set the credentials it needs
+#      (env vars listed under `target.requires`). Never paste secrets into
+#      this file — use environment variables.
+#   3. Run /run-eval and approve the cost estimate when prompted.
+#   4. When done, read summary.md. Anything marked P0 FAIL blocks release.
+#
+# (Pro tips at bottom of file.)
+# ─────────────────────────────────────────────────────────────────────────────
+
 name: "Eval Suite: [Feature Name]"
 description: "Evaluation suite for testing the [Feature Name] AI capabilities."
+
+# ───── Target system — REQUIRED for /run-eval to actually execute ─────
+# Without a valid target, /run-eval will hard-stop with a clear error.
+# It will NOT silently simulate results. That's by design — evals only
+# count when the feedback loop is real.
+target:
+  # type: claude-session | http | script
+  type: claude-session
+  # claude-session: invokes a Claude model with the prompt as user input.
+  #   model: claude-sonnet-4-6      (or claude-haiku-4-5-20251001 for cheap, etc.)
+  #   system_prompt: optional       (string OR path: "system-prompt.txt")
+  model: claude-haiku-4-5-20251001
+  system_prompt: null
+  # http: posts each test_case.input to a JSON endpoint.
+  #   url: https://api.example.com/v1/chat
+  #   method: POST
+  #   request_template: '{"prompt": "{{input}}"}'
+  #   response_path: "$.choices[0].message.content"
+  #   requires: ["MY_API_KEY"]      # env vars that MUST be set
+  # script: pipes input to stdin of a local executable.
+  #   path: ./scripts/my_runner.sh
+  #   timeout_sec: 30
 
 # The core capabilities to evaluate
 capabilities:
@@ -16,16 +78,54 @@ metrics:
   - name: "Accuracy"
     description: "Does the response contain factual errors?"
     type: "boolean"
+    pass_bar: "true"
   - name: "Relevance"
     description: "Does the response directly address the user's query?"
-    type: "score" # e.g., 1-5 scale
+    type: "score"  # score: 1-5
+    pass_bar: ">= 4"
 
 # The test cases or scenarios
 test_cases:
   - id: "test-case-1"
+    severity: "P0"   # P0 blocks release; P1 opens issue; P2 trends only
     description: "Scenario 1: e.g., User asks a complex question."
     input: "User query here..."
-    expected_output: "Expected response or behavior here..."
+    expected_behavior: "Expected response or behavior here..."
     metrics:
       - "Accuracy"
       - "Relevance"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# APPENDIX — PRO TIPS
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Before your first run
+#   ✓ Test with one case first: /run-eval <file> --only test-case-1
+#     A 30-second sanity run beats a 30-minute mistake.
+#   ✓ If the target is an external API, hit it manually once with curl to
+#     confirm the URL, auth, and response shape match what's in the YAML.
+#
+# Cost control (NOT measured in $ — measured in tokens / API calls)
+#   ✓ /run-eval prints a token budget estimate before it runs.
+#     Watch for: many test cases × large `expected_behavior` blobs ⇒ big run.
+#   ✓ You can pass --max-tokens N to cap. When the cap is hit, the run
+#     stops cleanly and writes a partial summary noting how many cases ran
+#     and how many tokens were used. No scary surprises.
+#
+# Reading the output
+#   ✓ summary.md → the metrics table is the headline. Sort by severity.
+#   ✓ Any case with `simulated: true` in cases/<id>.json means /run-eval
+#     could not reach the target. THAT IS A BUG IN YOUR SETUP, not a real
+#     score. Fix the target config and re-run.
+#
+# Iterating
+#   ✓ When a case fails, copy its input, paste it into the actual target,
+#     and reproduce by hand. If you can't reproduce by hand, the runner
+#     might be misconfigured (wrong endpoint, stale auth).
+#   ✓ Don't tune the test case to make a real bug pass. Tune the target.
+#
+# Anti-patterns (the system will warn you about these)
+#   ✗ "Run it without setting up the target — I'll just trust the LLM."
+#   ✗ "Skip the failing case, the metric must be wrong."
+#   ✗ "Re-run until I get a passing run." (Variance is data, not noise.)
+# ─────────────────────────────────────────────────────────────────────────────

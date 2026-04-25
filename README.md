@@ -4,13 +4,17 @@
 
 ## What is this?
 
-A curated set of Claude Code skills that turn Claude into an AI product management co-pilot. Drop this repo into any project and get instant access to:
+A curated set of skills that turn Claude into an AI product management co-pilot. Ships in **two formats** — slash commands for Claude Code, and Anthropic Agent Skills for Claude.ai web/mobile/desktop/API.
+
+### Commands
 
 - `/competitive [market]` — Structured competitive analysis in 60 seconds
-- `/prd [signal]` — Turn a customer quote or data point into a PRD draft
+- `/compare [products...]` — **NEW** — Feature-by-feature comparison with built-in eval design
+- `/prd [signal]` — Turn a customer quote into a PRD draft
 - `/metrics [feature]` — Design a measurement framework for AI products
-- `/brief [topic] [audience]` — Executive, engineering, customer, or board-ready comms
-- `/eval [feature]` — Design an evaluation suite for any AI-powered feature
+- `/brief [topic] [audience]` — Exec / eng / customer / board comms
+- `/eval [feature]` — Design an evaluation suite for any AI feature
+- `/run-eval [yaml]` — **NEW** — Execute an eval against a real target. Hard-stops on missing target — no fake results.
 
 ## Install (30 seconds)
 
@@ -22,19 +26,29 @@ cd pmstack
 ./setup --global                     # available in every Claude Code session
 ```
 
-The installer copies `CLAUDE.md`, `skills/`, `templates/`, and the `.claude/commands/` slash commands into the target. After install, the commands work natively in Claude Code:
+The installer copies `CLAUDE.md`, slash commands, Anthropic Skills, the runner script (`bin/run-eval.py`), templates, and docs.
+
+After install, the commands work natively in Claude Code:
 
 ```
 /eval Claude Ultraplan
+/run-eval outputs/eval-claude-ultraplan-2026-04-24.yaml
+/compare Cursor Windsurf
 /prd "Customers say onboarding takes 3 days"
-/competitive AI coding assistants
-/metrics agent handoff success
 /brief Q2 launch exec
 ```
 
-No dependencies. No API keys. No build step.
+For Claude.ai web / mobile / desktop, upload the `claude-skills/<name>/` folders to a Claude.ai Project — same brain, runs anywhere. See [claude-skills/README.md](./claude-skills/README.md).
 
-> **Manual install** if you'd rather not run the script: copy `CLAUDE.md`, `skills/`, `templates/`, and `.claude/commands/` into your project root yourself.
+> **Manual install**: copy `CLAUDE.md`, `skills/`, `templates/`, `bin/`, `docs/`, `.claude/commands/`, and `claude-skills/` into your target.
+
+## New in v0.4
+
+**`/compare`** — feature-by-feature comparison across products. Three sequential phases (explore → define → execute) with one explicit confirmation gate. Differs from `/competitive` (market positioning) in that it produces a runnable eval suite for the comparison.
+
+**`/run-eval`** — actually runs an eval YAML produced by `/eval`. Three target types: `claude-session`, `http`, `script`. **Hard-stops if no target is configured — never simulates results.** Outputs `summary.md`, per-case JSON, and `metrics.csv`. Token-based budgeting (no dollars — reproducible across price changes). New PMs: read [docs/run-eval-setup.md](./docs/run-eval-setup.md).
+
+**Anthropic Agent Skills** — same pmstack capabilities, packaged as cross-platform Skills. Works in Claude.ai web / mobile / desktop, the API, and Claude Code. Same content as the slash commands, different distribution surface.
 
 ## Why skills, not a framework?
 
