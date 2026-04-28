@@ -35,6 +35,27 @@ If an artifact looks like work you'd want to do less of by hand, that's the valu
 
 ---
 
+## /prd — translate a customer signal into a PRD draft
+
+**You'd type:**
+```
+/prd "Support agents spend 30% of their time manually triaging tickets. We're missing our 2-hour SLA on 40% of tickets and ticket volume is growing 15% MoM."
+```
+
+**You'd get:** **[examples/sample-prd-output.md](./sample-prd-output.md)**
+
+**What's good about it:**
+- Problem statement grounded in numbers (30% of agent time, 40% SLA miss, 15% MoM growth) — not vibes
+- MoSCoW scoping makes the V1 cut explicit and defensible (auto-categorize ✓, auto-reply ✗)
+- Success metrics include a North Star (>85% first-try routing), a supporting metric (<2hr response), and a counter-metric (<10% re-routing) — the trio you'd want before any launch
+- Open questions section names the real trade-off (Haiku vs Sonnet for cost/latency/accuracy) instead of hand-waving "TBD"
+- Calls out concrete risks at both layers — technical (LLM latency) and business (mis-routing enterprise tickets)
+
+**Time to produce by hand:** 1–2 hours of staring at a blank page, then more hours arguing about scope.
+**Time with `/prd`:** ~60 seconds + a few minutes to add company-specific context.
+
+---
+
 ## Strategy / planning artifacts
 
 Not from a single skill — these came from Claude+pmstack working through real strategic questions:
@@ -49,7 +70,6 @@ Not from a single skill — these came from Claude+pmstack working through real 
 
 | Skill | What we'd put here |
 |---|---|
-| `/prd` | A worked PRD from a real customer signal |
 | `/competitive` | A worked landscape analysis with white-space ID |
 | `/compare` | A side-by-side product comparison with an evaluable test plan |
 | `/metrics` | A real measurement framework with a North Star, supporting metrics, counter-metrics |
