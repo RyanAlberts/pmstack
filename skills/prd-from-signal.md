@@ -8,16 +8,19 @@ Transform a raw user signal (e.g., a customer quote, a support ticket, or a feat
 
 ## Instructions
 When the user invokes this skill with a signal, you should:
-1. Analyze the signal to extract the underlying user problem (the "Why").
-2. Propose a solution or feature that addresses the problem.
-3. Use the `templates/prd-template.md` structure to draft the PRD.
-4. Include:
-   - Problem Statement
-   - Target Audience
-   - Proposed Solution
-   - Key Features (MoSCoW prioritization)
-   - Success Metrics
-5. Save the output to `outputs/prd-[topic]-[date].md`.
+1. Analyze the signal to extract the underlying user problem (the "Why") — not just restate the surface ask.
+2. Name the target audience precisely — persona, segment, JTBD.
+3. Propose a solution that addresses the root problem.
+4. Fill out the PRD using the canonical structure in [`templates/prd-template.md`](../templates/prd-template.md). All six sections are required:
+   1. Problem Statement (what / who / why now)
+   2. Proposed Solution (description + value proposition)
+   3. Key Features (MoSCoW — specific features, not adjectives)
+   4. User Experience / Flow (step-by-step + empty / loading / error / success states)
+   5. Success Metrics (North Star + 2–3 supporting + 1–2 counter-metrics)
+   6. Open Questions / Risks (technical, business, unresolved decisions)
+5. Save the output to `outputs/prd-[topic-slug]-[YYYY-MM-DD].md`.
+
+If `templates/prd-template.md` ever conflicts with the list above, the template wins — update this skill to match.
 
 ## Tone
 Clear, concise, and focused on user value. Use active voice.
