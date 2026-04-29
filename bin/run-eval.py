@@ -2,6 +2,10 @@
 """
 pmstack evaluation executor.
 
+Not to be confused with `evals/runner.py` — that one runs the pmstack
+self-eval suite (grading pmstack's own skills via the `claude` CLI).
+This script grades a third-party AI system described by an eval YAML.
+
 Reads an evaluation YAML produced by /eval, validates it has a real target,
 invokes the target once per test case, scores the output, and writes
 deterministic artifacts to outputs/eval-runs/<feature>-<run-date>/.
