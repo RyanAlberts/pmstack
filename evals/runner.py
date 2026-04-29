@@ -2,6 +2,11 @@
 """
 pmstack self-eval runner.
 
+Not to be confused with `bin/run-eval.py` — that one is the user-facing
+executor for /run-eval (grades a third-party AI target described by an
+eval YAML). This script grades pmstack's own skills against the
+canonical suite at evals/pmstack-self.yaml.
+
 Runs each skill in evals/pmstack-self.yaml against a clean install of pmstack,
 collects the artifacts written to outputs/, runs structural checks, and asks a
 judge model to score quality. Writes a JSON report to evals/results/.
