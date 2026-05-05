@@ -11,8 +11,7 @@ If you find this repo useful, star it and help me make it better!
 ---
 
 ## Who this is for
-
-Two audiences. Both welcome.
+There are two Personas. Neither is presumed to be AI-pilled. 
 
 **Technical PM** — you live in a terminal. You want one consistent muscle memory across every PM artifact you produce. You install pmstack as slash commands inside Claude Code.
 
