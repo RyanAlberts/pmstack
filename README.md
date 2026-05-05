@@ -75,7 +75,7 @@ An **eval** is the test suite for an AI feature - it's how we evaluate non-deter
 
 <p align=”center”>
   <!-- Drop your image at docs/assets/eval-diagram.png (or change the src below). Recommended width 700–900px. -->
-  <img src=”docs/assets/eval-diagram.png” alt=”Diagram of an evaluation pipeline: input → AI system → grading logic → score. Adapted from Anthropic's 'Demystifying Evals for AI Agents.'” width=”780”>
+  <img src=”docs/assets/eval-diagram.png” alt=”Diagram of an evaluation pipeline: input → AI system → grading logic → score. Adapted from Anthropic's 'Demystifying Evals for AI Agents.'” width=”800”>
 </p>
 
 <p align=”center”>
