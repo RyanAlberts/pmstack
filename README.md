@@ -20,7 +20,15 @@ This saves you 5–15 minutes per artifact and stops you from staring at a blank
 
 ## What you get
 
-Fourteen capabilities organized in four layers. Each command produces a real markdown or YAML artifact (or, on web/desktop, an inline block you can copy). The layers compose — read "How these stitch together" below to see the full picture, or run `/onboarding` to walk the whole stack with a runnable example.
+Fourteen capabilities organized in five layers. Each command produces a real markdown or YAML artifact (or, on web/desktop, an inline block you can copy). The layers compose — read "How these stitch together" below to see the full picture.
+
+### Start here
+
+If you just installed pmstack, run this once. It's the only command you need to remember.
+
+| Command template | What it answers | What you get | Where it runs |
+|---|---|---|---|
+| `/onboarding` | "I just installed this. What do I do?" | A 7-step interactive tutorial running every capability in this README, with comparison links to the bundled walkthrough so you can see what good looks like | CLI · web · desktop |
 
 ### Routines — Become an AI Director
 
@@ -33,7 +41,6 @@ Recurring patterns that turn pmstack from a set of one-shot commands into a PM o
 | `/weekly` | "What changed in my thinking this week?" | Decisions made + open loops aging + one required 'changed my mind' field → [example](./examples/walkthrough-code-review/weekly-2026-W19.md) | CLI · web · desktop |
 | `/launch-readiness <feature>` | "Are we actually ready to ship this?" | GO / NO-GO / CONDITIONAL verdict + 7-item evidence checklist → [example](./examples/walkthrough-code-review/launch-readiness-code-review-2026-05-09.md) | CLI · web · desktop · mobile |
 | `/lint` | "Did anything in my workspace drift out of sync?" | Graph gaps + cross-artifact drift + stale candidates with 'Do this:' actions → [example](./examples/walkthrough-code-review/lint-2026-05-08.md) | CLI · web · desktop |
-| `/onboarding` | "I just installed this. What do I do?" | A 7-step interactive tutorial running every capability in this README | CLI · web · desktop |
 
 **Schedule with `/loop`** so the routines run themselves:
 
