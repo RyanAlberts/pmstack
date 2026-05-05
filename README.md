@@ -57,7 +57,7 @@ If you just installed pmstack, run this once. It's the only command you need to 
 
 | Command template | What it answers | What you get | Where it runs |
 |---|---|---|---|
-| `/onboarding` | "I just installed pmstack. Where do I start?" | A 7-step interactive tutorial running every capability in this README, with comparison links to the bundled walkthrough so you can see what good looks like | CLI · web · desktop |
+| `/onboarding` | "I just installed pmstack. Where do I start?" | A 9-step interactive tutorial running every capability in this README — including Anthropic's `/vibe-test` and `/transcript-review` rituals — with comparison links to the bundled walkthrough so you can see what good looks like | CLI · web · desktop |
 
 ### Prefer to browse first?
 
@@ -185,13 +185,13 @@ Conceptual mockup of a fresh claude.ai conversation after the user has uploaded 
 │  You:    I just installed pmstack. Walk me through it.               │
 │                                                                      │
 │  Claude: [auto-activates pmstack-onboarding skill]                   │
-│          Welcome to pmstack. We'll walk through 7 steps using a      │
+│          Welcome to pmstack. We'll walk through 9 steps using a      │
 │          realistic AI code review feature. Type 'next' to start      │
 │          with /prd.                                                  │
 │                                                                      │
 │  You:    next                                                        │
 │                                                                      │
-│  Claude: Step 2 of 7 — /prd                                          │
+│  Claude: Step 2 of 9 — /prd                                          │
 │          /prd takes a customer signal and writes a PRD draft. ...    │
 │          [shows the example signal, the command, the expected        │
 │          output, and a link to the bundled example artifact]         │
