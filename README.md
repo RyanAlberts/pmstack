@@ -19,6 +19,38 @@ There are two Personas. Neither is presumed to be AI-pilled.
 
 ---
 
+## Install
+
+### Path 1: claude.ai web, desktop, or mobile (non-technical PMs)
+
+**~30 seconds. No terminal.**
+
+1. claude.ai → **Projects** → new Project ("PM toolkit").
+2. **Settings → Skills → Upload skill** → upload each folder from [`claude-skills/`](./claude-skills/). All 14, or pick the 4–5 you'll use most.
+3. Chat normally. "Write a PRD from this customer quote" auto-activates the skill; output appears inline — copy-paste anywhere.
+
+### Path 2: Claude Code CLI (technical PMs)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/RyanAlberts/pmstack/main/install.sh | bash -s -- --global
+```
+
+Installs to `~/.claude/` so `/prd`, `/eval`, `/weekly` work in any folder. Drop `--global` to install in the current folder only.
+
+<details>
+<summary>Manual install / other tools (Cursor, ChatGPT, Gemini, …)</summary>
+
+```bash
+git clone https://github.com/RyanAlberts/pmstack.git && cd pmstack
+./setup --global    # or: ./setup ~/work/my-pm-stuff
+```
+
+For non-Claude tools, see [docs/using-other-tools.md](./docs/using-other-tools.md) — the skills are plain markdown, paste them into `.cursorrules`, a Custom GPT, or a system prompt.
+
+</details>
+
+---
+
 ## Start here
 
 If you just installed pmstack, run this once. It's the only command you need to remember.
@@ -109,38 +141,6 @@ pmstack is a layered PM operating system, not a collection of utilities. Each la
 - **Measurement** comes next — define what success means (`/metrics`), design the test suite for AI features (`/eval`), and execute it against a real target (`/run-eval`). `/eval-self` keeps pmstack itself honest.
 - **Communicate & orchestrate** packages the work for stakeholders (`/brief`) and chains the upstream skills in the right order (`/sprint` runs PRD → metrics → eval → brief with confirmation gates).
 - **Routines** sit on top of all three layers and add the operating discipline. `/premortem` hardens a spec before it ships. `/launch-readiness` gates the launch. `/eval-drift` watches the feature after launch. `/lint` keeps the workspace clean as your artifact corpus grows. `/weekly` makes you check your own thinking. **Most PM tooling stops at the artifact layer; pmstack ships the operating layer too. That's the AI-Director difference.**
-
----
-
-## Install
-
-### Path 1: claude.ai web, desktop, or mobile (non-technical PMs)
-
-**~30 seconds. No terminal.**
-
-1. claude.ai → **Projects** → new Project ("PM toolkit").
-2. **Settings → Skills → Upload skill** → upload each folder from [`claude-skills/`](./claude-skills/). All 14, or pick the 4–5 you'll use most.
-3. Chat normally. "Write a PRD from this customer quote" auto-activates the skill; output appears inline — copy-paste anywhere.
-
-### Path 2: Claude Code CLI (technical PMs)
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/RyanAlberts/pmstack/main/install.sh | bash -s -- --global
-```
-
-Installs to `~/.claude/` so `/prd`, `/eval`, `/weekly` work in any folder. Drop `--global` to install in the current folder only.
-
-<details>
-<summary>Manual install / other tools (Cursor, ChatGPT, Gemini, …)</summary>
-
-```bash
-git clone https://github.com/RyanAlberts/pmstack.git && cd pmstack
-./setup --global    # or: ./setup ~/work/my-pm-stuff
-```
-
-For non-Claude tools, see [docs/using-other-tools.md](./docs/using-other-tools.md) — the skills are plain markdown, paste them into `.cursorrules`, a Custom GPT, or a system prompt.
-
-</details>
 
 ---
 
