@@ -334,7 +334,7 @@ def check_cross_references() -> list[Check]:
 def check_routine_files_present() -> list[Check]:
     """Every routine ships in both forms (slash command + Anthropic Skill package)."""
     checks = []
-    for routine in ["eval-drift", "premortem", "weekly", "launch-readiness", "lint", "onboarding"]:
+    for routine in ["eval-drift", "premortem", "weekly", "launch-readiness", "lint", "onboarding", "vibe-test", "transcript-review"]:
         slash = REPO / ".claude" / "commands" / f"{routine}.md"
         skill = REPO / "claude-skills" / f"pmstack-{routine}" / "SKILL.md"
         checks.append(
@@ -358,7 +358,7 @@ def check_routine_files_present() -> list[Check]:
 
 def check_skill_graph_updated() -> list[Check]:
     g = read(REPO / "skills" / "_graph.yaml")
-    routines = ["premortem", "weekly", "launch-readiness", "lint", "eval-drift", "onboarding"]
+    routines = ["premortem", "weekly", "launch-readiness", "lint", "eval-drift", "onboarding", "vibe-test", "transcript-review"]
     return [
         Check(
             "graph",
