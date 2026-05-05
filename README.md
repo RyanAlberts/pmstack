@@ -73,7 +73,16 @@ An **eval** is the test suite for an AI feature - it's how we evaluate non-deter
 
 [From Anthropic] An evaluation (“eval”) is a test for an AI system: give an AI an input, then apply grading logic to its output to measure success. 
 
-[insert image here] credit anthropic [Link] https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
+<p align=”center”>
+  <!-- Drop your image at docs/assets/eval-diagram.png (or change the src below). Recommended width 700–900px. -->
+  <img src=”docs/assets/eval-diagram.png” alt=”Diagram of an evaluation pipeline: input → AI system → grading logic → score. Adapted from Anthropic's 'Demystifying Evals for AI Agents.'” width=”780”>
+</p>
+
+<p align=”center”>
+  <sub>
+    <em>Image adapted from Anthropic — <a href=”https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents”><strong>Demystifying Evals for AI Agents</strong></a> (Anthropic Engineering, 2025). Used with attribution; original copyright Anthropic, PBC. Read the full article for the canonical guidance pmstack draws on.</em>
+  </sub>
+</p>
 
 **Fluency in evals separate an AI PM from a traditional PM.** Traditional PMs ship a feature, instrument a dashboard, and read the launch metric. AI PMs do all of that *and* maintain a structured measurement of how the model itself behaves — because LLM outputs are non-deterministic, drift between model versions, and fail in ways feature flags can't catch.
 
