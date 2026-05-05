@@ -22,17 +22,57 @@ This saves you 5–15 minutes per artifact and stops you from staring at a blank
 
 ---
 
-## What you get
-
-Fourteen capabilities organized in five layers. Each command produces a real markdown or YAML artifact (or, on web/desktop, an inline block you can copy). The layers compose — read "How these stitch together" below to see the full picture.
-
-### Start here
+## Start here
 
 If you just installed pmstack, run this once. It's the only command you need to remember.
 
 | Command template | What it answers | What you get | Where it runs |
 |---|---|---|---|
 | `/onboarding` | "I just installed pmstack. Where do I start?" | A 7-step interactive tutorial running every capability in this README, with comparison links to the bundled walkthrough so you can see what good looks like | CLI · web · desktop |
+
+---
+
+## What you get
+
+Thirteen more capabilities, organized in four layers — ordered the way they stitch together. Spec creation is upstream, measurement comes next, communicate & orchestrate packages the work, and routines sit on top to give you the operating discipline. Each command produces a real markdown or YAML artifact (or, on web/desktop, an inline block you can copy).
+
+&nbsp;
+
+### Spec creation — Signal to shippable
+
+Translate the noise of customer signals, competitor moves, and market gaps into structured artifacts engineering can plan from.
+
+| Command template | What it answers | What you get | Where it runs |
+|---|---|---|---|
+| `/prd "<a customer signal>"` | "Customer said X. What's the spec?" | A 6-section PRD draft → [example](./examples/walkthrough-code-review/prd-code-review-2026-05-05.md) | CLI · web · desktop · mobile |
+| `/competitive "<market>"` | "Who else is in this space and where's the white space?" | Landscape with positioning + white-space analysis → [example](./examples/walkthrough-code-review/competitive-ai-code-review-2026-05-05.md) | CLI · web · desktop · mobile |
+| `/compare "<product A>" "<product B>" [...]` | "Which of these should we pick — and how would we test it?" | Feature matrix + decision rules + executable eval YAML → [example](./examples/walkthrough-compare-tools/) | CLI · web · desktop · mobile |
+
+&nbsp;
+
+### Measurement — What does "good" look like?
+
+Define how you'll know your work succeeded, and check whether it did. Without this layer, AI features ship blind.
+
+| Command template | What it answers | What you get | Where it runs |
+|---|---|---|---|
+| `/metrics "<feature>"` | "How will we know this worked?" | North Star + 2–3 supporting + 1–2 counter-metrics → [example](./examples/walkthrough-code-review/metrics-code-review-2026-05-06.md) | CLI · web · desktop · mobile |
+| `/eval "<AI feature>"` | "What does 'good' actually look like for this AI feature?" | A test-suite YAML (capabilities, failure modes, metrics, test cases) → [example](./examples/walkthrough-code-review/eval-code-review-2026-05-06.yaml) | CLI · web · desktop · mobile |
+| `/run-eval <eval-yaml-path>` | "Does this AI feature actually pass the bar?" | A scored summary.md with pass-rates, top failures, cost → [example](./examples/walkthrough-code-review/eval-runs/code-review-eval-2026-05-06/summary.md) | CLI only (needs a real target) |
+| `/eval-self [--skill <name>]` | "Is pmstack itself still good?" | Scores every pmstack skill against canonical scenarios | CLI only |
+
+&nbsp;
+
+### Communicate & orchestrate
+
+Package your work for the audience that needs it, or chain the right tools in the right order.
+
+| Command template | What it answers | What you get | Where it runs |
+|---|---|---|---|
+| `/brief "<topic>" <audience>` | "What does the exec / eng team / customer need to know?" | A one-page audience-sized brief → [example](./examples/walkthrough-code-review/brief-code-review-exec-2026-05-09.md) | CLI · web · desktop · mobile |
+| `/sprint "<a customer signal>"` | "Take this from signal to ship-ready in one pass." | Four artifacts in sequence — PRD → metrics → eval → brief — with confirmation gates | CLI · web · desktop |
+
+&nbsp;
 
 ### Routines — Become an AI Director
 
@@ -54,35 +94,7 @@ Recurring patterns that turn pmstack from a set of one-shot commands into a PM o
 /loop 7d /eval-drift   # weekly eval-regression watch
 ```
 
-### Spec creation — Signal to shippable
-
-Translate the noise of customer signals, competitor moves, and market gaps into structured artifacts engineering can plan from.
-
-| Command template | What it answers | What you get | Where it runs |
-|---|---|---|---|
-| `/prd "<a customer signal>"` | "Customer said X. What's the spec?" | A 6-section PRD draft → [example](./examples/walkthrough-code-review/prd-code-review-2026-05-05.md) | CLI · web · desktop · mobile |
-| `/competitive "<market>"` | "Who else is in this space and where's the white space?" | Landscape with positioning + white-space analysis → [example](./examples/walkthrough-code-review/competitive-ai-code-review-2026-05-05.md) | CLI · web · desktop · mobile |
-| `/compare "<product A>" "<product B>" [...]` | "Which of these should we pick — and how would we test it?" | Feature matrix + decision rules + executable eval YAML → [example](./examples/walkthrough-compare-tools/) | CLI · web · desktop · mobile |
-
-### Measurement — What does "good" look like?
-
-Define how you'll know your work succeeded, and check whether it did. Without this layer, AI features ship blind.
-
-| Command template | What it answers | What you get | Where it runs |
-|---|---|---|---|
-| `/metrics "<feature>"` | "How will we know this worked?" | North Star + 2–3 supporting + 1–2 counter-metrics → [example](./examples/walkthrough-code-review/metrics-code-review-2026-05-06.md) | CLI · web · desktop · mobile |
-| `/eval "<AI feature>"` | "What does 'good' actually look like for this AI feature?" | A test-suite YAML (capabilities, failure modes, metrics, test cases) → [example](./examples/walkthrough-code-review/eval-code-review-2026-05-06.yaml) | CLI · web · desktop · mobile |
-| `/run-eval <eval-yaml-path>` | "Does this AI feature actually pass the bar?" | A scored summary.md with pass-rates, top failures, cost → [example](./examples/walkthrough-code-review/eval-runs/code-review-eval-2026-05-06/summary.md) | CLI only (needs a real target) |
-| `/eval-self [--skill <name>]` | "Is pmstack itself still good?" | Scores every pmstack skill against canonical scenarios | CLI only |
-
-### Communicate & orchestrate
-
-Package your work for the audience that needs it, or chain the right tools in the right order.
-
-| Command template | What it answers | What you get | Where it runs |
-|---|---|---|---|
-| `/brief "<topic>" <audience>` | "What does the exec / eng team / customer need to know?" | A one-page audience-sized brief → [example](./examples/walkthrough-code-review/brief-code-review-exec-2026-05-09.md) | CLI · web · desktop · mobile |
-| `/sprint "<a customer signal>"` | "Take this from signal to ship-ready in one pass." | Four artifacts in sequence — PRD → metrics → eval → brief — with confirmation gates | CLI · web · desktop |
+&nbsp;
 
 ### How these stitch together
 
