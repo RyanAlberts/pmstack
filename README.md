@@ -17,8 +17,6 @@ There are two Personas. Neither is presumed to be AI-pilled.
 
 **Non-technical PM** — you do PM work in claude.ai web, the desktop app, or on your phone. You want the same toolkit without ever opening a terminal. You install pmstack as Anthropic Skills inside your Claude account. Same skills, same outputs, no terminal.
 
-This saves you 5–15 minutes per artifact and stops you from staring at a blank page. If you're a senior PM with your own templates, fork this and replace the prompts with your house style.
-
 ---
 
 ## Start here
