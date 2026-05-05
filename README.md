@@ -1,9 +1,10 @@
 # pmstack
 
-**A PM toolkit that runs inside Claude.** Turn customer signals into PRDs, run pre-mortems, gate launches, watch your AI feature for drift, and write the Monday memo — all from one consistent set of commands you type into Claude (terminal, browser, desktop, or mobile).
+**A PM toolkit that runs inside Claude.** Turn customer signals into outcomes like I do @AWS - delegate your work to AI agents as Routines or run commands on demand: run pre-mortems, stress-test launches, monitor your AI feature for drift, and write the Monday memo — all from one consistent set of commands you type into Claude (terminal, browser, desktop, or mobile).
 
 **Brand new?** → `/onboarding` walks you through every capability with a runnable example. Skip the rest of this README until you've done it once.
 
+Started with Claude as a passion project for myself, but if you find this repo useful, star it and submit a request to expand to Codex/open source! 
 ---
 
 ## Who this is for
@@ -28,7 +29,7 @@ If you just installed pmstack, run this once. It's the only command you need to 
 
 | Command template | What it answers | What you get | Where it runs |
 |---|---|---|---|
-| `/onboarding` | "I just installed this. What do I do?" | A 7-step interactive tutorial running every capability in this README, with comparison links to the bundled walkthrough so you can see what good looks like | CLI · web · desktop |
+| `/onboarding` | "I just installed pmstack. Where do I start?" | A 7-step interactive tutorial running every capability in this README, with comparison links to the bundled walkthrough so you can see what good looks like | CLI · web · desktop |
 
 ### Routines — Become an AI Director
 
