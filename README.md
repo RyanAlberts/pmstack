@@ -67,11 +67,13 @@ If you just installed pmstack, run this once. It's the only command you need to 
 
 ---
 
-## What's an eval? (the capability that distinguishes AI PMs from traditional PMs)
+## What's an eval? 
 
-**Running evals is the capability that separates an AI PM from a traditional PM.** Traditional PMs ship a feature, instrument a dashboard, and read the launch metric. AI PMs do all of that *and* maintain a structured measurement of how the model itself behaves — because LLM outputs are non-deterministic, drift between model versions, and fail in ways feature flags can't catch.
+An **eval** is the test suite for an AI feature - it's how we evaluate non-deterministic systems like LLMs, agents, and agentic systems. You define inputs ("what a real user might say") and what success looks like, then run these inputs through your AI system and score the results. The measurement appartus including the tests are the evals. Consider them the unit and integration tests of traditional software development. 
 
-An **eval** is the test suite for an AI feature. You define inputs ("what a real user might say") and what good looks like, then run them through your AI system and score the results. It's how you know whether the latest model change made things better or worse.
+[From Anthropic] An evaluation (“eval”) is a test for an AI system: give an AI an input, then apply grading logic to its output to measure success. 
+
+**Fluency in evals separate an AI PM from a traditional PM.** Traditional PMs ship a feature, instrument a dashboard, and read the launch metric. AI PMs do all of that *and* maintain a structured measurement of how the model itself behaves — because LLM outputs are non-deterministic, drift between model versions, and fail in ways feature flags can't catch.
 
 Three pmstack commands handle this:
 
