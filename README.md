@@ -20,61 +20,77 @@ This saves you 5–15 minutes per artifact and stops you from staring at a blank
 
 ## What you get
 
-Fourteen capabilities. Nine "skills" that produce a single artifact each, plus five "routines" that run on demand or on a schedule. Every output is a real markdown or YAML file (or, on web/desktop, an inline markdown block) you can paste into Notion or hand to a teammate.
+Fourteen capabilities organized in four layers. Each command produces a real markdown or YAML artifact (or, on web/desktop, an inline block you can copy). The layers compose — read "How these stitch together" below to see the full picture, or run `/onboarding` to walk the whole stack with a runnable example.
+
+### Routines — Become an AI Director
+
+Recurring patterns that turn pmstack from a set of one-shot commands into a PM operating system. They schedule themselves, audit your workspace, gate launches, and force you to notice your own learning. **This layer is what separates someone running prompts ad hoc from someone directing an AI-augmented workflow.**
+
+| Command template | What it answers | What you get | Where it runs |
+|---|---|---|---|
+| `/eval-drift` | "Did my AI feature get worse this week?" | Drift memo with `RELEASE_BLOCKED: true\|false` flag → [example](./examples/walkthrough-code-review/eval-drift-2026-05-12.md) | CLI only (needs real eval runs) |
+| `/premortem <prd-slug>` | "How could this feature fail?" | 3 failure stories + leading indicators + mitigations; mutates the PRD's Risks section → [example](./examples/walkthrough-code-review/premortem-code-review-2026-05-05.md) | CLI · web · desktop · mobile |
+| `/weekly` | "What changed in my thinking this week?" | Decisions made + open loops aging + one required 'changed my mind' field → [example](./examples/walkthrough-code-review/weekly-2026-W19.md) | CLI · web · desktop |
+| `/launch-readiness <feature>` | "Are we actually ready to ship this?" | GO / NO-GO / CONDITIONAL verdict + 7-item evidence checklist → [example](./examples/walkthrough-code-review/launch-readiness-code-review-2026-05-09.md) | CLI · web · desktop · mobile |
+| `/lint` | "Did anything in my workspace drift out of sync?" | Graph gaps + cross-artifact drift + stale candidates with 'Do this:' actions → [example](./examples/walkthrough-code-review/lint-2026-05-08.md) | CLI · web · desktop |
+| `/onboarding` | "I just installed this. What do I do?" | A 7-step interactive tutorial running every capability in this README | CLI · web · desktop |
+
+**Schedule with `/loop`** so the routines run themselves:
+
+```bash
+/loop 7d /weekly       # Monday self-snapshot
+/loop 7d /lint         # workspace audit
+/loop 7d /eval-drift   # weekly eval-regression watch
+```
+
+### Spec creation — Signal to shippable
+
+Translate the noise of customer signals, competitor moves, and market gaps into structured artifacts engineering can plan from.
 
 | Command template | What it answers | What you get | Where it runs |
 |---|---|---|---|
 | `/prd "<a customer signal>"` | "Customer said X. What's the spec?" | A 6-section PRD draft → [example](./examples/walkthrough-code-review/prd-code-review-2026-05-05.md) | CLI · web · desktop · mobile |
 | `/competitive "<market>"` | "Who else is in this space and where's the white space?" | Landscape with positioning + white-space analysis → [example](./examples/walkthrough-code-review/competitive-ai-code-review-2026-05-05.md) | CLI · web · desktop · mobile |
 | `/compare "<product A>" "<product B>" [...]` | "Which of these should we pick — and how would we test it?" | Feature matrix + decision rules + executable eval YAML → [example](./examples/walkthrough-compare-tools/) | CLI · web · desktop · mobile |
+
+### Measurement — What does "good" look like?
+
+Define how you'll know your work succeeded, and check whether it did. Without this layer, AI features ship blind.
+
+| Command template | What it answers | What you get | Where it runs |
+|---|---|---|---|
 | `/metrics "<feature>"` | "How will we know this worked?" | North Star + 2–3 supporting + 1–2 counter-metrics → [example](./examples/walkthrough-code-review/metrics-code-review-2026-05-06.md) | CLI · web · desktop · mobile |
 | `/eval "<AI feature>"` | "What does 'good' actually look like for this AI feature?" | A test-suite YAML (capabilities, failure modes, metrics, test cases) → [example](./examples/walkthrough-code-review/eval-code-review-2026-05-06.yaml) | CLI · web · desktop · mobile |
 | `/run-eval <eval-yaml-path>` | "Does this AI feature actually pass the bar?" | A scored summary.md with pass-rates, top failures, cost → [example](./examples/walkthrough-code-review/eval-runs/code-review-eval-2026-05-06/summary.md) | CLI only (needs a real target) |
+| `/eval-self [--skill <name>]` | "Is pmstack itself still good?" | Scores every pmstack skill against canonical scenarios | CLI only |
+
+### Communicate & orchestrate
+
+Package your work for the audience that needs it, or chain the right tools in the right order.
+
+| Command template | What it answers | What you get | Where it runs |
+|---|---|---|---|
 | `/brief "<topic>" <audience>` | "What does the exec / eng team / customer need to know?" | A one-page audience-sized brief → [example](./examples/walkthrough-code-review/brief-code-review-exec-2026-05-09.md) | CLI · web · desktop · mobile |
 | `/sprint "<a customer signal>"` | "Take this from signal to ship-ready in one pass." | Four artifacts in sequence — PRD → metrics → eval → brief — with confirmation gates | CLI · web · desktop |
-| `/eval-self [--skill <name>]` | "Is pmstack itself still good?" | Scores every pmstack skill against canonical scenarios | CLI only |
-| `/premortem <prd-slug>` | "How could this feature fail?" | 3 failure stories + leading indicators + mitigations → [example](./examples/walkthrough-code-review/premortem-code-review-2026-05-05.md) | CLI · web · desktop · mobile |
-| `/launch-readiness <feature>` | "Are we actually ready to ship this?" | GO / NO-GO / CONDITIONAL verdict + 7-item evidence checklist → [example](./examples/walkthrough-code-review/launch-readiness-code-review-2026-05-09.md) | CLI · web · desktop · mobile |
-| `/lint` | "Did anything in my workspace drift out of sync?" | Graph gaps + cross-artifact drift + stale candidates with 'Do this:' actions → [example](./examples/walkthrough-code-review/lint-2026-05-08.md) | CLI · web · desktop |
-| `/weekly` | "What changed in my thinking this week?" | Decisions made + open loops aging + one required 'changed my mind' field → [example](./examples/walkthrough-code-review/weekly-2026-W19.md) | CLI · web · desktop |
-| `/eval-drift` | "Did my AI feature get worse this week?" | Drift memo with `RELEASE_BLOCKED: true\|false` flag → [example](./examples/walkthrough-code-review/eval-drift-2026-05-12.md) | CLI only (needs real eval runs) |
-| `/onboarding` | "I just installed this. What do I do?" | A 7-step interactive tutorial running every capability above | CLI · web · desktop |
 
-**Don't worry about understanding all of them.** Run `/onboarding` once. It walks you through every command above with a real signal and produces a complete artifact set you can compare to the bundled examples.
+### How these stitch together
+
+pmstack is a layered PM operating system, not a collection of utilities. Each layer plays a distinct role and the layers compose:
+
+- **Spec creation** is upstream — translate customer signals into specs (`/prd`), ground them in market reality (`/competitive`), or stress-test product picks against alternatives (`/compare`).
+- **Measurement** comes next — define what success means (`/metrics`), design the test suite for AI features (`/eval`), and execute it against a real target (`/run-eval`). `/eval-self` keeps pmstack itself honest.
+- **Communicate & orchestrate** packages the work for stakeholders (`/brief`) and chains the upstream skills in the right order (`/sprint` runs PRD → metrics → eval → brief with confirmation gates).
+- **Routines** sit on top of all three layers and add the operating discipline. `/premortem` hardens a spec before it ships. `/launch-readiness` gates the launch. `/eval-drift` watches the feature after launch. `/lint` keeps the workspace clean as your artifact corpus grows. `/weekly` makes you check your own thinking. **Most PM tooling stops at the artifact layer; pmstack ships the operating layer too. That's the AI-Director difference.**
+
+A typical week, end to end: a customer signal arrives → `/prd` translates it → `/premortem` stress-tests the spec → `/sprint` chains metrics, eval, and brief → `/launch-readiness` gates the ship → `/eval-drift` watches it after launch. Meanwhile `/lint` keeps your workspace tidy and `/weekly` captures what changed in your thinking. The full week, with all 12 artifacts, lives in [examples/walkthrough-code-review/](./examples/walkthrough-code-review/).
+
+**Don't try to memorize all 14.** Run `/onboarding` once — it walks the whole stack with a real signal and produces a complete artifact set you can compare to the bundled examples.
 
 ### Prefer to browse first?
 
 - [examples/walkthrough-code-review/](./examples/walkthrough-code-review/) — the full set of artifacts a PM produced over a realistic week working on an "AI code review" feature. Twelve files, all referencing each other.
 - [examples/walkthrough-compare-tools/](./examples/walkthrough-compare-tools/) — what `/compare` produces (Cursor vs Windsurf).
 - [examples/inputs/README.md](./examples/inputs/README.md) — every command's example input, copy-pasteable.
-
----
-
-## The five default routines (added v0.5)
-
-Five routines that compose existing pmstack skills into recurring patterns. Run any of them as a one-shot slash command, or schedule on a weekly loop:
-
-```bash
-# One-shot — type any of these in Claude
-/weekly
-/lint
-/eval-drift
-
-# Schedule — Claude Code's /loop skill runs them on a cadence
-/loop 7d /weekly
-/loop 7d /lint
-/loop 7d /eval-drift
-```
-
-The five:
-
-- **`/eval-drift`** — "Did my AI feature get worse this week?" Re-runs your eval suite, diffs against the prior baseline, hard-stops releases on regression. Designed to run on a `/loop 7d` cron.
-- **`/premortem`** — "How could this feature fail?" Runs Klein's pre-mortem trick on a draft PRD: 3 failure stories from 6 months in the future, with leading indicators and mitigations. The only routine that mutates an existing artifact (the PRD's Risks section).
-- **`/weekly`** — "What changed in my thinking?" Three sections only — decisions made, open loops aging, and one required "thing I changed my mind about." Anti-vanity by design.
-- **`/launch-readiness`** — "Are we ready to ship?" Verifier-not-generator. Aggregates PRD/metrics/eval/run/premortem/eval-drift/brief evidence into GO / NO-GO / CONDITIONAL with each item showing pass/fail/missing + the file that proves it. Ship-anyway path is logged permanently.
-- **`/lint`** — "Is my workspace tidy?" Walks the artifact graph, finds gaps, drift, and stale files. Each finding has a one-line 'Do this:' action.
-
-Each routine produces a durable artifact in `outputs/` and appends one line to `decisions-log.md`. See [outputs/](./outputs/) and the example walkthrough for what they look like in practice.
 
 ---
 
