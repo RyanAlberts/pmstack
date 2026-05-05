@@ -119,47 +119,33 @@ A typical week, end to end: a customer signal arrives → `/prd` translates it �
 
 ## Install
 
-### Path 1: Claude Code CLI (technical PMs)
+### Path 1: claude.ai web, desktop, or mobile (non-technical PMs)
+
+**~30 seconds. No terminal.**
+
+1. claude.ai → **Projects** → new Project ("PM toolkit").
+2. **Settings → Skills → Upload skill** → upload each folder from [`claude-skills/`](./claude-skills/). All 14, or pick the 4–5 you'll use most.
+3. Chat normally. "Write a PRD from this customer quote" auto-activates the skill; output appears inline — copy-paste anywhere.
+
+### Path 2: Claude Code CLI (technical PMs)
 
 ```bash
-# Install into the current folder
-curl -fsSL https://raw.githubusercontent.com/RyanAlberts/pmstack/main/install.sh | bash
-
-# Install into a specific folder
-curl -fsSL https://raw.githubusercontent.com/RyanAlberts/pmstack/main/install.sh | bash -s -- ~/work/my-pm-stuff
-
-# Install GLOBALLY (recommended) — works in any folder you open Claude Code in
 curl -fsSL https://raw.githubusercontent.com/RyanAlberts/pmstack/main/install.sh | bash -s -- --global
 ```
 
-The global install puts the skills at `~/.claude/commands/` and `~/.claude/skills/` so you can run `/prd`, `/eval`, `/weekly` from any folder — including your team's repos. **This is the recommended path for PMs who jump between projects.**
+Installs to `~/.claude/` so `/prd`, `/eval`, `/weekly` work in any folder. Drop `--global` to install in the current folder only.
 
 <details>
-<summary>Manual install (if you prefer to clone and inspect first)</summary>
+<summary>Manual install / other tools (Cursor, ChatGPT, Gemini, …)</summary>
 
 ```bash
-git clone https://github.com/RyanAlberts/pmstack.git
-cd pmstack
-./setup ~/work/my-pm-stuff      # local install
-./setup --global                 # global install
+git clone https://github.com/RyanAlberts/pmstack.git && cd pmstack
+./setup --global    # or: ./setup ~/work/my-pm-stuff
 ```
 
+For non-Claude tools, see [docs/using-other-tools.md](./docs/using-other-tools.md) — the skills are plain markdown, paste them into `.cursorrules`, a Custom GPT, or a system prompt.
+
 </details>
-
-### Path 2: claude.ai web / desktop / mobile (non-technical PMs)
-
-If you don't use a terminal, install pmstack as **Anthropic Skills** in your Claude account. Same capabilities. No CLI.
-
-**One-time setup (~5 min):**
-
-1. Open claude.ai → **Projects** → create a Project called "PM toolkit" (or use an existing one).
-2. **Project settings → Skills → Upload skill.**
-3. Upload each folder from this repo's [`claude-skills/`](./claude-skills/) directory: `pmstack-prd`, `pmstack-eval`, `pmstack-premortem`, etc. Upload all 14 (it takes ~3 minutes total) or pick the 4–5 you'll use most.
-4. Done. From the desktop app, mobile, or web, just chat normally — when you say "I have a customer quote, write a PRD," the skill auto-activates.
-
-> Skills on claude.ai don't write files (no filesystem). The artifact appears inline in the conversation. Copy-paste it where you need it. The artifact is identical to what you'd get from the CLI.
-
-**Other tools** (Cursor, Codex, ChatGPT, Gemini, anything else): see [docs/using-other-tools.md](./docs/using-other-tools.md). The skills are markdown — paste into a `.cursorrules`, a Custom GPT, or a system prompt.
 
 ---
 
