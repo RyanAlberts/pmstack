@@ -131,16 +131,21 @@ Recurring patterns that turn pmstack from a set of one-shot commands into a PM o
 /loop 7d /eval-drift   # weekly eval-regression watch
 ```
 
-&nbsp;
+---
 
-### How these stitch together
+## What's an eval? (the one piece of jargon you'll see a lot)
 
-pmstack is a layered PM operating system, not a collection of utilities. Each layer plays a distinct role and the layers compose:
+An **eval** is a test suite for an AI feature. You define inputs ("what a real user might say") and what good looks like, then run them through your AI system and score the results. It's how you know whether the latest model change made things better or worse.
 
-- **Spec creation** is upstream — translate customer signals into specs (`/prd`), ground them in market reality (`/competitive`), or stress-test product picks against alternatives (`/compare`).
-- **Measurement** comes next — define what success means (`/metrics`), design the test suite for AI features (`/eval`), and execute it against a real target (`/run-eval`). `/eval-self` keeps pmstack itself honest.
-- **Communicate & orchestrate** packages the work for stakeholders (`/brief`) and chains the upstream skills in the right order (`/sprint` runs PRD → metrics → eval → brief with confirmation gates).
-- **Routines** sit on top of all three layers and add the operating discipline. `/premortem` hardens a spec before it ships. `/launch-readiness` gates the launch. `/eval-drift` watches the feature after launch. `/lint` keeps the workspace clean as your artifact corpus grows. `/weekly` makes you check your own thinking. **Most PM tooling stops at the artifact layer; pmstack ships the operating layer too. That's the AI-Director difference.**
+Three pmstack commands handle this:
+
+- **`/eval`** — Designs the test suite. Output: a YAML describing what to test and how to grade it.
+- **`/run-eval`** — Actually runs the test suite against a real AI system and writes a scored report.
+- **`/eval-drift`** — Re-runs the suite weekly, compares to last week, and flags any regression as a release blocker.
+
+Most PMs ship AI features without evals because designing one feels intimidating. `/eval` makes the design 80% done in 60 seconds. **`/run-eval` will hard-stop if you haven't told it what AI system to test against — it never invents fake scores.**
+
+A walk-through for your first eval: [docs/run-eval-setup.md](./docs/run-eval-setup.md).
 
 ---
 
@@ -208,22 +213,6 @@ Then type:
 That's it. The tutorial does the rest.
 
 If you installed via claude.ai, just open the Project you set up and ask: *"walk me through pmstack."*
-
----
-
-## What's an eval? (the one piece of jargon you'll see a lot)
-
-An **eval** is a test suite for an AI feature. You define inputs ("what a real user might say") and what good looks like, then run them through your AI system and score the results. It's how you know whether the latest model change made things better or worse.
-
-Three pmstack commands handle this:
-
-- **`/eval`** — Designs the test suite. Output: a YAML describing what to test and how to grade it.
-- **`/run-eval`** — Actually runs the test suite against a real AI system and writes a scored report.
-- **`/eval-drift`** — Re-runs the suite weekly, compares to last week, and flags any regression as a release blocker.
-
-Most PMs ship AI features without evals because designing one feels intimidating. `/eval` makes the design 80% done in 60 seconds. **`/run-eval` will hard-stop if you haven't told it what AI system to test against — it never invents fake scores.**
-
-A walk-through for your first eval: [docs/run-eval-setup.md](./docs/run-eval-setup.md).
 
 ---
 
