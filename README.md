@@ -85,7 +85,7 @@ An **eval** is the test suite for an AI feature - it's how we evaluate non-deter
 
 **Fluency in evals separates an AI PM from a traditional PM.** Traditional PMs ship a feature, instrument a dashboard, and read the launch metric. AI PMs do all of that *and* maintain a structured measurement of how the model itself behaves — because LLM outputs are non-deterministic, drift between model versions, and fail in ways feature flags can't catch.
 
-**pmstack implements [Anthropic's eval framework](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) as PM-runnable commands.** The Anthropic article is the canonical reference; you don't have to read it cover-to-cover before shipping. pmstack is the operating layer that produces its artifacts — task suites, transcripts, graders, drift watches — without writing engineering scaffolding. Five commands cover the lifecycle in flow order:
+**pmstack implements [Anthropic's eval framework](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) as PM-runnable commands.** The Anthropic article is the canonical reference; you don't have to read it cover-to-cover before shipping. pmstack is the operating layer that produces its artifacts — [task suites, transcripts, graders, drift watches](#glossary) — without writing engineering scaffolding. Five commands cover the lifecycle in flow order:
 
 - **`/vibe-test`** — Read raw transcripts of your AI feature in action; surface failure patterns and draft task candidates *before* you formalize a test suite. (Anthropic's "start with manual testing" ritual.)
 - **`/eval`** — Design the suite. Output: a YAML with tasks, metrics, graders (`code` / `model` / `human`), and pass-bars.
@@ -229,6 +229,30 @@ Then type:
 That's it. The tutorial does the rest.
 
 If you installed via claude.ai, just open the Project you set up and ask: *"walk me through pmstack."*
+
+---
+
+## Glossary
+
+The Anthropic eval-framework vocabulary, with concrete examples drawn from the bundled "AI code review" walkthrough so each term ties to something runnable.
+
+| Term | What it means | Example (AI code review) |
+|---|---|---|
+| **Task** | One test case. An input plus a definition of what success looks like. The atomic unit of an eval suite. | *"Given this 18-line bugfix PR, the bot should produce a summary that names the bug, 0–2 inline comments, and a CODEOWNER as the suggested reviewer."* |
+| **Trial** | One attempt at a task. Models are non-deterministic, so we run multiple. pmstack default: **5 trials per task**. | The bot is shown the same PR five times. Three trials produce great reviews, one is mid, one calls a clean diff "suspicious." That spread is the data. |
+| **Transcript** | The full record of one trial — the input the bot saw, its reasoning, every tool call, intermediate output, and the final answer. (a.k.a. trace, trajectory.) | The five mock files at [`examples/walkthrough-code-review/transcripts/`](./examples/walkthrough-code-review/transcripts/). Each shows what the bot saw, what it said, and what happened next. |
+| **Outcome** | The final state of the world after the trial — distinct from what the agent *said* it did. | The transcript says *"I posted a comment."* The outcome is whether the comment actually appears on the PR in GitHub. |
+| **Grader** | The logic that scores a trial. Three flavors: **code** (deterministic), **model** (LLM-as-judge with a rubric), **human** (SME spot-check). One task can have several. | `comments_per_pr_p75` → graded by **code** (count the comments). `severity_calibration` → graded by **model** (Claude judges the bot's severity tags vs. a rubric). `refusal_precision` → graded by **human** (SME labels 24 cases by hand). |
+| **Suite** | The whole eval YAML — a collection of tasks measuring some capability or guarding a regression. | [`eval-code-review-2026-05-06.yaml`](./examples/walkthrough-code-review/eval-code-review-2026-05-06.yaml) — 8+ tasks, 7 metrics, one target system. |
+| **Capability eval** | *"What can this agent do well?"* Starts at a low pass-rate. Gives the team a hill to climb. | Launch suite for a brand-new feature: pass-rate sits at 60%, climbing weekly as you fix prompts and edge cases. |
+| **Regression eval** | *"Does it still handle what it used to?"* Should sit near 100%. Any drop is a release blocker. | The launch suite graduated to a regression suite once it hit 95% consistently — now it just guards the floor. |
+| **pass@k** | Probability the agent gets it right on **at least one** of k trials. Use when one success is enough (a tool with retry). | A coding agent: as long as one of 5 attempts works, the dev moves on. **pass@5** is the right metric. |
+| **pass^k** | Probability the agent gets it right on **every one** of k trials. Use when consistency matters (customer-facing). | The code review bot: every dev expects it to work every time. **pass^5** is the right metric — and the bar PMs gate launches on. |
+| **Drift watch** | A scheduled re-run of the eval that diffs against last week and hard-stops releases on regression. | `/loop 7d /eval-drift` runs every Monday. If `severity_calibration` drops from 4.3 → 3.8, the memo includes `RELEASE_BLOCKED: true`. |
+| **Negative case** | A task where the agent should **not** do something. For every "should-do-X" case, include a "should-not-do-X" companion — Anthropic's balanced-set rule. | *"PR uses parameterized SQL that looks unsafe — bot should NOT flag SQL injection."* Marked `negative_case: true`. |
+| **Reference solution** | A known good output that passes all the graders. Proves the task is solvable and that the graders are wired up correctly. | *"On the bugfix PR, a reference solution would be: a summary naming the off-by-one, one inline asking for a unit test, `@django-pagination-codeowner` as reviewer."* |
+
+Want the deeper version? See [`docs/anthropic-framework.md`](./docs/anthropic-framework.md) for the full mapping of pmstack commands to Anthropic's 8-step eval roadmap.
 
 ---
 
