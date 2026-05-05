@@ -79,7 +79,7 @@ An **eval** is the test suite for an AI feature - it's how we evaluate non-deter
 
 <p align="center">
   <sub>
-    <em>Image adapted from Anthropic — <a href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents"><strong>Demystifying Evals for AI Agents</strong></a> (Anthropic Engineering, 2025). Used with attribution; original copyright Anthropic, PBC. Read the full article for the canonical guidance pmstack draws on.</em>
+    <em>Image taken from Anthropic — <a href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents"><strong>Demystifying Evals for AI Agents</strong></a> (Anthropic Engineering, 2025). Used with attribution; original copyright Anthropic, PBC. Read the full article for the canonical guidance pmstack draws on.</em>
   </sub>
 </p>
 
