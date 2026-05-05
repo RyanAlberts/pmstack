@@ -74,8 +74,8 @@ An **eval** is the test suite for an AI feature - it's how we evaluate non-deter
 [From Anthropic] An evaluation (“eval”) is a test for an AI system: give an AI an input, then apply grading logic to its output to measure success. 
 
 <p align=”center”>
-  <!-- Drop your image at docs/assets/eval-diagram.png.webp (or change the src below). Recommended width 700–900px. -->
-  <img src=”docs/assets/eval-diagram.png.webp” alt=”Diagram of an evaluation pipeline: input → AI system → grading logic → score. Adapted from Anthropic's 'Demystifying Evals for AI Agents.'” width=”780”>
+  <!-- Drop your image at docs/assets/eval-diagram.png (or change the src below). Recommended width 700–900px. -->
+  <img src=”docs/assets/eval-diagram.png” alt=”Diagram of an evaluation pipeline: input → AI system → grading logic → score. Adapted from Anthropic's 'Demystifying Evals for AI Agents.'” width=”780”>
 </p>
 
 <p align=”center”>
