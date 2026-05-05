@@ -83,25 +83,25 @@ An **eval** is the test suite for an AI feature - it's how we evaluate non-deter
   </sub>
 </p>
 
-**Fluency in evals separate an AI PM from a traditional PM.** Traditional PMs ship a feature, instrument a dashboard, and read the launch metric. AI PMs do all of that *and* maintain a structured measurement of how the model itself behaves — because LLM outputs are non-deterministic, drift between model versions, and fail in ways feature flags can't catch.
+**Fluency in evals separates an AI PM from a traditional PM.** Traditional PMs ship a feature, instrument a dashboard, and read the launch metric. AI PMs do all of that *and* maintain a structured measurement of how the model itself behaves — because LLM outputs are non-deterministic, drift between model versions, and fail in ways feature flags can't catch.
 
-Three pmstack commands handle this:
+**pmstack implements [Anthropic's eval framework](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) as PM-runnable commands.** The Anthropic article is the canonical reference; you don't have to read it cover-to-cover before shipping. pmstack is the operating layer that produces its artifacts — task suites, transcripts, graders, drift watches — without writing engineering scaffolding. Five commands cover the lifecycle in flow order:
 
-- **`/eval`** — Designs the test suite. Output: a YAML describing what to test and how to grade it.
-- **`/run-eval`** — Actually runs the test suite against a real AI system and writes a scored report.
-- **`/eval-drift`** — Re-runs the suite weekly, compares to last week, and flags any regression as a release blocker.
+- **`/vibe-test`** — Read raw transcripts of your AI feature in action; surface failure patterns and draft task candidates *before* you formalize a test suite. (Anthropic's "start with manual testing" ritual.)
+- **`/eval`** — Design the suite. Output: a YAML with tasks, metrics, graders (`code` / `model` / `human`), and pass-bars.
+- **`/run-eval`** — Execute the suite against a real AI system; report **pass@k** AND **pass^k**. Hard-stops if no target is configured — never invents fake scores.
+- **`/transcript-review`** — Walk every failed trial asking the diagnostic question: *model mistake, grader mistake, or task-spec error?* (Anthropic's "read the transcripts" ritual.)
+- **`/eval-drift`** — Re-run the suite weekly, diff against last week, flag any regression as a release blocker.
 
-Most PMs ship AI features without evals because designing one feels intimidating. `/eval` makes the design 80% done in 60 seconds. **`/run-eval` will hard-stop if you haven't told it what AI system to test against — it never invents fake scores.**
-
-A walk-through for your first eval: [docs/run-eval-setup.md](./docs/run-eval-setup.md).
+First-time setup: [docs/run-eval-setup.md](./docs/run-eval-setup.md). How pmstack maps to Anthropic's 8-step roadmap: [docs/anthropic-framework.md](./docs/anthropic-framework.md).
 
 ---
 
 ## What you get
 
-Thirteen capabilities that package a task to delegate to AI. The logical flow is from Spec creation -> measurement -> communicate & orchestrate, with Routines to give you the operating discipline. Each command produces a real markdown or YAML artifact (or, on web/desktop, an inline block you can copy).
+A growing set of capabilities, each packaging a task to delegate to AI. The logical flow is Spec creation → Measurement → Communicate & orchestrate, with Routines giving you the operating discipline. Each command produces a real markdown or YAML artifact (or, on web/desktop, an inline block you can copy).
 
-**Don't try to memorize all 14.** Run `/onboarding` once — it walks the whole stack with a real signal and produces a complete artifact set you can compare to the bundled examples.
+**Don't try to memorize them all.** Run `/onboarding` once — it walks the whole stack with a real signal and produces a complete artifact set you can compare to the bundled examples.
 
 &nbsp;
 
@@ -119,13 +119,15 @@ Translate the noise of customer signals, competitor moves, and market gaps into 
 
 ### Measurement — What does "good" look like?
 
-Define how you'll know your work succeeded, and check whether it did. Without this layer, AI features ship blind.
+Define how you'll know your work succeeded, then check whether it did — using Anthropic's framework end-to-end. The six commands below run in flow order: define metrics, read the data, design the suite, run it, diagnose failures, keep pmstack itself honest.
 
 | Command template | What it answers | What you get | Where it runs |
 |---|---|---|---|
 | `/metrics "<feature>"` | "How will we know this worked?" | North Star + 2–3 supporting + 1–2 counter-metrics → [example](./examples/walkthrough-code-review/metrics-code-review-2026-05-06.md) | CLI · web · desktop · mobile |
-| `/eval "<AI feature>"` | "What does 'good' actually look like for this AI feature?" | A test-suite YAML (capabilities, failure modes, metrics, test cases) → [example](./examples/walkthrough-code-review/eval-code-review-2026-05-06.yaml) | CLI · web · desktop · mobile |
-| `/run-eval <eval-yaml-path>` | "Does this AI feature actually pass the bar?" | A scored summary.md with pass-rates, top failures, cost → [example](./examples/walkthrough-code-review/eval-runs/code-review-eval-2026-05-06/summary.md) | CLI only (needs a real target) |
+| `/vibe-test "<feature>"` | "What does this AI feature actually do in the wild?" | A vibe-test memo — failure patterns + task candidates + 'ready for `/eval`?' verdict (reads transcripts via paste, attach, or `--from-folder`) | CLI · web · desktop · mobile |
+| `/eval "<AI feature>"` | "What does 'good' actually look like for this AI feature?" | A test-suite YAML — tasks, metrics, graders (code/model/human), pass@k or pass^k → [example](./examples/walkthrough-code-review/eval-code-review-2026-05-06.yaml) | CLI · web · desktop · mobile |
+| `/run-eval <eval-yaml-path>` | "Does this AI feature actually pass the bar?" | A scored summary.md with **both pass@k AND pass^k**, top failures, cost → [example](./examples/walkthrough-code-review/eval-runs/code-review-eval-2026-05-06/summary.md) | CLI only (needs a real target) |
+| `/transcript-review <run-folder>` | "Why did these trials fail — model, grader, or task?" | A diagnosis memo — per-trial verdicts + proposed eval changes (reads `/run-eval` output) | CLI · web · desktop · mobile |
 | `/eval-self [--skill <name>]` | "Is pmstack itself still good?" | Scores every pmstack skill against canonical scenarios | CLI only |
 
 &nbsp;
