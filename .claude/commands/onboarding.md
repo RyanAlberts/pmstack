@@ -12,7 +12,7 @@ Arguments: **$ARGUMENTS**
 
 ## What this is
 
-A 7-step interactive tutorial. Every step is runnable, has an example input, and produces a real artifact the user can read. The user types `next` (or just hits enter) to advance; types `skip` to jump past a step; types `back` to revisit. By the end, the user has run the full pmstack pipeline once on a realistic feature ("AI code review") and has every artifact in `outputs/`.
+A 9-step interactive tutorial. Every step is runnable, has an example input, and produces a real artifact the user can read. The user types `next` (or just hits enter) to advance; types `skip` to jump past a step; types `back` to revisit. By the end, the user has run the full pmstack pipeline once on a realistic feature ("AI code review") and has every artifact in `outputs/`.
 
 This routine is non-destructive — all artifacts go under `outputs/onboarding-tutorial/` so the user's real `outputs/` stays clean.
 
@@ -28,7 +28,7 @@ If the user asks a question mid-step, answer it concretely using the artifacts i
 
 ---
 
-### Step 1 of 7 — Welcome + the customer signal
+### Step 1 of 9 — Welcome + the customer signal
 
 Tell the user:
 
@@ -42,7 +42,7 @@ Tell the user:
 
 ---
 
-### Step 2 of 7 — `/prd` (the translation)
+### Step 2 of 9 — `/prd` (the translation)
 
 > "`/prd` takes a customer signal and writes a PRD draft. It's the translation from 'what the customer said' to 'what we'll build.'
 >
@@ -57,7 +57,7 @@ Tell the user:
 
 ---
 
-### Step 3 of 7 — `/competitive` (ground the PRD in reality)
+### Step 3 of 9 — `/competitive` (ground the PRD in reality)
 
 > "Before stress-testing the PRD, scan the market. `/competitive` produces a 3–5 player landscape with a white-space analysis you can borrow from in your PRD's Target Audience section.
 >
@@ -72,7 +72,7 @@ Tell the user:
 
 ---
 
-### Step 4 of 7 — `/premortem` (stress-test the PRD)
+### Step 4 of 9 — `/premortem` (stress-test the PRD)
 
 > "`/premortem` is the most opinionated routine in pmstack. It pretends your feature failed 6 months from now, writes 3 plausible failure stories, and offers to mutate the PRD's Risks section.
 >
@@ -87,9 +87,28 @@ Tell the user:
 
 ---
 
-### Step 5 of 7 — `/sprint` (chain metrics → eval → run-eval → brief)
+### Step 5 of 9 — `/vibe-test` (read the data before writing the eval)
 
-> "`/sprint` is an orchestrator. It runs `/metrics`, then `/eval`, then asks you to actually run the eval, then writes a stakeholder brief — pausing between each step so you can correct course.
+> "Before formalizing tests, Anthropic recommends reading raw transcripts of your AI feature in action — what they call *'manual testing, dogfooding, and intuition.'* `/vibe-test` walks you through this layer-1 ritual. You read 5–10 transcripts, surface failure patterns, draft task candidates, and decide if you're ready for a structured eval.
+>
+> For the tutorial, we ship 5 mock transcripts of the AI Code Review bot.
+>
+> **Type:**
+> ```
+> /vibe-test "AI code review" --from-folder examples/walkthrough-code-review/transcripts/
+> ```
+>
+> If you're on claude.ai web (no filesystem), drop the `--from-folder` flag and the skill will prompt you to paste or attach the transcripts. They're at `examples/walkthrough-code-review/transcripts/` in this repo on GitHub.
+>
+> **What you'll get:** a vibe-test memo with 3-5 failure patterns, 5–10 task candidates (including `negative_case: true` companions), and a 'ready for /eval?' verdict.
+>
+> **Compare to:** `examples/walkthrough-code-review/vibe-test-code-review-2026-05-05.md`."
+
+---
+
+### Step 6 of 9 — `/sprint` (chain metrics → eval → run-eval → brief)
+
+> "`/sprint` is an orchestrator. It runs `/metrics`, then `/eval`, then asks you to actually run the eval, then writes a stakeholder brief — pausing between each step so you can correct course. Now that you have a vibe-test memo from step 5, /sprint will use it as priors when designing the eval — task candidates and failure patterns flow forward.
 >
 > **Type:**
 > ```
@@ -102,7 +121,26 @@ Tell the user:
 
 ---
 
-### Step 6 of 7 — `/launch-readiness` + `/lint` (the gate routines)
+### Step 7 of 9 — `/transcript-review` (diagnose the failures)
+
+> "After /run-eval finishes, every failed trial deserves the diagnostic question Anthropic emphasizes: *model mistake, grader mistake, or task-spec error?* `/transcript-review` walks each failed case with you and produces a memo with verdict counts and proposed eval changes.
+>
+> Without this step, you risk treating every failure as a model bug — but Anthropic's CORE-Bench example showed Opus 4.5 going from 42% → 95% just by fixing grader bugs. Read the data.
+>
+> **Type:**
+> ```
+> /transcript-review examples/walkthrough-code-review/eval-runs/code-review-eval-2026-05-06/
+> ```
+>
+> If you're on claude.ai web, paste the contents of `summary.md` from that folder and a couple of failed `cases/*.json` files; the skill will work from there.
+>
+> **What you'll get:** a transcript-review memo at `outputs/transcript-review-code-review-<today>.md` with per-trial diagnoses and proposed rubric / task / instrumentation fixes.
+>
+> **Compare to:** `examples/walkthrough-code-review/transcript-review-code-review-2026-05-08.md`."
+
+---
+
+### Step 8 of 9 — `/launch-readiness` + `/lint` (the gate routines)
 
 > "Two routines you'll lean on near launch:
 >
@@ -119,7 +157,7 @@ Tell the user:
 
 ---
 
-### Step 7 of 7 — Schedule the recurring routines
+### Step 9 of 9 — Schedule the recurring routines
 
 > "Three routines benefit from running on a schedule:
 >
@@ -133,7 +171,7 @@ Tell the user:
 
 ---
 
-### Step 8 (final) — Recap + next steps
+### Step 10 (final) — Recap + next steps
 
 > "You've now run the full pmstack pipeline. Recap:
 >
@@ -143,8 +181,10 @@ Tell the user:
 > | `/competitive` | Need to ground the PRD in market reality |
 > | `/premortem` | Before any major launch — stress-test the PRD |
 > | `/metrics` | Define how you'll measure success |
+> | `/vibe-test` | Read raw transcripts before writing the eval |
 > | `/eval` | Design a test suite for an AI feature |
 > | `/run-eval` | Execute the eval against a real target |
+> | `/transcript-review` | Diagnose failed eval trials — model / grader / task |
 > | `/launch-readiness` | At launch — verify all evidence is in place |
 > | `/lint` | Weekly — catch graph gaps and drift |
 > | `/weekly` | Monday — self-snapshot of what changed |
@@ -158,7 +198,7 @@ Tell the user:
 
 ## Hard rules
 
-- **Wait for explicit user advance between every step.** Do not run all 7 steps without pausing.
+- **Wait for explicit user advance between every step.** Do not run all 9 steps without pausing.
 - **Tutorial artifacts go under `outputs/onboarding-tutorial/`**, not `outputs/` directly. Otherwise the user's real workspace gets polluted.
 - **If a referenced example file is missing**, fall back to a one-paragraph in-line description and tell the user "the bundled example wasn't found at <path>; you can compare against your own output instead."
 - **Surface-aware:** in web/desktop mode, emit artifact contents inline as markdown blocks rather than writing files. The user copies them.
