@@ -57,7 +57,7 @@ If you just installed pmstack, run this once. It's the only command you need to 
 
 | Command template | What it answers | What you get | Where it runs |
 |---|---|---|---|
-| `/onboarding` | "I just installed pmstack. Where do I start?" | A 9-step interactive tutorial running every capability in this README — including Anthropic's `/vibe-test` and `/transcript-review` rituals — with comparison links to the bundled walkthrough so you can see what good looks like | CLI · web · desktop |
+| `/onboarding` | "I just installed pmstack. Where do I start?" | A 9-step interactive tutorial running every capability in this README with examples so you can see what good looks like | CLI · web · desktop |
 
 ### Prefer to browse first?
 
