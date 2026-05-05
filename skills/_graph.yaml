@@ -11,7 +11,7 @@
 #
 # Edit if you want to change the canonical PM workflow.
 
-version: 0.4.1
+version: 0.5.0
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Skill graph — for each skill, what prior outputs help it do better work
@@ -60,6 +60,82 @@ edges:
         glob: "outputs/eval-*.yaml"
         when: "input — the eval design to execute"
 
+  # ───── Default routines (v0.5+) ─────
+
+  # /premortem reads a target PRD and (optionally) same-domain competitive + eval
+  premortem:
+    reads_from:
+      - skill: prd
+        glob: "outputs/prd-*.md"
+        when: "always — the target PRD; required input"
+      - skill: competitive
+        glob: "outputs/competitive-*.md"
+        when: "if same-topic competitive scan exists, sharpens the failure stories"
+      - skill: eval
+        glob: "outputs/eval-*.yaml"
+        when: "if same-topic eval exists, leading indicators can borrow eval cases"
+    feeds_to:
+      - prd  # mutates the PRD's Risks section on confirmation
+
+  # /weekly synthesizes the last 7 days of decisions-log + outputs/
+  weekly:
+    reads_from:
+      - skill: any
+        glob: "outputs/*"
+        when: "filter to last 7 days; group decisions by skill"
+      - skill: any
+        glob: "decisions-log.md"
+        when: "delta on the log is the canonical source for 'decisions made'"
+
+  # /launch-readiness reads the full artifact graph for one feature
+  launch-readiness:
+    reads_from:
+      - skill: prd
+        glob: "outputs/prd-<feature>-*.md"
+        when: "required — verdict is NO-GO without a matching PRD"
+      - skill: metrics
+        glob: "outputs/metrics-<feature>-*.md"
+      - skill: eval
+        glob: "outputs/eval-<feature>-*.yaml"
+      - skill: run-eval
+        glob: "outputs/eval-runs/*<feature>*/summary.md"
+      - skill: premortem
+        glob: "outputs/premortem-<feature>-*.md"
+      - skill: eval-drift
+        glob: "outputs/eval-drift-*.md"
+        when: "most recent — flags P0 regression"
+      - skill: brief
+        glob: "outputs/brief-<feature>-*.md"
+
+  # /lint reads the entire artifact corpus + this graph
+  lint:
+    reads_from:
+      - skill: any
+        glob: "outputs/*"
+        when: "walks every artifact for graph gaps + cross-artifact drift + staleness"
+      - skill: any
+        glob: "skills/_graph.yaml"
+        when: "this file — defines expected downstream edges"
+
+  # /eval-drift reads prior eval runs to compute a delta
+  eval-drift:
+    reads_from:
+      - skill: eval-self
+        glob: "evals/results/*.json"
+        when: "self-eval baseline for drift detection"
+      - skill: run-eval
+        glob: "outputs/eval-runs/*/summary.md"
+        when: "user-eval baselines for drift detection"
+    feeds_to:
+      - brief  # writes a release-blocker brief on regression
+
+  # /onboarding is the entry-point tutorial; reads the example walkthrough
+  onboarding:
+    reads_from:
+      - skill: any
+        glob: "examples/walkthrough-code-review/*"
+        when: "uses the bundled walkthrough as comparison reference"
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Default orchestrators — chains a higher-level command can run
 # ─────────────────────────────────────────────────────────────────────────────
@@ -73,6 +149,35 @@ orchestrators:
     description: "Compare two products, then execute the resulting eval"
     chain: [compare, run-eval]
     confirm_between_steps: true
+
+  onboarding:
+    description: "Interactive tutorial for new pmstack users"
+    chain: [prd, competitive, premortem, metrics, eval, run-eval, lint, launch-readiness, brief, weekly, eval-drift]
+    confirm_between_steps: true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Default routines — five recurring patterns that compose existing skills.
+# Each is runnable as a one-shot slash command AND schedulable via /loop.
+# ─────────────────────────────────────────────────────────────────────────────
+default_routines:
+  eval-drift:
+    trigger: loop-only
+    cadence: 7d
+    purpose: "Weekly drift watch over an AI feature; release-blocker on regression"
+  premortem:
+    trigger: slash-only
+    purpose: "Stress-test a draft PRD with 3 failure stories + mutation gate"
+  weekly:
+    trigger: both
+    cadence: 7d
+    purpose: "Monday self-snapshot — decisions, open loops, changed-mind"
+  launch-readiness:
+    trigger: slash-only
+    purpose: "Pre-launch GO/NO-GO/CONDITIONAL verdict over the artifact graph"
+  lint:
+    trigger: both
+    cadence: 7d
+    purpose: "Workspace audit — graph gaps, cross-artifact drift, stale candidates"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Decision log — every skill that ships an artifact should append here

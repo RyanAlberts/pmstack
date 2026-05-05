@@ -27,7 +27,9 @@ The most convenient if you want pmstack on your phone or in the browser. Anthrop
 2. Go to a Project (or create one — call it "PM toolkit").
 3. **Settings** → **Skills** → **Upload skill**.
 4. Zip and upload the folder `claude-skills/pmstack-prd/` (or any other you want).
-5. Repeat for as many of the 9 skills as you want (`pmstack-eval`, `pmstack-compare`, `pmstack-brief`, etc.).
+5. Repeat for as many of the **14 skills** as you want — the original nine (`pmstack-prd`, `pmstack-eval`, `pmstack-compare`, `pmstack-brief`, `pmstack-metrics`, `pmstack-competitive`, `pmstack-run-eval`, `pmstack-sprint`, `pmstack-eval-self`) plus the **five default routines** (`pmstack-eval-drift`, `pmstack-premortem`, `pmstack-weekly`, `pmstack-launch-readiness`, `pmstack-lint`) and the **interactive tutorial** (`pmstack-onboarding`).
+
+**Recommended starter set** (4 skills, covers 80% of PM work): `pmstack-prd`, `pmstack-premortem`, `pmstack-weekly`, `pmstack-onboarding`. Upload these four, ask Claude "walk me through pmstack," and the onboarding tutorial does the rest.
 
 **Now what?** Just chat with Claude in that Project. When you say "I have a customer quote, write a PRD," it'll auto-invoke `pmstack-prd`. No slash commands needed.
 
@@ -106,11 +108,13 @@ The format is intentionally simple — no DSL, no framework, no compile step. If
 
 A few capabilities only work in Claude Code (terminal):
 
-- **`/run-eval`** — needs Python + the `claude` CLI to actually execute eval suites. Outputs go to disk.
-- **`/sprint`** — the four-step orchestrator with checkpoint gates. Other surfaces don't have a good equivalent of "stop and ask user y/n between steps".
+- **`/run-eval`** — needs Python + the `claude` CLI to actually execute eval suites against a real target.
 - **`/eval-self`** — runs the pmstack self-eval suite (Python script).
+- **`/eval-drift`** — wraps `/eval-self` and `/run-eval`; needs the same toolchain.
 
-Workaround for those: read the eval YAML inline in any tool, then run `bin/run-eval.py` locally on your laptop when you need real scores.
+Everything else — including the other four default routines (`/premortem`, `/weekly`, `/launch-readiness`, `/lint`) and the `/onboarding` tutorial — works fine in claude.ai web/desktop/mobile after you've uploaded the skills.
+
+Workaround for the eval-running ones: read the eval YAML inline in any tool, then run the eval locally on your laptop when you need real scores.
 
 ---
 
