@@ -59,6 +59,26 @@ This is **context engineering**: the persistent layer (`outputs/`, `decisions-lo
 | `/run-eval` | [skills/run-eval.md](./skills/run-eval.md) | claude-skills/pmstack-run-eval |
 | `/sprint` | (orchestrator — see [.claude/commands/sprint.md](./.claude/commands/sprint.md)) | — |
 | `/eval-self` | (suite runner — see [.claude/commands/eval-self.md](./.claude/commands/eval-self.md)) | — |
+| `/eval-drift` | [.claude/commands/eval-drift.md](./.claude/commands/eval-drift.md) | claude-skills/pmstack-eval-drift |
+| `/premortem` | [.claude/commands/premortem.md](./.claude/commands/premortem.md) | claude-skills/pmstack-premortem |
+| `/weekly` | [.claude/commands/weekly.md](./.claude/commands/weekly.md) | claude-skills/pmstack-weekly |
+| `/launch-readiness` | [.claude/commands/launch-readiness.md](./.claude/commands/launch-readiness.md) | claude-skills/pmstack-launch-readiness |
+| `/lint` | [.claude/commands/lint.md](./.claude/commands/lint.md) | claude-skills/pmstack-lint |
+| `/onboarding` | [.claude/commands/onboarding.md](./.claude/commands/onboarding.md) | claude-skills/pmstack-onboarding |
+
+## Default routines (v0.5+)
+
+Five recurring patterns that compose existing skills. Run as one-shot slash commands or schedule via `/loop 7d /<routine>`:
+
+- `/eval-drift` — weekly drift watch over an AI feature's eval scores; release-blocker on regression (loop-only).
+- `/premortem <prd-slug>` — Klein-style pre-mortem on a draft PRD; mutates the PRD's Risks section behind a confirmation gate (slash-only).
+- `/weekly` — Monday self-snapshot: decisions made, open loops aging, one required "changed my mind" field (both).
+- `/launch-readiness <feature>` — verifier returning GO/NO-GO/CONDITIONAL with evidence trail; acknowledged-gap override path (slash-only).
+- `/lint` — workspace audit: graph gaps, cross-artifact drift, stale candidates with "Do this:" actions (both).
+
+End-to-end test: `python3 evals/routines-e2e.py` validates all five routines + `/onboarding` against the bundled walkthrough at `examples/walkthrough-code-review/`.
+
+New users start with `/onboarding` — a 7-step interactive tutorial covering every capability.
 
 ## Context
 This config is designed for a Staff PM working in Agentic AI at a hyperscaler, building AI-powered developer tools and enterprise automation products. Adjust domain context as needed.
