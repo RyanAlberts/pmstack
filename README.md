@@ -4,9 +4,10 @@
 
 Turn customer signals into outcomes like I do @AWS - delegate your work to AI agents as Routines or run commands on demand: run pre-mortems, stress-test launches, monitor your AI feature for drift, and write the Monday memo — all from one consistent set of commands you type into Claude (terminal, browser, desktop, or mobile).
 
-**Brand new?** → `/onboarding` walks you through every capability with a runnable example.** Skip the rest of this README until you've done it once.
+**Brand new?** → `/onboarding` walks you through every capability with a runnable example. Skip the rest of this README until you've done it once.
 
-Started with Claude as a passion project for myself, but if you find this repo useful, star it and submit a request to expand to Codex/open source! 
+If you find this repo useful, star it and help me make it better!
+
 ---
 
 ## Who this is for
