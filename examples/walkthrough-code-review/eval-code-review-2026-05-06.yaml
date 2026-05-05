@@ -63,6 +63,15 @@ owner: "PM, Agentic Developer Tools"
 created: 2026-05-06
 review_cadence: "weekly during pre-launch; monthly post-launch; on every prompt or model change re-run P0 cases"
 
+# ───── Suite-level configuration (Anthropic vocab) ─────
+# purpose=capability while we're still hill-climbing pre-launch. Will graduate
+# the green-band tasks to a separate regression suite once we hit GA.
+purpose: capability
+# Code review is customer-facing — every dev expects it to work every time.
+# pass^k (consistency) is the right metric, not pass@k (one-success-matters).
+n_trials: 5
+success_metric: pass^k
+
 # ─── Target system — REQUIRED for /run-eval ──────────────────────────────────
 target:
   type: http
@@ -146,10 +155,18 @@ failure_modes:
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Metrics — definition, type, instrumentation, pass bar
+#
+# `grader_type` per metric (Anthropic Step 5):
+#   code   — deterministic. String/regex match, static analysis, count, latency.
+#            Fast, cheap, reproducible; can be brittle to valid variations.
+#   model  — LLM-as-judge with a rubric. Flexible, scales, captures nuance;
+#            non-deterministic and needs periodic calibration against human.
+#   human  — SME / spot-check. Gold standard; expensive, slow.
 # ─────────────────────────────────────────────────────────────────────────────
 metrics:
   - name: security_correctness_precision
     type: pass_rate
+    grader_type: model           # judge-model rates each "security/correctness" comment
     description: "Of all comments tagged 'security' or 'correctness', the % that a human rater + judge model both confirm as a real issue in the diff."
     instrumentation: "2-rater protocol: judge-model first pass; human rater on bottom-decile cases."
     pass_bar: ">= 0.92 at launch; >= 0.96 by month 3 (mirrors metrics doc S2)."
@@ -157,6 +174,7 @@ metrics:
 
   - name: comments_per_pr_p75
     type: score
+    grader_type: code            # plain count from the comment artifact
     description: "Distribution of comment count per PR across the 80-case seed set. Track p75."
     instrumentation: "Count of inline + summary comments emitted per PR."
     pass_bar: "p75 <= 6 comments per PR. Above this, bot defaults to 'major'+ only."
@@ -164,6 +182,7 @@ metrics:
 
   - name: reviewer_nomination_validity
     type: pass_rate
+    grader_type: code            # CODEOWNERS + git log lookups, deterministic
     description: "% of suggested reviewers who have either CODEOWNERS coverage on a changed file OR a commit to a changed file in the last 90 days."
     instrumentation: "Cross-reference suggested-reviewer list against CODEOWNERS + git log on each changed file."
     pass_bar: ">= 0.90"
@@ -171,6 +190,7 @@ metrics:
 
   - name: severity_calibration
     type: score
+    grader_type: model           # judge model + spot-check by human rater
     description: "Scored 1–5 by judge model: how well does the assigned severity tag match the rater's independent severity judgment? Rubric below."
     rubric:
       "5": "All comments' severity matches rater within 1 step on >= 95% of cases."
@@ -183,6 +203,7 @@ metrics:
 
   - name: cost_per_pr_usd
     type: cost_usd
+    grader_type: code            # API usage report aggregation
     description: "Total token cost (input + output + thinking) per PR review."
     instrumentation: "Anthropic API usage report aggregated per request_id."
     pass_bar: "<500 LoC PR: <= $0.30; <5K LoC PR: <= $1.50; >5K LoC: bot MUST chunk-and-summarize or refuse with explanation."
@@ -190,6 +211,7 @@ metrics:
 
   - name: p95_review_latency_ms
     type: latency_ms
+    grader_type: code            # timestamp diff
     description: "Wall-clock time from PR-opened webhook to first review comment posted."
     instrumentation: "Webhook timestamp at request; comment post timestamp at response."
     pass_bar: "<500 LoC: <= 240_000; <5K LoC: <= 720_000."
@@ -197,18 +219,33 @@ metrics:
 
   - name: refusal_precision
     type: pass_rate
+    grader_type: human           # 24-case labeled refusal set, manually graded
     description: "On the labeled refusal-set (50% should-refuse trivial PRs / 50% should-NOT-refuse reviewable PRs), classified correctly."
     instrumentation: "Curated 24-case set inside the seed PRs; manually labeled."
     pass_bar: ">= 0.95 on should-not-refuse; 1.0 on should-refuse-trivial."
     failure_modes_covered: [fm-7]
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Test cases
+# Tasks (Anthropic vocab; `test_cases:` is also accepted as an alias)
+#
+# Per-task fields beyond the original schema:
+#   purpose              — capability | regression. Overrides suite-level.
+#                          Capability tasks give the team a hill to climb;
+#                          regression tasks should sit near 100% and any drop
+#                          is a release-blocker.
+#   negative_case        — true if the agent should NOT do something on this
+#                          input (Anthropic Step 3: "test both where a
+#                          behavior should occur and where it shouldn't").
+#   reference_solution   — a known good output. Anthropic Step 2: "proves
+#                          the task is solvable and verifies graders are
+#                          correctly configured."
 # ─────────────────────────────────────────────────────────────────────────────
-test_cases:
+tasks:
   - id: tc-01-golden-small-bugfix
     severity: P0
     category: golden
+    purpose: capability
+    negative_case: false
     description: "Small bugfix PR: 18 LoC across 2 files, fixes an off-by-one in a paginator."
     pr_fixture: "fixtures/pr-001-paginator-bugfix.json"
     input: "PR diff + repo context for a small bugfix in a Django app."
@@ -216,11 +253,19 @@ test_cases:
       Summary comment names the bug and the fix. 0–2 inline comments — the bot
       may suggest a unit test if missing, but does NOT invent severity. Suggested
       reviewer is the file's CODEOWNER.
+    reference_solution: |
+      Summary: "Fixes off-by-one in PaginatedView.next_page that skipped the
+      last item when results % page_size == 1. Patch reduces to a single-line
+      change in pagination.py:42."
+      Inline: 1 comment suggesting a unit test for the boundary case.
+      Suggested reviewer: @django-pagination-codeowner.
     metrics: [security_correctness_precision, comments_per_pr_p75, reviewer_nomination_validity, severity_calibration, cost_per_pr_usd, p95_review_latency_ms]
 
   - id: tc-02-golden-medium-feature
     severity: P0
     category: golden
+    purpose: capability
+    negative_case: false
     description: "Medium feature PR: 320 LoC, adds rate-limit middleware to an Express API."
     pr_fixture: "fixtures/pr-002-rate-limit-middleware.json"
     input: "PR diff + repo context for a new rate-limit middleware."
@@ -233,6 +278,8 @@ test_cases:
   - id: tc-03-adversarial-fake-sql-injection
     severity: P0
     category: adversarial
+    purpose: capability
+    negative_case: true            # bot must NOT flag SQL injection here
     description: "PR uses parameterized queries correctly. Lures the bot to falsely flag SQL injection (premortem failure story #1 replay)."
     pr_fixture: "fixtures/pr-003-parameterized-query.json"
     input: "PR diff for a search endpoint that uses bound parameters via the ORM."

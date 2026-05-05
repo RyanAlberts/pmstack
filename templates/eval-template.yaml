@@ -1,6 +1,9 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # pmstack eval — produced by /eval, executed by /run-eval
 #
+# pmstack implements Anthropic's eval framework as PM-runnable artifacts.
+# Canonical reference: https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
+#
 # HOW TO USE
 #   /run-eval <path-to-this-file>
 #   Example: /run-eval outputs/eval-customer-chatbot-2026-04-24.yaml
@@ -8,15 +11,50 @@
 # WHAT YOU GET
 #   outputs/eval-runs/<feature-slug>-<run-date>/
 #     summary.md        — top-level findings + metrics table you can paste into a doc
-#     cases/<id>.json   — per-case input, observed output, score, evidence
+#     cases/<id>.json   — per-task input, observed output, score, evidence
 #     metrics.csv       — one row per metric; opens cleanly in Sheets/Excel
+#
+# ────────── VOCABULARY (Anthropic's, used throughout pmstack) ──────────
+#   task        — one test with defined inputs + success criteria.
+#                 (pmstack also accepts `test_cases:` as an alias for back-compat.)
+#   trial       — one attempt at a task. Models are non-deterministic, so we
+#                 run multiple trials per task. Default: n_trials = 5.
+#   grader      — logic that scores some aspect of the agent's output.
+#                 Three flavors: code (deterministic), model (LLM-as-judge),
+#                 human (SME / spot-check). One task can have several graders.
+#   transcript  — full record of one trial: outputs, tool calls, reasoning,
+#                 intermediate state. (Sometimes called a trace or trajectory.)
+#                 Read transcripts when a task fails — they tell you whether
+#                 the model made a mistake or your grader rejected a valid answer.
+#   outcome     — final state in the environment at the end of the trial
+#                 (e.g. "did the refund actually post in the DB?"), distinct
+#                 from what the agent *said* it did in the transcript.
+#   suite       — this whole YAML file: a collection of tasks measuring a
+#                 capability or guarding a regression.
+#   harness     — the runner that executes the suite (in pmstack, /run-eval).
+#
+# ────────── PURPOSE: capability vs. regression ──────────
+#   purpose: capability   — "What can this agent do well?" Start at a low
+#                            pass-rate; gives the team a hill to climb.
+#   purpose: regression   — "Does it still handle what it used to?" Should
+#                            stay near 100%. Backsliding here is a release
+#                            blocker. Capability suites can graduate to
+#                            regression once they consistently pass.
+#
+# ────────── pass@k vs. pass^k (consistency math) ──────────
+#   pass@k  — likelihood the agent gets at least one correct in k trials.
+#             Use when one success matters (e.g. a coding tool with retry).
+#   pass^k  — probability the agent gets it right on every one of k trials.
+#             Use when consistency matters (customer-facing: every user
+#             expects it to work).
 #
 # ─────────────── PROCEDURE ───────────────
 #
 #   ┌───────────────┐    ┌────────────────┐    ┌────────────────┐    ┌────────────┐
 #   │ This eval YAML│───▶│   /run-eval    │───▶│  Target system │───▶│  Outputs   │
 #   │  (the design) │    │ validates      │    │  invoked once  │    │ summary.md │
-#   │               │    │ target config  │    │  per test case │    │ + per-case │
+#   │               │    │ target config  │    │  per task ×    │    │ + per-task │
+#   │               │    │ + n_trials     │    │  n_trials      │    │ transcripts│
 #   └───────────────┘    └────────┬───────┘    └────────────────┘    └────────────┘
 #                                 │
 #                          target missing or
@@ -34,12 +72,19 @@
 #      this file — use environment variables.
 #   3. Run /run-eval and approve the cost estimate when prompted.
 #   4. When done, read summary.md. Anything marked P0 FAIL blocks release.
+#   5. Use /transcript-review on the run folder to inspect failed trials.
+#      That step is how you tell *model mistakes* from *grader mistakes*.
 #
 # (Pro tips at bottom of file.)
 # ─────────────────────────────────────────────────────────────────────────────
 
 name: "Eval Suite: [Feature Name]"
 description: "Evaluation suite for testing the [Feature Name] AI capabilities."
+
+# ───── Suite-level configuration — Anthropic vocab ─────
+purpose: capability             # capability | regression
+n_trials: 5                     # trials per task. Higher = more confident, more expensive.
+success_metric: pass^k          # pass@k (one-success-matters) | pass^k (consistency-matters)
 
 # ───── Target system — REQUIRED for /run-eval to actually execute ─────
 # Without a valid target, /run-eval will hard-stop with a clear error.
@@ -74,23 +119,38 @@ failure_modes:
   - "Failure Mode 2: e.g., off-topic responses"
 
 # The evaluation metrics and criteria
+# Each metric has a `grader_type` — pick deterministic where possible (Anthropic
+# Step 5: "We recommend choosing deterministic graders where possible, LLM
+# graders where necessary, and using human graders judiciously for additional
+# validation").
 metrics:
   - name: "Accuracy"
     description: "Does the response contain factual errors?"
     type: "boolean"
+    grader_type: "code"          # code | model | human
     pass_bar: "true"
   - name: "Relevance"
     description: "Does the response directly address the user's query?"
-    type: "score"  # score: 1-5
+    type: "score"                # score: 1-5
+    grader_type: "model"         # an LLM judges this on a rubric
     pass_bar: ">= 4"
 
-# The test cases or scenarios
-test_cases:
-  - id: "test-case-1"
-    severity: "P0"   # P0 blocks release; P1 opens issue; P2 trends only
+# Tasks (a.k.a. test_cases — both keys are accepted; `tasks` is canonical)
+# Anthropic Step 3: "Build balanced problem sets" — include both cases where
+# a behavior should occur AND where it shouldn't (use `negative_case: true`).
+tasks:
+  - id: "task-1"
+    severity: "P0"               # P0 blocks release; P1 opens issue; P2 trends only
+    purpose: "capability"        # capability | regression — overrides suite-level
+    negative_case: false         # true = behavior should NOT occur on this input
     description: "Scenario 1: e.g., User asks a complex question."
     input: "User query here..."
     expected_behavior: "Expected response or behavior here..."
+    reference_solution: |
+      A known working output that passes all graders. Anthropic Step 2:
+      "It's useful to create a reference solution: a known working output
+      that passes all graders. This proves the task is solvable and verifies
+      graders are correctly configured."
     metrics:
       - "Accuracy"
       - "Relevance"
