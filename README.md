@@ -30,11 +30,19 @@ If you just installed pmstack, run this once. It's the only command you need to 
 |---|---|---|---|
 | `/onboarding` | "I just installed pmstack. Where do I start?" | A 7-step interactive tutorial running every capability in this README, with comparison links to the bundled walkthrough so you can see what good looks like | CLI · web · desktop |
 
+### Prefer to browse first?
+
+- [examples/walkthrough-code-review/](./examples/walkthrough-code-review/) — the full set of artifacts a PM produced over a realistic week working on an "AI code review" feature. Twelve files, all referencing each other.
+- [examples/walkthrough-compare-tools/](./examples/walkthrough-compare-tools/) — what `/compare` produces (Cursor vs Windsurf).
+- [examples/inputs/README.md](./examples/inputs/README.md) — every command's example input, copy-pasteable.
+
 ---
 
 ## What you get
 
 Thirteen more capabilities, organized in four layers — ordered the way they stitch together. Spec creation is upstream, measurement comes next, communicate & orchestrate packages the work, and routines sit on top to give you the operating discipline. Each command produces a real markdown or YAML artifact (or, on web/desktop, an inline block you can copy).
+
+**Don't try to memorize all 14.** Run `/onboarding` once — it walks the whole stack with a real signal and produces a complete artifact set you can compare to the bundled examples.
 
 &nbsp;
 
@@ -105,16 +113,6 @@ pmstack is a layered PM operating system, not a collection of utilities. Each la
 - **Communicate & orchestrate** packages the work for stakeholders (`/brief`) and chains the upstream skills in the right order (`/sprint` runs PRD → metrics → eval → brief with confirmation gates).
 - **Routines** sit on top of all three layers and add the operating discipline. `/premortem` hardens a spec before it ships. `/launch-readiness` gates the launch. `/eval-drift` watches the feature after launch. `/lint` keeps the workspace clean as your artifact corpus grows. `/weekly` makes you check your own thinking. **Most PM tooling stops at the artifact layer; pmstack ships the operating layer too. That's the AI-Director difference.**
 
-A typical week, end to end: a customer signal arrives → `/prd` translates it → `/premortem` stress-tests the spec → `/sprint` chains metrics, eval, and brief → `/launch-readiness` gates the ship → `/eval-drift` watches it after launch. Meanwhile `/lint` keeps your workspace tidy and `/weekly` captures what changed in your thinking. The full week, with all 12 artifacts, lives in [examples/walkthrough-code-review/](./examples/walkthrough-code-review/).
-
-**Don't try to memorize all 14.** Run `/onboarding` once — it walks the whole stack with a real signal and produces a complete artifact set you can compare to the bundled examples.
-
-### Prefer to browse first?
-
-- [examples/walkthrough-code-review/](./examples/walkthrough-code-review/) — the full set of artifacts a PM produced over a realistic week working on an "AI code review" feature. Twelve files, all referencing each other.
-- [examples/walkthrough-compare-tools/](./examples/walkthrough-compare-tools/) — what `/compare` produces (Cursor vs Windsurf).
-- [examples/inputs/README.md](./examples/inputs/README.md) — every command's example input, copy-pasteable.
-
 ---
 
 ## Install
@@ -146,6 +144,12 @@ git clone https://github.com/RyanAlberts/pmstack.git && cd pmstack
 For non-Claude tools, see [docs/using-other-tools.md](./docs/using-other-tools.md) — the skills are plain markdown, paste them into `.cursorrules`, a Custom GPT, or a system prompt.
 
 </details>
+
+---
+
+## A week with pmstack
+
+A typical week, end to end: a customer signal arrives → `/prd` translates it → `/premortem` stress-tests the spec → `/sprint` chains metrics, eval, and brief → `/launch-readiness` gates the ship → `/eval-drift` watches it after launch. Meanwhile `/lint` keeps your workspace tidy and `/weekly` captures what changed in your thinking. The full week, with all 12 artifacts, lives in [examples/walkthrough-code-review/](./examples/walkthrough-code-review/).
 
 ---
 
