@@ -1,6 +1,8 @@
 # pmstack
 
-**A PM toolkit that runs inside Claude.** Turn customer signals into outcomes like I do @AWS - delegate your work to AI agents as Routines or run commands on demand: run pre-mortems, stress-test launches, monitor your AI feature for drift, and write the Monday memo — all from one consistent set of commands you type into Claude (terminal, browser, desktop, or mobile).
+**A PM toolkit that runs inside the browser (web app), desktop (claude app), or mobile Claude app, as well as the terminal.** It is built to bridge the gap between non-technical PMs and AI fluency. Part learning playground, part tactical skillset. All-in-one.
+
+Turn customer signals into outcomes like I do @AWS - delegate your work to AI agents as Routines or run commands on demand: run pre-mortems, stress-test launches, monitor your AI feature for drift, and write the Monday memo — all from one consistent set of commands you type into Claude (terminal, browser, desktop, or mobile).
 
 **Brand new?** → `/onboarding` walks you through every capability with a runnable example. Skip the rest of this README until you've done it once.
 
