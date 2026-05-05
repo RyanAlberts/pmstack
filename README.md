@@ -1,6 +1,6 @@
 # pmstack
 
-**A PM toolkit that runs inside the browser, desktop, or mobile Claude app, as well as the terminal.** It is built to bridge the gap between non-technical PMs and AI fluency. Part learning playground, part tactical skillset. All-in-one.
+**A PM toolkit that runs inside the browser, desktop, or mobile Claude app, as well as the terminal.** I built it to give Product Managers a path to AI fluency...irrespective of your technical fluency today. Learn by building. Part learning playground, part tactical skillset. All-in-one.
 
 Turn customer signals into outcomes like I do @AWS - delegate your work to AI agents as Routines or run commands on demand: run pre-mortems, stress-test launches, monitor your AI feature for drift, and write the Monday memo — all from one consistent set of commands you type into Claude (terminal, browser, desktop, or mobile).
 
