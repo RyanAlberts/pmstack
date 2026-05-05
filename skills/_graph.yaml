@@ -59,6 +59,34 @@ edges:
       - skill: eval
         glob: "outputs/eval-*.yaml"
         when: "input — the eval design to execute"
+    feeds_to:
+      - transcript-review
+
+  # /vibe-test is the layer-1 ritual — read transcripts before writing the eval.
+  # Implements Anthropic Steps 0–1 (Demystifying Evals for AI Agents).
+  vibe-test:
+    reads_from:
+      - skill: any
+        glob: "outputs/transcripts/**"
+        when: "if a transcripts/ folder exists locally, sample from it"
+      - skill: prd
+        glob: "outputs/prd-*.md"
+        when: "PRD provides the 'what should this do' frame"
+    feeds_to:
+      - eval
+
+  # /transcript-review is the post-run companion — Anthropic Step 6.
+  # Walks every failed trial asking: model mistake, grader mistake, or task-spec error?
+  transcript-review:
+    reads_from:
+      - skill: run-eval
+        glob: "outputs/eval-runs/*/summary.md"
+        when: "input — the run summary to triage"
+      - skill: run-eval
+        glob: "outputs/eval-runs/*/cases/*.json"
+        when: "per-trial detail for the diagnostic walk"
+    feeds_to:
+      - eval        # rubric + task updates feed back into /eval
 
   # ───── Default routines (v0.5+) ─────
 
