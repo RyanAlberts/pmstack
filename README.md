@@ -69,7 +69,7 @@ If you just installed pmstack, run this once. It's the only command you need to 
 
 ## What's an eval? 
 
-An **eval** is the test suite for an AI feature - it's how we evaluate non-deterministic systems like LLMs, agents, and agentic systems. You define inputs ("what a real user might say") and what success looks like, then run these inputs through your AI system and score the results. The measurement appartus including the tests are the evals. Consider them the unit and integration tests of traditional software development. 
+An **eval** is the test suite for an AI feature - it's how we evaluate non-deterministic systems like LLMs, agents, and agentic systems. You define inputs ("what a real user might say") and what success looks like, then run these inputs through your AI system and score the results. This repo abstracts the measurement appartus in the same way that you depend on your engineering team to write unit and integration tests in traditional software development. 
 
 [From Anthropic] "An evaluation (“eval”) is a test for an AI system: give an AI an input, then apply grading logic to its output to measure success." 
 
