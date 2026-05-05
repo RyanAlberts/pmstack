@@ -2,7 +2,7 @@
 
 **A PM toolkit that runs inside the browser, desktop, or mobile Claude app, as well as the terminal.** I built it to give Product Managers a path to AI fluency...irrespective of your technical fluency today. Learn by building. Part learning playground, part tactical skillset. All-in-one.
 
-Turn customer signals into outcomes like I do @AWS - delegate your work to AI agents as Routines or run commands on demand: run pre-mortems, stress-test launches, monitor your AI feature for drift, and write the Monday memo — all from one consistent set of commands you type into Claude (terminal, browser, desktop, or mobile).
+Turn customer signals into outcomes like I do @AWS - delegate your work to AI agents as Routines or run commands on demand: run evals like an ML engineer. Schedule pre-mortems, stress-test launches, monitor your AI feature for drift, and write the Monday memo — all from one consistent set of commands you type into Claude (terminal, browser, desktop, or mobile).
 
 **Brand new?** → `/onboarding` walks you through every capability with a runnable example. Skip the rest of this README until you've done it once.
 
