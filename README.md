@@ -37,7 +37,7 @@ If you just installed pmstack, run this once. It's the only command you need to 
 
 ## What you get
 
-Thirteen more capabilities, organized in four layers — ordered the way they stitch together. Spec creation is upstream, measurement comes next, communicate & orchestrate packages the work, and routines sit on top to give you the operating discipline. Each command produces a real markdown or YAML artifact (or, on web/desktop, an inline block you can copy).
+Thirteen capabilities that package a task to delegate to AI. The logical flow is from Spec creation -> measurement -> communicate & orchestrate, with Routines to give you the operating discipline. Each command produces a real markdown or YAML artifact (or, on web/desktop, an inline block you can copy).
 
 **Don't try to memorize all 14.** Run `/onboarding` once — it walks the whole stack with a real signal and produces a complete artifact set you can compare to the bundled examples.
 
