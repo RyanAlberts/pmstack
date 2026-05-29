@@ -1,0 +1,144 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# pmstack EVAL — Support-Ticket Triage (RUNNABLE DEMO)
+#
+# WHAT THIS IS
+#   A complete, runnable eval you can execute in ~1 minute with nothing but your
+#   existing Claude session. The "AI feature under test" is a real Claude model
+#   given a deliberately naive triage prompt — the kind a PM writes on the first
+#   try. Each test case is a PROBE for a known AI failure mode. The eval tells
+#   you, with evidence, which probes the prompt actually trips.
+#
+# HOW TO RUN IT (this is the demo)
+#   bin/run-eval.py examples/eval-target-demo/triage-eval.yaml \
+#       --judge-model claude-sonnet-4-6 --yes
+#
+#   COST: ~$0.05–0.20 for the full 8-case run (Haiku target + Sonnet judge).
+#   Tip: run `--only clear-outage` first to spend a penny and confirm the loop.
+#
+# THE LESSON (and it is NOT "watch the AI fail")
+#   When the author first ran this, every prediction was wrong. The naive prompt
+#   CAUGHT the disguised-security ticket (routed it to Security, not Billing) —
+#   the case built to embarrass it. Meanwhile the "easy" billing case tripped:
+#   the model rated a routine double-charge as HIGH urgency. Over-escalation? Or
+#   a too-strict spec? That question — model mistake vs. spec mistake — is what
+#   /transcript-review answers, and it's the real job.
+#
+#   Your intuition about where AI breaks is unreliable. That is *why* evals exist.
+#
+# THE MOST RELIABLE THING TO WATCH
+#   The three `consistency-*` cases are the SAME ticket, three times. If the
+#   category or urgency flips between them, that's non-determinism (pass^k) — the
+#   failure a feature flag can never show you, and the one customers feel.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: "Eval Suite: Support-Ticket Triage (demo)"
+description: >
+  A live claude-session target running a naive triage prompt: read a customer
+  message, output {category, urgency} as JSON. The suite grades routing and
+  urgency with an LLM judge against stated expected behavior, plus a
+  deterministic length check. Each case probes a specific failure mode.
+
+capabilities:
+  - "Route a support ticket to the right team (Billing / Technical / Account / Security)"
+  - "Assign an urgency (Low / Medium / High) that reflects real business impact"
+
+failure_modes:
+  - id: fm-1
+    severity: P0
+    desc: "Surface keywords (a charge, a plan change) mislead routing away from a real security/account-takeover incident."
+  - id: fm-2
+    severity: P1
+    desc: "Tone misread: urgency under-rated when the customer is sarcastic rather than explicit."
+  - id: fm-3
+    severity: P1
+    desc: "Over-escalation: a low-priority request is rated urgent because it contains the word 'urgent'."
+  - id: fm-4
+    severity: P1
+    desc: "Non-determinism: identical inputs get different answers (poor pass^k)."
+  - id: fm-5
+    severity: P1
+    desc: "Urgency miscalibration: routine issues rated too high (or too low)."
+
+# The AI feature under test: a real Claude model + a deliberately naive prompt.
+target:
+  type: claude-session
+  model: claude-haiku-4-5-20251001
+  system_prompt: |
+    You are a support-ticket triage assistant. Read the customer's message and
+    classify it. Respond with ONLY a compact JSON object and no other text:
+    {"category": "<Billing|Technical|Account|Security>", "urgency": "<Low|Medium|High>"}
+    Pick the category that matches the main topic of the message.
+
+metrics:
+  - name: routed_correctly
+    type: pass_rate
+    grader_type: model        # judged: does category match expected_behavior?
+    description: "Judge true/false — does the predicted category match the correct routing in expected_behavior (accepting any option it marks acceptable)?"
+    pass_bar: "true"
+    failure_modes_covered: [fm-1, fm-4]
+  - name: urgency_correct
+    type: pass_rate
+    grader_type: model        # judged: does urgency match expected_behavior?
+    description: "Judge true/false — does the predicted urgency fall in the acceptable range stated in expected_behavior?"
+    pass_bar: "true"
+    failure_modes_covered: [fm-2, fm-3, fm-5]
+  - name: response_concise
+    type: tokens              # deterministic: scored without a judge
+    grader_type: code
+    description: "Output should be a short JSON object, not prose. Deterministic length check."
+    pass_bar: "<= 80"
+
+test_cases:
+  # CONTROL — an unambiguous ticket the system should get right.
+  - id: clear-outage
+    severity: P2
+    input: "Your API has been returning 500 errors on every call since about 9am. Our integration is completely down."
+    expected_behavior: "Unambiguous technical outage. Correct category: Technical. Urgency: High (production is down). This is the control — if this fails, something is badly wrong."
+    metrics: [routed_correctly, urgency_correct, response_concise]
+
+  # PROBE fm-5 — urgency calibration on a routine issue.
+  - id: routine-billing-calibration
+    severity: P2
+    input: "I was charged twice for my subscription this month. Can you refund the duplicate?"
+    expected_behavior: "Category is clearly Billing. Urgency is a calibration test: Low or Medium are both defensible (financial, but nothing is broken or unsafe and it's reversible). High = over-escalation of a routine issue — mark urgency_correct false if urgency is High."
+    metrics: [routed_correctly, urgency_correct, response_concise]
+
+  # PROBE fm-1 — do surface keywords mislead routing? (Author expected a fail here; the model passed. Run it yourself.)
+  - id: disguised-security
+    severity: P0
+    input: "Hey — I got an email saying my plan was upgraded and my password was changed, but I didn't do either. There's also a login from a country I've never been to. Did you charge me for the upgrade?"
+    expected_behavior: "The correct routing is Security (account takeover); the charge/plan wording is a red herring. Correct category: Security. Urgency: High. Mark routed_correctly true only if category is Security."
+    metrics: [routed_correctly, urgency_correct, response_concise]
+
+  # PROBE fm-2 — does sarcasm hide real urgency?
+  - id: sarcasm-hidden-urgency
+    severity: P1
+    input: "Oh, fantastic. The dashboard is down AGAIN, right in the middle of our board demo. Really loving the reliability today."
+    expected_behavior: "Sarcasm masks a real, urgent outage. Correct category: Technical. Urgency: High. Mark urgency_correct true only if urgency is High."
+    metrics: [routed_correctly, urgency_correct, response_concise]
+
+  # PROBE fm-3 — negative case: does the word 'urgent' trigger over-escalation?
+  - id: urgent-word-trap
+    severity: P1
+    input: "No rush at all, but it would eventually be urgent for us to get a dark-mode option. Just logging the request for whenever you get to it."
+    expected_behavior: "Low-urgency feature request. The word 'urgent' is a red herring — the customer explicitly says 'no rush.' Urgency must be Low; mark urgency_correct false if it is Medium or High. Category Technical or Account both acceptable."
+    metrics: [routed_correctly, urgency_correct, response_concise]
+
+  # PROBE fm-4 — the same ticket, three times. Watch for inconsistency (pass^k).
+  - id: consistency-borderline-1
+    severity: P1
+    input: "I can't get into my account and I think it's because my last payment didn't go through."
+    expected_behavior: "Genuinely ambiguous: Account (can't log in) and Billing (payment failed) are BOTH acceptable — mark routed_correctly true for either. Urgency: Medium acceptable (Low or High also defensible). Duplicated 3x to test whether identical inputs get identical answers."
+    metrics: [routed_correctly, urgency_correct, response_concise]
+
+  - id: consistency-borderline-2
+    severity: P1
+    input: "I can't get into my account and I think it's because my last payment didn't go through."
+    expected_behavior: "Same input as consistency-borderline-1. Account or Billing both acceptable; urgency Low/Medium/High all defensible (it's ambiguous). The real signal is whether the ANSWER matches the other two identical inputs."
+    metrics: [routed_correctly, urgency_correct, response_concise]
+
+  - id: consistency-borderline-3
+    severity: P1
+    input: "I can't get into my account and I think it's because my last payment didn't go through."
+    expected_behavior: "Same input again. Account or Billing both acceptable; any urgency defensible. If the three identical inputs produce different categories, that non-determinism is what a PM must design around (pass^k)."
+    metrics: [routed_correctly, urgency_correct, response_concise]
