@@ -18,6 +18,8 @@ It's a set of commands you run inside Claude — terminal *or* phone, no code. T
 
 That's the wedge. The PRDs, voice-of-customer synthesis, and stakeholder briefs are table stakes — every AI writes those. **An eval a PM can actually run is the part nobody else ships.**
 
+**Where do you stand?** Take the 2-minute [Eval-Readiness check](https://ryanalberts.github.io/pmstack/eval-readiness/) — 8 questions, no email, instant score. Most PMs find out they're shipping on vibes.
+
 **Brand new?** Run `/onboarding` once — it walks the whole stack on a real example, start to finish. If it earns a place in your workflow, star the repo so you can find your way back.
 
 ---

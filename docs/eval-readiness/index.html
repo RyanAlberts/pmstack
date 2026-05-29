@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Can you tell when your AI feature gets worse? — AI PM Eval-Readiness Check</title>
+<meta name="description" content="A 2-minute check: can you actually prove your AI feature is good — and catch it the week it degrades? Score your eval-readiness as an AI PM.">
+<meta property="og:title" content="Can you tell when your AI feature gets worse?">
+<meta property="og:description" content="The 2-minute AI PM Eval-Readiness check. Most PMs ship AI features they can't measure. Find out where you stand.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#11151f; --line:#222a39; --ink:#e6e9ef; --mut:#8b95a7;
+    --acc:#5eead4; --acc2:#7dd3fc; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--acc2)}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 20px 80px}
+  .kick{font:600 13px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+  h1{font-size:30px;line-height:1.15;margin:14px 0 8px;letter-spacing:-.01em}
+  .sub{color:var(--mut);font-size:17px;margin:0 0 8px}
+  .meta{color:var(--mut);font:500 13px/1.4 var(--mono);margin-top:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 20px 8px;margin:18px 0}
+  .q{font-weight:600;margin:0 0 12px;font-size:16px}
+  .q .n{color:var(--acc);font:600 13px var(--mono);margin-right:8px}
+  .opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin:8px 0;cursor:pointer;transition:.12s}
+  .opt:hover{border-color:#3a455c;background:#0e1320}
+  .opt input{margin-top:3px;accent-color:var(--acc)}
+  .opt.sel{border-color:var(--acc);background:#0f1a1c}
+  .opt span{flex:1}
+  button{font:600 15px/1 inherit;cursor:pointer;border-radius:10px;border:1px solid var(--acc);background:var(--acc);color:#06231f;padding:14px 20px;transition:.12s}
+  button:hover{filter:brightness(1.06)}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+  .bar{position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--bg) 38%);padding:18px 0 6px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .prog{flex:1;min-width:140px;height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+  .prog>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:.25s}
+  .progtxt{font:600 13px var(--mono);color:var(--mut);white-space:nowrap}
+  #result{display:none}
+  .score{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .ring{--p:0;width:118px;height:118px;border-radius:50%;flex:0 0 118px;
+    background:conic-gradient(var(--acc) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center}
+  .ring>i{width:92px;height:92px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font:700 28px/1 var(--mono)}
+  .tier{font-size:24px;font-weight:700;margin:0}
+  .diag{color:var(--mut);margin:6px 0 0}
+  .gap{border-left:3px solid var(--acc);padding:4px 0 4px 14px;margin:18px 0}
+  code{font:600 13px var(--mono);background:#0e1320;border:1px solid var(--line);border-radius:6px;padding:2px 6px;color:var(--acc)}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .foot{color:var(--mut);font-size:13px;margin-top:34px;border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kick">AI PM · Eval-Readiness Check</div>
+  <h1>Can you tell when your AI feature gets worse?</h1>
+  <p class="sub">Most PMs ship AI features they can't actually measure — then find out from churned users. Eight questions. Two minutes. No email.</p>
+  <p class="meta">answer honestly — the result is only useful if you do</p>
+
+  <form id="quiz"></form>
+
+  <div class="bar">
+    <div class="prog"><i id="progfill"></i></div>
+    <span class="progtxt" id="progtxt">0 / 8</span>
+    <button id="scoreBtn" disabled>Score me</button>
+  </div>
+
+  <section id="result" class="card">
+    <div class="score">
+      <div class="ring" id="ring"><i id="ringnum">0</i></div>
+      <div>
+        <p class="tier" id="tier"></p>
+        <p class="diag" id="diag"></p>
+      </div>
+    </div>
+    <div class="gap" id="gapBox"></div>
+    <div class="cta">
+      <button id="shareBtn">Copy my result</button>
+      <a id="tweetBtn" style="text-decoration:none"><button class="ghost">Post it on X</button></a>
+      <a href="https://github.com/RyanAlberts/pmstack" style="text-decoration:none"><button>Get the toolkit &rarr;</button></a>
+    </div>
+    <p class="diag" id="copied" style="margin-top:10px"></p>
+  </section>
+
+  <p class="foot">
+    Built on <a href="https://github.com/RyanAlberts/pmstack">pmstack</a> — the eval toolkit for PMs.
+    <code>/eval</code> is a command, not a course. This page runs entirely in your browser: no tracking, no email, nothing leaves your device.
+  </p>
+</div>
+
+<script>
+"use strict";
+// One source of truth. Each question maps to the pmstack command that closes the gap.
+const SHARE_URL = "https://ryanalberts.github.io/pmstack/eval-readiness/"; // the live quiz — sharing it drives others to take it too
+const Q = [
+  { t:"Does your most important AI feature have a written eval — a test suite you can re-run?",
+    cmd:"/eval", fix:"Turn that feature into a runnable suite — tasks, graders, and a pass bar.",
+    o:[["No — we try it manually",0],["A doc of examples, nothing runnable",1],["Yes, but it's stale",2],["Yes — runnable and current",3]] },
+  { t:"When the underlying model or provider updates, how do you find out if your feature got worse?",
+    cmd:"/eval-drift", fix:"Schedule a weekly drift watch that re-runs your suite and flags regressions.",
+    o:[["Our users tell us",0],["We notice eventually in product metrics",1],["Someone spot-checks it",2],["An eval re-runs and flags it automatically",3]] },
+  { t:"Do you measure whether it works every time — or just that it can work?",
+    cmd:"/run-eval", fix:"Track pass^k: success across k runs, not one lucky pass.",
+    o:[["We check it works once",0],["We try a few times informally",1],["We track a pass rate",2],["We track pass^k and gate on it",3]] },
+  { t:"For every “the AI should do X” check, do you have a “the AI should NOT do X” check?",
+    cmd:"/eval", fix:"Add negative cases — Anthropic's balanced-set rule, built in by default.",
+    o:[["We don't think in those terms",0],["Happy-path checks only",1],["Some negative cases",2],["Balanced positive + negative by design",3]] },
+  { t:"Who decides an AI feature is good enough to ship — and on what evidence?",
+    cmd:"/launch-readiness", fix:"Gate launches on a pre-agreed evidence bar (GO / NO-GO).",
+    o:[["We ship and watch",0],["PM gut + a demo",1],["Eng signs off",2],["A pre-agreed eval bar with a number",3]] },
+  { t:"When trials fail, what do you actually look at?",
+    cmd:"/transcript-review", fix:"Read the failing transcripts and classify each: model, grader, or task-spec error.",
+    o:[["We don't see individual failures",0],["Aggregate metrics only",1],["We skim a few examples",2],["We read transcripts and classify the failure",3]] },
+  { t:"How are your evals graded?",
+    cmd:"/eval", fix:"Use the right grader per task: code, model-as-judge, or human SME.",
+    o:[["We eyeball the output",0],["One person's judgment",1],["A rubric a human applies",2],["A mix of code / model / human graders",3]] },
+  { t:"In a launch review, could you answer “what's the pass rate and the regression bar?” with a number today?",
+    cmd:"/run-eval", fix:"Produce a scored summary with pass rates and a tracked regression bar.",
+    o:[["No",0],["I could estimate",1],["For one feature",2],["Yes — tracked over time for key features",3]] },
+];
+const MAX = Q.length * 3;
+const TIERS = [
+  {min:0,  label:"Shipping on vibes", diag:"You're flying blind. A model update could quietly tank your feature and you'd hear about it from a churn interview, not a dashboard. The upside: this is the single highest-leverage gap in your craft to close right now."},
+  {min:30, label:"Eval-curious",      diag:"You know the vocabulary and you've felt the pain — but there's no system yet. You're one workflow away from being the PM in the room who can actually answer “is it good?”"},
+  {min:55, label:"Eval-literate",     diag:"You measure. The gaps now are the subtle ones that separate good from rigorous: consistency (pass^k), negative cases, and reading the transcripts instead of the averages."},
+  {min:80, label:"Eval-fluent",       diag:"You're the PM other PMs should be copying — you ship AI features you can prove are good and catch the week they aren't. Rare. Hold the bar."},
+];
+function tierFor(pct){ let t = TIERS[0]; for (const x of TIERS){ if (pct >= x.min) t = x; } return t; }
+
+function el(tag, attrs, kids){
+  const n = document.createElement(tag);
+  if (attrs) for (const k in attrs){ if (k === "class") n.className = attrs[k]; else if (k === "for") n.htmlFor = attrs[k]; else n.setAttribute(k, attrs[k]); }
+  (kids || []).forEach(c => n.appendChild(typeof c === "string" ? document.createTextNode(c) : c));
+  return n;
+}
+
+const form = document.getElementById("quiz");
+Q.forEach((q, i) => {
+  const card = el("div", {class:"card"});
+  card.appendChild(el("p", {class:"q"}, [ el("span", {class:"n"}, ["Q" + (i+1)]), q.t ]));
+  q.o.forEach((opt, j) => {
+    const id = "q" + i + "_" + j;
+    const inp = el("input", {type:"radio", id:id, name:"q"+i, value:String(opt[1])});
+    const lab = el("label", {class:"opt", for:id}, [ inp, el("span", null, [opt[0]]) ]);
+    inp.addEventListener("change", () => {
+      [...card.querySelectorAll(".opt")].forEach(o => o.classList.remove("sel"));
+      lab.classList.add("sel");
+      update();
+    });
+    card.appendChild(lab);
+  });
+  form.appendChild(card);
+});
+
+const scoreBtn = document.getElementById("scoreBtn");
+function answered(){ let n = 0; for (let i=0;i<Q.length;i++){ if (form.querySelector('input[name="q'+i+'"]:checked')) n++; } return n; }
+function update(){
+  const n = answered();
+  document.getElementById("progfill").style.width = (n / Q.length * 100) + "%";
+  document.getElementById("progtxt").textContent = n + " / " + Q.length;
+  scoreBtn.disabled = n < Q.length;
+}
+
+scoreBtn.addEventListener("click", () => {
+  let sum = 0, lowIdx = 0, lowVal = 99;
+  for (let i=0;i<Q.length;i++){
+    const v = +form.querySelector('input[name="q'+i+'"]:checked').value;
+    sum += v;
+    if (v < lowVal){ lowVal = v; lowIdx = i; }
+  }
+  const pct = Math.round(sum / MAX * 100);
+  const tier = tierFor(pct);
+  document.getElementById("ring").style.setProperty("--p", pct);
+  document.getElementById("ringnum").textContent = pct;
+  document.getElementById("tier").textContent = tier.label + " · " + pct + "/100";
+  document.getElementById("diag").textContent = tier.diag;
+  const gap = document.getElementById("gapBox");
+  gap.replaceChildren(
+    el("b", null, ["Your highest-leverage gap: "]),
+    document.createTextNode(Q[lowIdx].fix + "  →  run "),
+    el("code", null, [Q[lowIdx].cmd])
+  );
+  const line = "I scored " + pct + "/100 on the AI PM Eval-Readiness check — “" + tier.label + ".” Can you tell when YOUR AI feature gets worse? " + SHARE_URL;
+  document.getElementById("shareBtn").onclick = async () => {
+    try { await navigator.clipboard.writeText(line); document.getElementById("copied").textContent = "Copied — paste it anywhere."; }
+    catch (e) { document.getElementById("copied").textContent = line; }
+  };
+  document.getElementById("tweetBtn").href = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(line);
+  const res = document.getElementById("result");
+  res.style.display = "block";
+  res.scrollIntoView({behavior:"smooth", block:"start"});
+});
+update();
+</script>
+</body>
+</html>
