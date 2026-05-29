@@ -2,6 +2,13 @@
 
 ### Everyone says PMs need to learn evals. Nobody shipped the tool. So I did.
 
+> [!TIP]
+> ### Can you tell when your AI feature gets worse?
+> **[Take the 2-minute Eval-Readiness check →](https://ryanalberts.github.io/pmstack/eval-readiness/)** &nbsp; · &nbsp; 8 questions · no email · instant score.
+> Most PMs find out they're shipping on vibes — then it names the one gap to fix first.
+
+---
+
 An **eval** is how you prove an AI feature is actually good — and *stays* good after the next model update. In 2025 it became the line between a real AI PM and one who ships and hopes (OpenAI's CPO, Lenny, and a16z all said as much). But every eval tool is built for ML engineers: dashboards, SDKs, CI pipelines. **pmstack is the one a PM runs.** Here, `/eval` is a command — not a $2,000 course.
 
 It's a set of commands you run inside Claude — terminal *or* phone, no code. The eval lifecycle is the core; the rest of your PM workflow (PRDs, competitive teardowns, launch-readiness gates, the Monday memo) rides along in the same place.
@@ -17,8 +24,6 @@ It's a set of commands you run inside Claude — terminal *or* phone, no code. T
 → a runnable eval YAML: tasks, graders (code / model / human), negative cases, and the **pass^k** bar you'd gate a launch on. [See a full one ›](./examples/walkthrough-code-review/eval-code-review-2026-05-06.yaml) Then `/run-eval` scores it against the real system and flags the week it regresses.
 
 That's the wedge. The PRDs, voice-of-customer synthesis, and stakeholder briefs are table stakes — every AI writes those. **An eval a PM can actually run is the part nobody else ships.**
-
-**Where do you stand?** Take the 2-minute [Eval-Readiness check](https://ryanalberts.github.io/pmstack/eval-readiness/) — 8 questions, no email, instant score. Most PMs find out they're shipping on vibes.
 
 **Brand new?** Run `/onboarding` once — it walks the whole stack on a real example, start to finish. If it earns a place in your workflow, star the repo so you can find your way back.
 
