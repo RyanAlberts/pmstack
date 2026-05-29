@@ -190,6 +190,67 @@ skills:
           should_ask: true
           notes: "Audience missing — skill should ask once."
 
+  - name: voc
+    command: "/voc"
+    output_glob: "outputs/voc-*.md"
+    required_sections:
+      - "Snapshot"
+      - "Themes"
+      - "Prioritization read"
+      - "Top 3 problems"
+      - "What I did NOT hear"
+      - "Recommended next step"
+    quality_rubric:
+      - dim: clustering
+        question: "Are themes the underlying problem (not feature buckets like 'the API'), and is the count a synthesized 3–7 rather than one-theme-per-signal?"
+        weight: 3
+      - dim: prioritization
+        question: "Is the ranking frequency × severity × fit (not frequency alone), shown transparently, with an explicit loudest-≠-most-important read and a silent killer flagged when one exists?"
+        weight: 3
+      - dim: prd_readiness
+        question: "Are the top-3 problem statements paste-able into /prd — verbatim quote + segment + business cost + a ready-to-run /prd line?"
+        weight: 2
+      - dim: honesty
+        question: "Does it work only from the provided signals (no invented counts/quotes/segment sizes) and flag sampling bias in 'What I did NOT hear'?"
+        weight: 2
+    test_inputs:
+      - id: voc-tc-1
+        category: golden
+        input: |
+          1. Churn interview: "Three of our biggest enterprise customers said code reviews are taking 24+ hours and devs are skipping them or merging without review. Two churned this quarter and named slow review as a top reason."
+          2. Churn interview, Northwind: "Devs wait a full day for the first pass. They've gone back to Slack. We didn't renew."
+          3. NPS detractor (3): "Reviews are fine when they show up — they don't show up fast enough to matter."
+          4. Ticket #5120: "The bot leaves 40 comments on a 20-line PR. My team mutes it."
+          5. App review (3 stars): "Half the comments are nitpicks our linter already catches."
+          6. Interview, mid-market: "A typo and a real logic bug get the same treatment. I can't tell what's urgent."
+          7. Ticket #5188: "Can we turn off the style comments? They drown the useful ones."
+          8. Slack via CSM: "Devs ignore the bot because 9 of 10 comments are noise."
+          9. Churn-risk, Acme (Enterprise, $180k ARR): "Bot approved a PR with a SQL injection. They paused rollout pending a trust review."
+          10. Interview, fintech: "It missed a hardcoded secret last week. A missed security issue is worse than ten style nits."
+          11. Ticket #5044: "GitHub check shows pending for hours and blocks our merge queue."
+          12. Sales note (lost): "CI status would hang and block merges. Dealbreaker."
+          13. Interview, platform: "On anything over ~800 lines it summarizes the first file and gives up."
+          14. Ticket #5201: "Big refactor PRs get a useless 2-line review."
+          15. App review (4 stars): "Love it for small PRs. For big monorepo changes it's basically silent."
+        expectations:
+          min_themes: 4
+          notes: "Top-ranked theme must be review-latency (severity+fit), NOT the most-frequent noisy-comments theme. Must flag missed-security as a silent killer and noisy-comments as the squeaky wheel. >=3 PRD-ready problem statements."
+      - id: voc-tc-2
+        category: edge
+        input: |
+          1. "The export button is in a weird place."
+          2. "Wish the dark mode was a bit darker."
+          3. "Sometimes the toast notification disappears too fast."
+        expectations:
+          should_recommend_prd: true
+          notes: "Fewer than 5 signals → skill should say this is /prd territory and not pad to fabricate themes."
+      - id: voc-tc-3
+        category: ambiguous
+        input: ""
+        expectations:
+          should_ask: true
+          notes: "Empty arg → skill must ask for the signals, not invent them."
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Run discipline
 # ─────────────────────────────────────────────────────────────────────────────

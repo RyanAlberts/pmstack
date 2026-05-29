@@ -6,7 +6,7 @@ Real artifacts produced by pmstack commands. Browse before you install — see i
 
 End-to-end scenarios. Every artifact a PM would produce in a realistic week, cross-referenced. The `/onboarding` tutorial uses these as comparison references.
 
-- **[walkthrough-code-review/](./walkthrough-code-review/)** — A staff PM works on an "AI code review" feature across one week. 12 artifacts: PRD, competitive scan, premortem, metrics, eval, eval run, lint, launch-readiness, brief, weekly, eval-drift, plus the decisions-log that ties them together.
+- **[walkthrough-code-review/](./walkthrough-code-review/)** — A staff PM works on an "AI code review" feature across one week. 13 artifacts: VoC synthesis, PRD, competitive scan, premortem, metrics, eval, eval run, lint, launch-readiness, brief, weekly, eval-drift, plus the decisions-log that ties them together.
 - **[walkthrough-compare-tools/](./walkthrough-compare-tools/)** — A PM compares Cursor and Windsurf for an enterprise rollout decision. 3 artifacts: comparison plan, executable eval YAML, README.
 
 ## Inputs gallery
