@@ -61,7 +61,7 @@ If you just installed pmstack, run this once. It's the only command you need to 
 
 ### Prefer to browse first?
 
-- [examples/walkthrough-code-review/](./examples/walkthrough-code-review/) — the full set of artifacts a PM produced over a realistic week working on an "AI code review" feature. Twelve files, all referencing each other.
+- [examples/walkthrough-code-review/](./examples/walkthrough-code-review/) — the full set of artifacts a PM produced over a realistic week working on an "AI code review" feature. Thirteen files, all referencing each other.
 - [examples/walkthrough-compare-tools/](./examples/walkthrough-compare-tools/) — what `/compare` produces (Cursor vs Windsurf).
 - [examples/inputs/README.md](./examples/inputs/README.md) — every command's example input, copy-pasteable.
 
@@ -111,6 +111,7 @@ Translate the noise of customer signals, competitor moves, and market gaps into 
 
 | Command template | What it answers | What you get | Where it runs |
 |---|---|---|---|
+| `/voc [paste \| attach \| --from-folder]` | "I have a pile of feedback — what's the real problem and what do I build first?" | Themes scored by frequency × severity × fit + top-3 PRD-ready problems → [example](./examples/walkthrough-code-review/voc-code-review-2026-05-04.md) | CLI · web · desktop · mobile |
 | `/prd "<a customer signal>"` | "Customer said X. What's the spec?" | A 6-section PRD draft → [example](./examples/walkthrough-code-review/prd-code-review-2026-05-05.md) | CLI · web · desktop · mobile |
 | `/competitive "<market>"` | "Who else is in this space and where's the white space?" | Landscape with positioning + white-space analysis → [example](./examples/walkthrough-code-review/competitive-ai-code-review-2026-05-05.md) | CLI · web · desktop · mobile |
 | `/compare "<product A>" "<product B>" [...]` | "Which of these should we pick — and how would we test it?" | Feature matrix + decision rules + executable eval YAML → [example](./examples/walkthrough-compare-tools/) | CLI · web · desktop · mobile |
@@ -167,7 +168,7 @@ Recurring patterns that turn pmstack from a set of one-shot commands into a PM o
 
 ## A week with pmstack
 
-A typical week, end to end: a customer signal arrives → `/prd` translates it → `/premortem` stress-tests the spec → `/sprint` chains metrics, eval, and brief → `/launch-readiness` gates the ship → `/eval-drift` watches it after launch. Meanwhile `/lint` keeps your workspace tidy and `/weekly` captures what changed in your thinking. The full week, with all 12 artifacts, lives in [examples/walkthrough-code-review/](./examples/walkthrough-code-review/).
+A typical week, end to end: a pile of customer signals lands → `/voc` synthesizes it and surfaces the problem that matters most → `/prd` translates that problem into a spec → `/premortem` stress-tests it → `/sprint` chains metrics, eval, and brief → `/launch-readiness` gates the ship → `/eval-drift` watches it after launch. Meanwhile `/lint` keeps your workspace tidy and `/weekly` captures what changed in your thinking. The full week, with all 13 artifacts, lives in [examples/walkthrough-code-review/](./examples/walkthrough-code-review/).
 
 ---
 

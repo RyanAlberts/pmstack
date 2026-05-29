@@ -44,6 +44,7 @@ Pass each skill folder to the Skills system per the [SDK docs](https://www.anthr
 
 | Folder | What it does |
 |---|---|
+| `pmstack-voc/` | Synthesize many raw signals into ranked, PRD-ready problems (the step before a PRD) |
 | `pmstack-prd/` | Turn a customer quote into a PRD draft |
 | `pmstack-competitive/` | Market positioning + white-space analysis |
 | `pmstack-compare/` | Feature-by-feature comparison across products |

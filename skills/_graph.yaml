@@ -11,15 +11,31 @@
 #
 # Edit if you want to change the canonical PM workflow.
 
-version: 0.5.0
+version: 0.6.0
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Skill graph — for each skill, what prior outputs help it do better work
 # ─────────────────────────────────────────────────────────────────────────────
 edges:
-  # /prd reads /competitive output if present (positioning informs problem framing)
+  # /voc is the front of the funnel — synthesizes many raw signals into ranked
+  # problems, then hands the #1 problem statement to /prd.
+  voc:
+    reads_from:
+      - skill: competitive
+        glob: "outputs/competitive-*.md"
+        when: "if a positioning analysis exists for this market, use it to judge strategic fit of each theme"
+      - skill: prd
+        glob: "outputs/prd-*.md"
+        when: "if a theme is already specced, mark it [already in PRD] instead of re-surfacing as net-new"
+    feeds_to:
+      - prd  # the top-ranked problem statement is formatted to paste straight into /prd
+
+  # /prd reads /voc (the chosen problem) and /competitive output if present
   prd:
     reads_from:
+      - skill: voc
+        glob: "outputs/voc-*.md"
+        when: "if a VoC synthesis exists, the top-ranked problem statement is the signal — use it verbatim for the Problem Statement"
       - skill: competitive
         glob: "outputs/competitive-*.md"
         when: "if a positioning analysis exists for this market, use it for the Target Audience section"
