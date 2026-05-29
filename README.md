@@ -6,7 +6,7 @@ An **eval** is how you prove an AI feature is actually good — and *stays* good
 
 It's a set of commands you run inside Claude — terminal *or* phone, no code. The eval lifecycle is the core; the rest of your PM workflow (PRDs, competitive teardowns, launch-readiness gates, the Monday memo) rides along in the same place.
 
-> If gstack is the engineer's setup, pmstack is the PM's — built around the one thing engineers gatekeep: knowing whether the model is any good. A feature flag won't tell you your model got quietly dumber overnight after a version bump. An eval will.
+> If gstack is the engineer's setup, pmstack is the PM's. Prove you know whether the model is any good. A feature flag won't tell you your model got quietly dumber overnight after a version bump. An eval will.
 
 **See it in 30 seconds.** Point it at any AI feature — get a real test suite, not advice:
 
