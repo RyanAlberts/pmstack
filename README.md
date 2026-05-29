@@ -1,22 +1,22 @@
 # pmstack
 
-### gstack is for engineers. pmstack is for the PM sitting next to them.
+### Everyone says PMs need to learn evals. Nobody shipped the tool. So I did.
 
-AI is quietly splitting product managers into two groups: the ones who can **prove** an AI feature is good, and the ones who ship it and hope. pmstack puts you in the first group — without writing a line of code.
+An **eval** is how you prove an AI feature is actually good — and *stays* good after the next model update. In 2025 it became the line between a real AI PM and one who ships and hopes (OpenAI's CPO, Lenny, and a16z all said as much). But every eval tool is built for ML engineers: dashboards, SDKs, CI pipelines. **pmstack is the one a PM runs.** Here, `/eval` is a command — not a $2,000 course.
 
-It's one set of commands you run inside Claude — in the terminal *or* on your phone — that turn the entire PM loop into real, repeatable artifacts: **customer signal → spec → eval → launch → drift watch.** Your eng team has unit tests for their code. Most AI features ship on vibes. pmstack is the muscle that closes that gap — and that muscle is fast becoming the whole job.
+It's a set of commands you run inside Claude — terminal *or* phone, no code. The eval lifecycle is the core; the rest of your PM workflow (PRDs, competitive teardowns, launch-readiness gates, the Monday memo) rides along in the same place.
 
-> Traditional PMs ship a feature and read the dashboard. AI PMs *also* measure how the model itself behaves — because a feature flag won't tell you your model got quietly dumber overnight after a version bump.
+> If gstack is the engineer's setup, pmstack is the PM's — built around the one thing engineers gatekeep: knowing whether the model is any good. A feature flag won't tell you your model got quietly dumber overnight after a version bump. An eval will.
 
-**See it in 30 seconds.** Paste a real customer quote, get a real spec:
+**See it in 30 seconds.** Point it at any AI feature — get a real test suite, not advice:
 
 ```
-/prd "Two enterprise accounts churned this quarter — both named slow code review as the reason."
+/eval "AI code-review bot that comments on pull requests"
 ```
 
-→ a six-section PRD: the underlying problem, MoSCoW scope, success metrics, risks. [See the full output ›](./examples/walkthrough-code-review/prd-code-review-2026-05-05.md)
+→ a runnable eval YAML: tasks, graders (code / model / human), negative cases, and the **pass^k** bar you'd gate a launch on. [See a full one ›](./examples/walkthrough-code-review/eval-code-review-2026-05-06.yaml) Then `/run-eval` scores it against the real system and flags the week it regresses.
 
-A PRD is table stakes — every AI writes one. The part nobody else hands a PM is the next move: **designing and running an eval that proves the feature works, and catches it the week it stops.** That's what the rest of this is.
+That's the wedge. The PRDs, voice-of-customer synthesis, and stakeholder briefs are table stakes — every AI writes those. **An eval a PM can actually run is the part nobody else ships.**
 
 **Brand new?** Run `/onboarding` once — it walks the whole stack on a real example, start to finish. If it earns a place in your workflow, star the repo so you can find your way back.
 
