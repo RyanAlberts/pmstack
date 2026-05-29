@@ -8,6 +8,39 @@ If you don't have a real customer signal of your own yet, **steal one of these t
 
 ## Translation skills (signal → spec)
 
+### `/voc` — synthesize a pile of signals into ranked problems
+
+The step *before* `/prd`. Paste a stack of raw feedback; get themes scored by frequency × severity × fit and the top-3 PRD-ready problems. This 15-signal set is the bundled walkthrough fixture — notice the most-*frequent* theme (noisy comments) is **not** the winner, and the rarest theme (missed security) is the silent killer.
+
+```
+/voc
+1. Churn interview: "Three of our biggest enterprise customers said code reviews are taking 24+ hours and devs are skipping them or merging without review. Two churned this quarter and named slow review as a top reason."
+2. Churn interview, Northwind: "We're paying for review automation but our devs wait a full day for the first pass. They've gone back to pinging each other on Slack. We didn't renew."
+3. NPS verbatim (detractor, 3): "The reviews are fine when they show up. The problem is they don't show up fast enough to matter."
+4. Support ticket #5120: "The bot leaves 40 comments on a 20-line PR. My team mutes it."
+5. App review (3 stars): "Half the comments are nitpicks about formatting our linter already catches."
+6. Interview, mid-market: "It comments on everything equally — a typo and a real logic bug get the same treatment. I can't tell what's urgent."
+7. Support ticket #5188: "Can we turn off the style comments? They drown the useful ones."
+8. Slack complaint via CSM: "Devs are starting to ignore the bot because 9 of 10 comments are noise."
+9. Churn-risk flag, Acme (Enterprise, $180k ARR): "Their security team found the bot approved a PR that introduced a SQL injection. They've paused rollout pending a trust review."
+10. Interview, fintech customer: "It's great at style but it missed a hardcoded secret last week. A missed security issue is worse than ten missed style nits."
+11. Support ticket #5044: "The GitHub check randomly shows pending for hours and blocks our merge queue."
+12. Sales-call note (prospect, lost): "They liked the reviews but the CI status would hang and block merges. Dealbreaker."
+13. Interview, platform team: "On anything over ~800 lines it just summarizes the first file and gives up."
+14. Support ticket #5201: "Big refactor PRs get a useless 2-line review. Small PRs are great."
+15. App review (4 stars): "Love it for small PRs. For our monorepo's big changes it's basically silent."
+```
+
+**Variations to try:**
+- Attach a CSV/markdown export of support tickets instead of pasting.
+- `/voc --from-folder outputs/transcripts/` to synthesize a folder of interview notes.
+
+**Output:** `outputs/voc-<topic>-<date>.md` — theme table + top-3 PRD-ready problems + sampling-bias note.
+
+**Reference:** [examples/walkthrough-code-review/voc-code-review-2026-05-04.md](../walkthrough-code-review/voc-code-review-2026-05-04.md)
+
+---
+
 ### `/prd` — turn a signal into a PRD
 
 ```

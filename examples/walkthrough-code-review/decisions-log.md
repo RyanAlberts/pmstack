@@ -1,5 +1,6 @@
 # Decisions log
 
+- 2026-05-04 — voc: AI code review (15 signals → 5 themes; latency #1, security = silent killer) — examples/walkthrough-code-review/voc-code-review-2026-05-04.md
 - 2026-05-05 — prd: AI Code Review v1 — examples/walkthrough-code-review/prd-code-review-2026-05-05.md
 - 2026-05-05 — competitive: AI code review market (5-player matrix) — examples/walkthrough-code-review/competitive-ai-code-review-2026-05-05.md
 - 2026-05-05 — premortem(code-review): 3 stories; mitigations 1 & 2 accepted, 3 rejected — examples/walkthrough-code-review/premortem-code-review-2026-05-05.md
