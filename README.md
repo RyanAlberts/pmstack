@@ -1,21 +1,34 @@
 # pmstack
 
-**A PM toolkit that runs inside the browser, desktop, or mobile Claude app, as well as the terminal.** I built it to give Product Managers a path to AI fluency...irrespective of your technical fluency today. Learn by building. Part learning playground, part tactical skillset. All-in-one.
+### gstack is for engineers. pmstack is for the PM sitting next to them.
 
-Turn customer signals into outcomes like I do @AWS - delegate your work to AI agents as Routines or run commands on demand: run evals like an ML engineer. Schedule pre-mortems, stress-test launches, monitor your AI feature for drift, and write the Monday memo — all from one consistent set of commands you type into Claude (terminal, browser, desktop, or mobile).
+AI is quietly splitting product managers into two groups: the ones who can **prove** an AI feature is good, and the ones who ship it and hope. pmstack puts you in the first group — without writing a line of code.
 
-**Brand new?** → `/onboarding` walks you through every capability with a runnable example. Skip the rest of this README until you've done it once.
+It's one set of commands you run inside Claude — in the terminal *or* on your phone — that turn the entire PM loop into real, repeatable artifacts: **customer signal → spec → eval → launch → drift watch.** Your eng team has unit tests for their code. Most AI features ship on vibes. pmstack is the muscle that closes that gap — and that muscle is fast becoming the whole job.
 
-If you find this repo useful, star it and help me make it better!
+> Traditional PMs ship a feature and read the dashboard. AI PMs *also* measure how the model itself behaves — because a feature flag won't tell you your model got quietly dumber overnight after a version bump.
+
+**See it in 30 seconds.** Paste a real customer quote, get a real spec:
+
+```
+/prd "Two enterprise accounts churned this quarter — both named slow code review as the reason."
+```
+
+→ a six-section PRD: the underlying problem, MoSCoW scope, success metrics, risks. [See the full output ›](./examples/walkthrough-code-review/prd-code-review-2026-05-05.md)
+
+A PRD is table stakes — every AI writes one. The part nobody else hands a PM is the next move: **designing and running an eval that proves the feature works, and catches it the week it stops.** That's what the rest of this is.
+
+**Brand new?** Run `/onboarding` once — it walks the whole stack on a real example, start to finish. If it earns a place in your workflow, star the repo so you can find your way back.
 
 ---
 
-## Who this is for
-There are two Personas. Neither is presumed to be AI-pilled. 
+## Two kinds of PM, one toolkit
 
-**Technical PM** — you live in a terminal. You want one consistent muscle memory across every PM artifact you produce. You install pmstack as slash commands inside Claude Code.
+You don't have to be "technical." You have to be able to run a command.
 
-**Non-technical PM** — you do PM work in claude.ai web, the desktop app, or on your phone. You want the same toolkit without ever opening a terminal. You install pmstack as Anthropic Skills inside your Claude account. Same skills, same outputs, no terminal.
+**Terminal PM** — you live in the shell. Install pmstack as Claude Code slash commands and get one muscle-memory across every artifact you ship.
+
+**Phone-and-browser PM** — you work in claude.ai on web, desktop, or your phone. Upload the skills to a Claude Project and the same commands fire on plain English. No terminal, ever — same commands, same outputs.
 
 ---
 
@@ -26,7 +39,7 @@ There are two Personas. Neither is presumed to be AI-pilled.
 **~30 seconds. No terminal.**
 
 1. claude.ai → **Projects** → new Project ("PM toolkit").
-2. **Settings → Skills → Upload skill** → upload each folder from [`claude-skills/`](./claude-skills/). All 14, or pick the 4–5 you'll use most.
+2. **Settings → Skills → Upload skill** → upload each folder from [`claude-skills/`](./claude-skills/). All 18, or pick the 4–5 you'll use most.
 3. Chat normally. "Write a PRD from this customer quote" auto-activates the skill; output appears inline — copy-paste anywhere.
 
 ### Path 2: Claude Code CLI (technical PMs)
@@ -69,7 +82,7 @@ If you just installed pmstack, run this once. It's the only command you need to 
 
 ## What's an eval? 
 
-An **eval** is the test suite for an AI feature - it's how we evaluate non-deterministic systems like LLMs, agents, and agentic systems. You define inputs ("what a real user might say") and what success looks like, then run these inputs through your AI system and score the results. This repo abstracts the measurement appartus in the same way that you depend on your engineering team to write unit and integration tests in traditional software development. 
+An **eval** is the test suite for an AI feature - it's how we evaluate non-deterministic systems like LLMs, agents, and agentic systems. You define inputs ("what a real user might say") and what success looks like, then run these inputs through your AI system and score the results. This repo hands you the measurement apparatus — the same way you rely on your engineering team to write unit and integration tests for traditional software. 
 
 [From Anthropic] "An evaluation (“eval”) is a test for an AI system: give an AI an input, then apply grading logic to its output to measure success." 
 
@@ -180,7 +193,7 @@ Conceptual mockup of a fresh claude.ai conversation after the user has uploaded 
 ┌──────────────────────────────────────────────────────────────────────┐
 │ Project: PM toolkit                                                  │
 │ Skills: pmstack-prd, pmstack-premortem, pmstack-launch-readiness,    │
-│         pmstack-weekly, pmstack-onboarding, ... (14 total)           │
+│         pmstack-weekly, pmstack-onboarding, ... (18 total)           │
 ├──────────────────────────────────────────────────────────────────────┤
 │                                                                      │
 │  You:    I just installed pmstack. Walk me through it.               │
@@ -289,4 +302,4 @@ Run `/onboarding`. It walks you through every routine with the bundled walkthrou
 
 ---
 
-Built by [Ryan Alberts](https://github.com/RyanAlberts) — Staff PM in Agentic AI. PRs and forks welcome.
+Built by [Ryan Alberts](https://github.com/RyanAlberts) — Staff PM in agentic AI at AWS, turning customer signals into measured outcomes for a living. pmstack even evals itself (`/eval-self`). If it makes you a sharper PM, **star it** — and send the PR that makes it better.
