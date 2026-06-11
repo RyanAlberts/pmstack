@@ -1,6 +1,6 @@
 # pmstack
 
-### Everyone says PMs need to learn evals. Nobody shipped the tool. So I did.
+### This is how you ship evals as a PM.
 
 > [!TIP]
 > ### Can you tell when your AI feature gets worse?
