@@ -21,6 +21,11 @@ It's a set of commands you run inside Claude — terminal *or* phone, no code. T
 /eval "AI code-review bot that comments on pull requests"
 ```
 
+<p align="center">
+  <img src="docs/demo.gif" alt="Terminal demo: running /eval on an AI code-review bot and getting back a runnable eval YAML with tasks, graders, and a pass^k bar" width="800">
+  <br><sub><em>A real run — the YAML shown is actual /eval output, not a mockup.</em></sub>
+</p>
+
 → a runnable eval YAML: tasks, graders (code / model / human), negative cases, and the **pass^k** bar you'd gate a launch on. [See a full one ›](./examples/walkthrough-code-review/eval-code-review-2026-05-06.yaml) Then `/run-eval` scores it against the real system and flags the week it regresses.
 
 That's the wedge. The PRDs, voice-of-customer synthesis, and stakeholder briefs are table stakes — every AI writes those. **An eval a PM can actually run is the part nobody else ships.**
@@ -49,16 +54,25 @@ You don't have to be "technical." You have to be able to run a command.
 2. **Settings → Skills → Upload skill** → upload each folder from [`claude-skills/`](./claude-skills/). All 18, or pick the 4–5 you'll use most.
 3. Chat normally. "Write a PRD from this customer quote" auto-activates the skill; output appears inline — copy-paste anywhere.
 
-### Path 2: Claude Code CLI (technical PMs)
+### Path 2: Claude Code plugin (technical PMs — recommended)
+
+**Two commands inside Claude Code. Versioned updates, clean uninstall, nothing piped to bash.**
+
+```
+/plugin marketplace add RyanAlberts/pmstack
+/plugin install pmstack@pmstack
+```
+
+Commands arrive namespaced — `/pmstack:eval`, `/pmstack:prd`, `/pmstack:weekly` — and all 18 skills auto-activate on plain English ("write a PRD from this customer quote"). Update later with `/plugin`, no re-install.
+
+<details>
+<summary>Classic copy-install (bare /eval, /prd names) / other tools (Cursor, ChatGPT, Gemini, …)</summary>
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/RyanAlberts/pmstack/main/install.sh | bash -s -- --global
 ```
 
-Installs to `~/.claude/` so `/prd`, `/eval`, `/weekly` work in any folder. Drop `--global` to install in the current folder only.
-
-<details>
-<summary>Manual install / other tools (Cursor, ChatGPT, Gemini, …)</summary>
+Installs to `~/.claude/` so the commands work in any folder under their bare names. Drop `--global` to install in the current folder only.
 
 ```bash
 git clone https://github.com/RyanAlberts/pmstack.git && cd pmstack
@@ -194,41 +208,7 @@ A typical week, end to end: a pile of customer signals lands → `/voc` synthesi
 
 ## What it looks like (claude.ai web — non-technical path)
 
-Conceptual mockup of a fresh claude.ai conversation after the user has uploaded the pmstack skills:
-
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│ Project: PM toolkit                                                  │
-│ Skills: pmstack-prd, pmstack-premortem, pmstack-launch-readiness,    │
-│         pmstack-weekly, pmstack-onboarding, ... (18 total)           │
-├──────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  You:    I just installed pmstack. Walk me through it.               │
-│                                                                      │
-│  Claude: [auto-activates pmstack-onboarding skill]                   │
-│          Welcome to pmstack. We'll walk through 9 steps using a      │
-│          realistic AI code review feature. Type 'next' to start      │
-│          with /prd.                                                  │
-│                                                                      │
-│  You:    next                                                        │
-│                                                                      │
-│  Claude: Step 2 of 9 — /prd                                          │
-│          /prd takes a customer signal and writes a PRD draft. ...    │
-│          [shows the example signal, the command, the expected        │
-│          output, and a link to the bundled example artifact]         │
-│                                                                      │
-│  You:    [pastes a real customer quote from their team]              │
-│          /prd "Half our trial users churn before they finish setup." │
-│                                                                      │
-│  Claude: [auto-activates pmstack-prd skill]                          │
-│          # PRD: Trial setup friction — 2026-05-05                    │
-│          ## Problem Statement ...                                    │
-│          [full 6-section PRD inline]                                 │
-│                                                                      │
-└──────────────────────────────────────────────────────────────────────┘
-```
-
-That's the entire UX. No terminal, no install path, no slash commands to memorize. The skills auto-activate on natural-language phrasing the user is already using.
+The demo GIF above is the terminal. On claude.ai there is no terminal at all: upload the skills to a Project once, then chat normally — *"I just installed pmstack, walk me through it"* auto-activates the onboarding skill, and *"write a PRD from this customer quote"* fires `/prd` without you typing a command. Same skills, same artifacts, inline in the conversation. No install path, no slash commands to memorize.
 
 ---
 
