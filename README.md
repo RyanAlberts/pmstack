@@ -3,7 +3,7 @@
 ### This is how you ship evals as a PM.
 
 > [!TIP]
-> ### Can you tell when your AI feature gets worse?
+> ### How do you measure the success of AI features?
 > **[Take the 2-minute Eval-Readiness check →](https://ryanalberts.github.io/pmstack/eval-readiness/)** &nbsp; · &nbsp; 8 questions · no email · instant score.
 > Most PMs find out they're shipping on vibes — then it names the one gap to fix first.
 
