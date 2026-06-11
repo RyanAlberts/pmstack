@@ -1,0 +1,15 @@
+{
+  "name": "pmstack",
+  "owner": {
+    "name": "Ryan Alberts",
+    "email": "ryan.a.alberts@gmail.com"
+  },
+  "description": "pmstack — the PM toolkit for the AI era. One plugin: the eval lifecycle plus the PM workflow around it.",
+  "plugins": [
+    {
+      "name": "pmstack",
+      "source": "./",
+      "description": "PM toolkit for the AI era — the eval lifecycle (design, run, diagnose, drift-watch) plus PRDs, VoC synthesis, launch gates, and weekly routines, as Claude Code commands and skills."
+    }
+  ]
+}
