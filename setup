@@ -54,14 +54,16 @@ run() {
 
 run mkdir -p "$COMMANDS_DIR" "$AGENT_SKILLS_DIR" "$TARGET/skills" "$TARGET/templates" "$TARGET/outputs" "$TARGET/bin" "$TARGET/docs" "$TARGET/evals/golden" "$TARGET/examples/golden"
 
-# Slash commands — required for /eval, /prd, etc. to work.
-for cmd in eval prd competitive metrics brief compare run-eval sprint eval-self; do
-  run cp "$SRC/.claude/commands/$cmd.md" "$COMMANDS_DIR/$cmd.md"
+# Slash commands — required for /eval, /prd, etc. to work. The list is the
+# directory itself, so a new command can never silently miss the installer.
+for f in "$SRC"/.claude/commands/*.md; do
+  run cp "$f" "$COMMANDS_DIR/$(basename "$f")"
 done
 
-# Skills + templates — referenced by the commands.
-for f in "$SRC"/skills/*.md; do
-  run cp "$f" "$TARGET/skills/$(basename "$f")"
+# Skills + templates — referenced by the commands. All flat files, not just
+# *.md: commands also reference skills/_graph.yaml.
+for f in "$SRC"/skills/*; do
+  [[ -f "$f" ]] && run cp "$f" "$TARGET/skills/$(basename "$f")"
 done
 for f in "$SRC"/templates/*; do
   run cp "$f" "$TARGET/templates/$(basename "$f")"
@@ -99,10 +101,43 @@ for f in "$SRC"/examples/golden/*; do
   [[ -f "$f" ]] && run cp "$f" "$TARGET/examples/golden/$(basename "$f")"
 done
 
+# examples/walkthrough-code-review/ — /onboarding walks this artifact set
+# (commands reference @examples/walkthrough-code-review/), so it ships too.
+while IFS= read -r -d '' f; do
+  rel="${f#"$SRC"/}"
+  run mkdir -p "$TARGET/$(dirname "$rel")"
+  run cp "$f" "$TARGET/$rel"
+done < <(find "$SRC/examples/walkthrough-code-review" -type f -print0)
+
 # docs/ — learn-by-doing guides for PMs new to evals etc.
 for f in "$SRC"/docs/*; do
   [[ -f "$f" ]] && run cp "$f" "$TARGET/docs/$(basename "$f")"
 done
+
+# Global install: commands and skills reference @skills/..., @templates/...,
+# `bin/run-eval.py` etc. relative to a project root. Claude Code resolves
+# @-references against the *current working directory*, so from any other
+# folder they silently fail to load. Rewrite them to absolute ~/.claude paths
+# at install time. (Project installs keep relative refs — they resolve from
+# the project root, which is where you run claude.)
+if [[ "$GLOBAL" == "1" ]]; then
+  rewrite_refs() {
+    sed -e "s|@skills/|@$TARGET/skills/|g" \
+        -e "s|@templates/|@$TARGET/templates/|g" \
+        -e "s|@evals/|@$TARGET/evals/|g" \
+        -e "s|@examples/|@$TARGET/examples/|g" \
+        -e "s|\`bin/run-eval.py|\`$TARGET/bin/run-eval.py|g" \
+        -e "s|python3 evals/runner.py|python3 $TARGET/evals/runner.py|g" \
+        -e "s|python3 evals/regression-check.py|python3 $TARGET/evals/regression-check.py|g" \
+        "$1" > "$1.pmstack-rewrite" && mv "$1.pmstack-rewrite" "$1"
+  }
+  echo "  rewriting relative @-references to $TARGET/... in installed commands + skills"
+  if [[ "$DRY_RUN" == "0" ]]; then
+    for f in "$COMMANDS_DIR"/*.md "$TARGET"/skills/*.md; do
+      [[ -f "$f" ]] && rewrite_refs "$f"
+    done
+  fi
+fi
 
 # CLAUDE.md — only at project scope, never overwrite.
 if [[ "$GLOBAL" == "0" ]]; then
