@@ -36,6 +36,14 @@ My CLAUDE.md is opinionated about communication style because that's where PMs c
 
 Same reasoning as Karpathy's LLM Wiki: markdown files are the most LLM-native storage format. They're human-readable, version-controlled, grep-able, and they fit in a context window. Every alternative (SQLite, JSON, YAML) adds complexity without adding capability for this use case.
 
+## Why a Claude Code plugin (2026-06)
+
+`curl | bash` is the wrong install idiom for this audience — it's the one command pattern a security-conscious PM has been told never to run. The repo now doubles as a plugin marketplace (`.claude-plugin/`): `/plugin marketplace add RyanAlberts/pmstack` then `/plugin install pmstack@pmstack`. Plugin users get namespaced commands (`/pmstack:eval`) and versioned updates; the copy-install path stays for people who want bare `/eval` names or non-Claude tools. The plugin's command files are 6-line shims that invoke the self-contained skills in `claude-skills/` — deliberately, so there's no fourth copy of the skill content to drift.
+
+## Why MIT, not CC-BY-SA (2026-06)
+
+Share-alike was the wrong default for a tool whose target user works at a company with a legal department. "Can I edit this skill file for internal use?" should never require a lawyer. MIT removes the conversation. (Relicensed while the repo had a single author, so no contributor sign-off was needed.)
+
 ## What I'd add next
 
 If this gets traction, the natural extensions are:
