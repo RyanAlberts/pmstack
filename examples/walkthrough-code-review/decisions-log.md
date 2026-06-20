@@ -13,3 +13,4 @@
 - 2026-05-09 — brief(code-review, exec): GA sign-off readout — examples/walkthrough-code-review/brief-code-review-exec-2026-05-09.md
 - 2026-05-12 — weekly: 10 decisions / 1 open loop — examples/walkthrough-code-review/weekly-2026-W19.md
 - 2026-05-12 — eval-drift: RELEASE_BLOCKED=false (baseline run, scope=user) — examples/walkthrough-code-review/eval-drift-2026-05-12.md
+- 2026-06-20 — eval-grade(code-review): A (15/16); 1 Partial — reference solutions thin on P0 capability tasks — examples/walkthrough-code-review/eval-grade-code-review-2026-06-20.md

@@ -51,7 +51,7 @@ You don't have to be "technical." You have to be able to run a command.
 **~30 seconds. No terminal.**
 
 1. claude.ai → **Projects** → new Project ("PM toolkit").
-2. **Settings → Skills → Upload skill** → upload each folder from [`claude-skills/`](./claude-skills/). All 18, or pick the 4–5 you'll use most.
+2. **Settings → Skills → Upload skill** → upload each folder from [`claude-skills/`](./claude-skills/). All 19, or pick the 4–5 you'll use most.
 3. Chat normally. "Write a PRD from this customer quote" auto-activates the skill; output appears inline — copy-paste anywhere.
 
 ### Path 2: Claude Code plugin (technical PMs — recommended)
@@ -63,7 +63,7 @@ You don't have to be "technical." You have to be able to run a command.
 /plugin install pmstack@pmstack
 ```
 
-Commands arrive namespaced — `/pmstack:eval`, `/pmstack:prd`, `/pmstack:weekly` — and all 18 skills auto-activate on plain English ("write a PRD from this customer quote"). Update later with `/plugin`, no re-install.
+Commands arrive namespaced — `/pmstack:eval`, `/pmstack:prd`, `/pmstack:weekly` — and all 19 skills auto-activate on plain English ("write a PRD from this customer quote"). Update later with `/plugin`, no re-install.
 
 <details>
 <summary>Classic copy-install (bare /eval, /prd names) / other tools (Cursor, ChatGPT, Gemini, …)</summary>

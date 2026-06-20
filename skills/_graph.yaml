@@ -104,6 +104,19 @@ edges:
     feeds_to:
       - eval        # rubric + task updates feed back into /eval
 
+  # /eval-grade is the meta-eval — grades an existing eval suite A–F against
+  # Anthropic's Steps 0–5 (the same standard /eval produces to). Inverse of /eval.
+  eval-grade:
+    reads_from:
+      - skill: eval
+        glob: "outputs/eval-*.yaml"
+        when: "input — the eval suite to grade; also checks examples/**/eval-*.yaml"
+      - skill: run-eval
+        glob: "outputs/eval-runs/*/summary.md"
+        when: "if a run exists, leakage/calibration findings can reference real scores"
+    feeds_to:
+      - eval        # the report card's fixes feed back into the eval design
+
   # ───── Default routines (v0.5+) ─────
 
   # /premortem reads a target PRD and (optionally) same-domain competitive + eval
