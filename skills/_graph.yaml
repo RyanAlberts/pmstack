@@ -117,6 +117,14 @@ edges:
     feeds_to:
       - eval        # the report card's fixes feed back into the eval design
 
+  # /eval-report is the presentation layer — renders a /run-eval result into a
+  # single self-contained, shareable HTML report (bin/eval-report.py).
+  eval-report:
+    reads_from:
+      - skill: run-eval
+        glob: "outputs/eval-runs/*/summary.md"
+        when: "input — the run summary to render into a shareable HTML report"
+
   # ───── Default routines (v0.5+) ─────
 
   # /premortem reads a target PRD and (optionally) same-domain competitive + eval

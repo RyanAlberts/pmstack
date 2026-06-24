@@ -1,7 +1,7 @@
 {
   "name": "pmstack",
   "displayName": "pmstack — PM Toolkit for the AI Era",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "The eval lifecycle as PM-runnable commands (/pmstack:eval, /pmstack:run-eval, /pmstack:eval-drift), plus PRDs, voice-of-customer synthesis, launch-readiness gates, and the Monday memo.",
   "author": {
     "name": "Ryan Alberts",

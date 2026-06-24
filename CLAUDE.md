@@ -58,6 +58,7 @@ This is **context engineering**: the persistent layer (`outputs/`, `decisions-lo
 | `/eval` | [skills/agent-eval-design.md](./skills/agent-eval-design.md) | claude-skills/pmstack-eval |
 | `/run-eval` | [skills/run-eval.md](./skills/run-eval.md) | claude-skills/pmstack-run-eval |
 | `/eval-grade` | [skills/eval-grade.md](./skills/eval-grade.md) | claude-skills/pmstack-eval-grade |
+| `/eval-report` | [skills/eval-report.md](./skills/eval-report.md) | claude-skills/pmstack-eval-report |
 | `/sprint` | (orchestrator — see [.claude/commands/sprint.md](./.claude/commands/sprint.md)) | — |
 | `/eval-self` | (suite runner — see [.claude/commands/eval-self.md](./.claude/commands/eval-self.md)) | — |
 | `/eval-drift` | [.claude/commands/eval-drift.md](./.claude/commands/eval-drift.md) | claude-skills/pmstack-eval-drift |
