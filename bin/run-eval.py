@@ -33,6 +33,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -169,7 +170,15 @@ def invoke_target(target: dict, prompt: str, dry_run: bool) -> tuple[str, dict]:
                 raw = r.read().decode()
                 status = r.status
         except urllib.error.HTTPError as e:
-            return "", {"type": "http", "status": e.code, "error": str(e)}
+            err_body = ""
+            try:
+                err_body = e.read().decode()[:300]
+            except Exception:
+                pass
+            if e.code == 429:
+                warn(f"HTTP 429 from target — rate limit or quota exhausted. Body: {err_body[:120]}")
+                warn("If all cases 429, your API key likely lacks access to this model OR the free-tier quota is exhausted. Try a smaller/cheaper model or set target.delay_between_cases_sec.")
+            return "", {"type": "http", "status": e.code, "error": str(e), "body_excerpt": err_body}
         except urllib.error.URLError as e:
             fatal(f"http target unreachable: {e}")
         path = target.get("response_path", "$")
@@ -373,10 +382,14 @@ def main() -> int:
 
     tokens_used = 0
     run_results = []
-    for tc in cases:
+    delay_sec = float(target.get("delay_between_cases_sec", 0))
+    for i, tc in enumerate(cases):
         if args.max_tokens and tokens_used >= args.max_tokens:
             warn(f"token cap {args.max_tokens:,} reached — partial run, {len(run_results)} cases done")
             break
+        if i > 0 and delay_sec > 0 and not args.dry_run:
+            info(f"  sleeping {delay_sec}s (rate-limit respect)")
+            time.sleep(delay_sec)
         info(f"  case {tc['id']} ({tc.get('severity', '?')})")
 
         output, evidence = invoke_target(target, tc["input"], args.dry_run)

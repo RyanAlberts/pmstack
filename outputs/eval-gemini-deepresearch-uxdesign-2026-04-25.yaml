@@ -1,0 +1,157 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# pmstack eval — Gemini deep-research + UX design capabilities
+# Real-world test of /run-eval against an external HTTP target.
+#
+# HOW TO USE
+#   1. export GEMINI_API_KEY="your_key_here"         # in your terminal, before launching claude
+#   2. /run-eval outputs/eval-gemini-deepresearch-uxdesign-2026-04-25.yaml --judge-model claude-sonnet-4-6
+#   3. Read outputs/eval-runs/<dir>/summary.md
+#
+# To compare against Claude: edit target.type to claude-session and re-run.
+# Diff the two summary.md files manually (a comparison-runner is a v0.5 item).
+#
+# COST ESTIMATE
+#   Gemini calls: 6 cases × ~8K tokens ≈ 48K tokens through your Gemini subscription
+#   Judge calls : 6 × ~4K tokens ≈ 24K tokens against Claude session
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: "Gemini 2.0 Flash — deep research + UX design"
+description: >
+  Six cases probing Gemini's deep-research synthesis and its ability to
+  produce / critique UX. Judged by Claude Sonnet (different family, no
+  self-grading bias).
+
+  Why flash and not pro: free-tier quota for gemini-2.5-pro is too tight
+  for a 6-case run (every call 429s on first attempt). Flash has much
+  more permissive free-tier limits and is the closer apples-to-apples
+  comparison against Claude Haiku/Sonnet anyway.
+
+target:
+  type: http
+  url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+  method: POST
+  request_template: '{"contents":[{"parts":[{"text":"{{input}}"}]}],"generationConfig":{"maxOutputTokens":2048,"temperature":0.3}}'
+  response_path: ".candidates[0].content.parts[0].text"
+  headers:
+    x-goog-api-key: "${GEMINI_API_KEY}"
+  requires:
+    - GEMINI_API_KEY
+  # Free tier limits are per-minute; 6s spacing keeps us under 10 RPM comfortably.
+  delay_between_cases_sec: 6
+
+capabilities:
+  - "Deep research: multi-source synthesis with explicit uncertainty"
+  - "Deep research: structured comparison across multiple data points"
+  - "Deep research: factual hedging when data is uncertain or post-cutoff"
+  - "UX design: produce usable HTML/CSS for a constrained spec"
+  - "UX design: critique an existing flow with concrete fix proposals"
+  - "UX design: design experiments (A/B test) with explicit assumptions"
+
+failure_modes:
+  - id: fm-1
+    name: "Hallucinated facts in research synthesis"
+    severity: P0
+  - id: fm-2
+    name: "Refuses or stalls on time-sensitive questions instead of dating its claims"
+    severity: P1
+  - id: fm-3
+    name: "Generic 'best practices' answer instead of design with specifics"
+    severity: P1
+  - id: fm-4
+    name: "Critique that lists everything as a problem (no prioritization)"
+    severity: P1
+
+metrics:
+  - name: "Substance"
+    description: "Does the response actually answer the question with concrete content (not generic advice)?"
+    type: score
+    pass_bar: ">= 4"
+  - name: "Hedging"
+    description: "When uncertain, does the model say so explicitly (vs. confidently asserting wrong facts)?"
+    type: score
+    pass_bar: ">= 4"
+  - name: "Structure"
+    description: "Is the response easy to scan — headers, lists, comparison tables when useful?"
+    type: score
+    pass_bar: ">= 4"
+  - name: "Length"
+    description: "Output token count (rough char-based estimate). Should be substantive but not bloated."
+    type: tokens
+    pass_bar: "<= 2000"
+
+test_cases:
+  # ── Deep research ───────────────────────────────────────────────────────────
+  - id: dr-1-multisource-synthesis
+    severity: P0
+    description: "Multi-source synthesis on a contested topic. Expects structured comparison, not a single source's view."
+    input: "Compare the leading approaches to LLM agent memory in 2024-2025: in-context, vector RAG, fine-tuned, and hybrid. For each, give one strength and one trade-off, and name a representative system that uses it. Be specific. If you're not sure about a system's actual approach, say so."
+    expected_behavior: "Four approaches, each with named real system, strength, trade-off. Hedges where uncertain about post-training-cutoff systems."
+    metrics: ["Substance", "Hedging", "Structure", "Length"]
+
+  - id: dr-2-counterfactual
+    severity: P1
+    description: "Counterfactual reasoning under uncertainty. Tests whether the model reasons explicitly or fabricates a confident timeline."
+    input: "If GPT-4 had launched in mid-2022 instead of March 2023, what's a plausible competitive response from Anthropic in the following 12 months? Reason step-by-step. Mark assumptions as assumptions."
+    expected_behavior: "Reasoning steps, named assumptions, plausible scenarios. NOT a confident retelling as if it happened."
+    metrics: ["Substance", "Hedging", "Structure"]
+
+  - id: dr-3-citations-honesty
+    severity: P0
+    description: "Citation honesty. Models often hallucinate paper titles + URLs."
+    input: "List 5 academic papers on retrieval failures or hallucinations in RAG systems published 2022-2024. For each: title, lead author, year, arXiv URL. If you cannot remember a real paper exactly, say so explicitly — DO NOT invent."
+    expected_behavior: "Either real papers with verifiable details, OR an explicit acknowledgement that the model cannot guarantee paper accuracy. Fabricated arXiv IDs = P0 fail."
+    metrics: ["Substance", "Hedging"]
+
+  # ── UX design ───────────────────────────────────────────────────────────────
+  - id: ux-1-html-form
+    severity: P1
+    description: "Concrete HTML/CSS for a constrained spec. Tests whether the model can produce usable code, not generic templates."
+    input: "Write a mobile-first sign-up form for a B2B SaaS. Fields: work email, company name, team size (1-10/11-50/51+/dropdown). Include client-side validation hints (HTML5 attributes, no JS), accessible labels, and a single primary button. Output only the HTML+CSS, in one code block."
+    expected_behavior: "Working HTML+CSS, mobile-first (viewport meta, max-width container), accessible labels, validation attrs. Not just a template."
+    metrics: ["Substance", "Structure", "Length"]
+
+  - id: ux-2-flow-critique
+    severity: P1
+    description: "Critique with prioritization. Tests whether the model picks 3 real issues vs lists 12 generic ones."
+    input: |
+      Here's a SaaS onboarding flow:
+      1. Email signup → email verification (24h delay sometimes)
+      2. After verification, a 12-question profile setup before user can see the product
+      3. Product loads with empty state and a "watch our 4-min intro video" modal
+      4. After dismissing video, user is on the dashboard with no data and a "create your first project" CTA in the bottom-right
+      Identify the 3 biggest UX gaps in this flow, in priority order, with concrete fixes for each. Do not list more than 3.
+    expected_behavior: "Exactly 3 gaps, prioritized by impact, each with a concrete fix. Should flag email verification delay (high friction), 12-question survey before value (gate), CTA placement (low affordance)."
+    metrics: ["Substance", "Structure"]
+
+  - id: ux-3-experiment-design
+    severity: P1
+    description: "Designs an A/B test with explicit assumptions and success criteria."
+    input: "Design an A/B test to validate whether adding a 30-second product tour at first login improves week-1 retention. Include: variants, hypothesis, primary metric, sample size estimate (state the assumptions), success criteria, and what could go wrong (false positives, novelty effects, etc.)."
+    expected_behavior: "Two variants named, explicit hypothesis, primary metric defined, sample-size reasoning with named baseline + MDE, success criteria, at least 2 named risks."
+    metrics: ["Substance", "Hedging", "Structure"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# APPENDIX — PRO TIPS (specific to this eval)
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Setup
+#   ✓ export GEMINI_API_KEY="..." in your terminal BEFORE launching claude
+#   ✓ Verify with: echo "key set: ${GEMINI_API_KEY:+yes}"  (should print "key set: yes")
+#   ✓ Never paste the key into the YAML or chat
+#
+# Running
+#   ✓ Always pass --judge-model claude-sonnet-4-6 — without it, all subjective
+#     metrics will be marked "needs-judge" and you won't get scores.
+#   ✓ Try one case first: --only dr-1-multisource-synthesis
+#   ✓ Cost is small: ~$0.20 Gemini + ~$0.20 Claude judge for the full 6-case run.
+#
+# Comparing against Claude
+#   ✓ Duplicate this YAML with target.type: claude-session, model: claude-sonnet-4-6
+#   ✓ Run both. Diff the summary.md files.
+#   ✓ Watch for "Hedging" — that's where models diverge most on dr-2 and dr-3.
+#
+# What you'll learn
+#   ✓ Whether Gemini hallucinates citations on dr-3 (most models do).
+#   ✓ Whether Gemini's UX critique prioritizes (ux-2) or lists everything.
+#   ✓ Whether the HTML on ux-1 is mobile-first and accessible by default.
+# ─────────────────────────────────────────────────────────────────────────────
