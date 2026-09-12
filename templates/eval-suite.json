@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "id": "example-ticket-routing",
+  "name": "Illustrative template: classify a support request",
+  "example": true,
+  "target": {
+    "kind": "model",
+    "description": "An example single-response model. Replace with your evaluated system and a reviewed adapter.",
+    "version": "Not connected"
+  },
+  "product": {
+    "customer": "Illustrative support team, not observed customer research",
+    "job": "Route blocked customers to urgent support while keeping routine questions in the normal queue.",
+    "success": "Return the specified category without treating every request as urgent."
+  },
+  "purpose": "capability",
+  "environment": {
+    "description": "A small fictional text fixture for learning the suite format. It does not evaluate an actual ticket workflow.",
+    "mode": "pinned",
+    "reset": "fresh-trial",
+    "context": "Use only the routing rule and ticket text in each task.",
+    "tools": [],
+    "memory": "No memory between independent trials.",
+    "dependencies": "A separately configured target command; no provider integration is included.",
+    "constraints": "Return one label only. No customer data or external actions."
+  },
+  "plan": {
+    "trials": 3,
+    "k": 3,
+    "mix": "balanced",
+    "rationale": "One urgent and one routine example demonstrate opposing cases. Three trials demonstrate repetition, not statistical confidence or production coverage.",
+    "passRateThreshold": 1
+  },
+  "tasks": [
+    {
+      "id": "blocked",
+      "name": "Blocked customer",
+      "prompt": "Classify this support request. Return exactly urgent if the customer cannot continue their work; otherwise return exactly routine. Return only the lowercase label. Request: Our whole team cannot sign in and cannot complete any work.",
+      "context": "Fictional teaching example. No other information is needed for this classification.",
+      "successCriteria": "The entire response must be urgent. The explicit output format permits exact matching.",
+      "category": "positive",
+      "difficulty": "introductory example",
+      "customerValue": "A blocked customer reaches the urgent queue.",
+      "weight": 1,
+      "reference": {
+        "description": "Illustrative reference written from the stated rule. The deterministic check can validate its format; no live target has been run.",
+        "output": "urgent",
+        "outcome": {}
+      },
+      "graders": [
+        {
+          "id": "routing-label",
+          "name": "Correct routing label",
+          "type": "code",
+          "source": "output",
+          "required": true,
+          "weight": 1,
+          "threshold": 1,
+          "check": {
+            "operator": "equals",
+            "path": "",
+            "expected": "urgent"
+          },
+          "rubric": "Pass only when the entire output equals the required label. This strict check is suitable because the task explicitly requires that format.",
+          "calibration": "The reference must pass; the opposite label and a response claiming success without the label must fail. Replace with independently observed outcome checks for an agent that actually routes tickets."
+        }
+      ]
+    },
+    {
+      "id": "question",
+      "name": "Routine question",
+      "prompt": "Classify this support request. Return exactly urgent if the customer cannot continue their work; otherwise return exactly routine. Return only the lowercase label. Request: Where can I change the color of my profile avatar? Everything is working.",
+      "context": "Fictional teaching example. No other information is needed for this classification.",
+      "successCriteria": "The entire response must be routine. The explicit output format permits exact matching.",
+      "category": "negative",
+      "difficulty": "introductory example",
+      "customerValue": "Routine questions do not displace blocked customers.",
+      "weight": 1,
+      "reference": {
+        "description": "Illustrative reference written from the stated rule. The deterministic check can validate its format; no live target has been run.",
+        "output": "routine",
+        "outcome": {}
+      },
+      "graders": [
+        {
+          "id": "routing-label",
+          "name": "Correct routing label",
+          "type": "code",
+          "source": "output",
+          "required": true,
+          "weight": 1,
+          "threshold": 1,
+          "check": {
+            "operator": "equals",
+            "path": "",
+            "expected": "routine"
+          },
+          "rubric": "Pass only when the entire output equals the required label. This strict check is suitable because the task explicitly requires that format.",
+          "calibration": "The reference must pass; the opposite label and a response claiming success without the label must fail. Replace with independently observed outcome checks for an agent that actually routes tickets."
+        }
+      ]
+    }
+  ]
+}

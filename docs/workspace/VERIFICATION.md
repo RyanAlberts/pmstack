@@ -1,39 +1,40 @@
 # Verification record
 
-Verified September 12, 2026 before publication.
+Verified September 12, 2026 for the general evaluation framework rebuild.
 
 ## Automated checks
 
-```sh
-node --test evals/*.test.mjs
-node --check docs/workspace/app.mjs
-python3 evals/eval-report-test.py
-git diff --check
-```
+`node --test evals/*.test.mjs` passed **49 tests**: 26 checks for the new evaluation harness, including nested stage-failure cases, and 23 existing work-review checks. `python3 evals/eval-report-test.py` passed 20 existing report checks. JavaScript syntax and `git diff --check` passed.
 
-Results: 23 Node tests and 20 existing report checks passed. The JavaScript syntax and whitespace checks passed. No application build or package install is required.
-
-The tests cover source counts, citations, omitted contradictory evidence, severe incidents, unknown evidence, changed standards, import validation, Markdown escaping, and the actual CLI's commands and exit codes. Missing human review never passes the acceptance gate.
+The new harness tests cover strict schemas, reference validity, required unknown judgments, code checks, critical failures, balanced and weighted aggregates, repeated trials, isolated working directories, independent observation, external graders, malformed output, size limits, timeouts, stage errors, and forged imported pass claims. Saved labels cannot override freshly computed grades. These tests do not establish the validity of a customer's chosen rubric.
 
 ## Browser checks
 
-Playwright exercised the rendered application at desktop and 390-pixel mobile widths:
+Playwright exercised the actual local studio:
 
-- Open source evidence and reveal source-derived counts.
-- Accept a lesson and inspect the new standard.
-- Review the revised decision and record an acceptance.
-- Reject acceptance when the new-week example omits severity.
-- Reject an empty review reason without mutating the decision.
-- Replace a revision request with an acceptance when factual checks pass.
-- Add a custom evidence batch and download its prompt.
-- Import a workspace and an actual agent response.
-- Reload the page and retain the imported response.
-- Download a decision brief and reset the prepared example.
+- Open the framework and clearly labeled library; choose the chief-of-staff example.
+- Edit a custom evaluation from a blank suite and export it. The CLI accepted the exported suite.
+- Add a human grader, check reference evidence, and reject an unsupported completion claim as unresolved.
+- Load the recorded simulation and inspect its 50% failing result.
+- Import run evidence through the file picker.
+- Record a human judgment: an otherwise passing trial changed from unknown to pass.
+- Download the reviewed JSON run and a Markdown report containing a failure diagnosis and next experiment.
+- Reload and retain the authored suite. Run records and review notes require download; they are not persisted in browser storage.
+- Check mobile layouts at 390 pixels. The results view initially overflowed; the action layout was corrected and rechecked at exactly 390 pixels of page width.
 
-The mobile decision and handoff views had no horizontal page overflow. The screenshots and visual walkthrough were generated from actual browser states. The walkthrough sequences prepared examples; it is not a model execution recording.
+The preview and seven-state visual walkthrough were captured from the rebuilt interface. The video sequences actual screens; it is not a live model execution recording.
 
-## Real execution
+## Actual harness execution
 
-The [Claude handoff example](../../examples/work-review/README.md) preserves the prompt, response, and review packet. Its four factual checks pass. Human judgment remains unresolved. One earlier output-format failure is documented separately from the final valid JSON response.
+The [offline adapter example](../../examples/eval-adapters/README.md) was run again from the CLI after integration:
 
-This verifies a file handoff and limited checks. It does not establish improvement over a baseline, unattended operation, a Grok integration, customer demand, or a productivity multiple.
+| Configuration | Result | Exit code |
+| --- | --- | --- |
+| Working deterministic simulation | 6 passing trials | 0 |
+| Claim-only deterministic simulation | 3 passing and 3 failing trials | 1 |
+
+The observer checks persisted export and escalation state. The claim-only target's assertion of success does not satisfy the outcome checks.
+
+[sample-run.json](sample-run.json) contains the recorded claim-only execution used by the studio. Its suite display name identifies the example; local workspace paths were removed and the adapter path made repository-relative for sharing. Trial evidence remains unchanged. The record is unsigned, and the UI recomputes its grades on load.
+
+No live commercial model, Grok Bot deployment, production customer system, or flight-booking service was evaluated for this rebuild. Adapters must connect those targets and establish trustworthy state observation. Temporary directories are not an operating-system sandbox.

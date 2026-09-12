@@ -1,57 +1,38 @@
-# Demonstrate one better product decision
+# Show the craft of defining success
 
-The memorable moment is a correction that still matters next week. Use the prepared example to teach the idea, then show how a real agent can participate.
-
-## Prepare the recording
-
-Open the [workspace](README.md). Export any work you want to keep before choosing **Open the example** and confirming. Start on **Week 1 · First draft**. Keep **Prepared example** visible, use a readable browser size, and hide notifications.
-
-For this prepared walkthrough, accept one lesson so the standard becomes version 2. The later sample responses use that version. Reset the example before another take rather than adding repeated lessons.
+Begin with the framework, not a result. Every library item is an illustrative example. The offline execution demonstrates the harness using a deterministic simulation, not a commercial agent benchmark.
 
 ## A 90-second walkthrough
 
-| Time | Action | Narration |
+| Time | Show | Explain |
 | --- | --- | --- |
-| 0–12 seconds | Read the first recommendation. | “My AI teammate recommends exports. This is a prepared example of a product judgment mistake.” |
-| 12–25 seconds | Click **Check against the sources** and inspect a Northstar conversation. | “Six requests came from one customer. Four other customers had onboarding trouble. Message volume isn't customer reach.” |
-| 25–42 seconds | Choose **Teach a lesson**. Keep the proposed rule, add a reason, and choose **Accept the standard**. | “I save the reasoning rule and its exception: severity can matter more than customer count.” |
-| 42–55 seconds | Return to **Customer problem decision**. Select **Week 1 · After the lesson**. | “The prepared revision separates the counts and preserves evidence that challenges its recommendation.” |
-| 55–72 seconds | Select **Week 2 · New evidence**. Inspect the critical data-loss conversation. | “Next week, five customers want dark mode, but one reports deleted work. Counting correctly still doesn't choose the right priority.” |
-| 72–82 seconds | Select **Week 2 · Revised decision**. Open **Review this decision**. | “Now the recommendation explains that tradeoff. I still have to review the evidence and make the call.” |
-| 82–90 seconds | Close the review dialog. Open **Use with your teammate**, then show **Download agent instructions**. | “Give the job to your own agent. Import its actual response, check it, and take the decision back to your team.” |
+| 0–15 seconds | The framework screen | “The PM defines what success means. A task becomes a trial, produces a transcript and an outcome, and is assessed by graders.” |
+| 15–30 seconds | The example library, then chief-of-staff flight template | “This is an example, not a flight-booking product. The same framework supports coding, support, research, and long-running teammates.” |
+| 30–45 seconds | Task and environment | “Define the customer value, constraints, approval boundaries, and context. Reset between trials while preserving intended memory within a session sequence.” |
+| 45–60 seconds | Graders and reference check | “The reservation must exist in the observed state. Saying ‘done’ cannot pass. Reference checks test the grading rule; they are not agent trials.” |
+| 60–75 seconds | Trial plan | “Balance action with restraint. Run repeated trials, inspect case slices, and do not hide critical failures inside an average.” |
+| 75–90 seconds | Imported offline claim-only run | “The simulated target claimed success. The observer found the job still stalled. Now we can diagnose the failure and know what to change.” |
 
-Suggested reason for the lesson: “Repeated messages from one customer can exaggerate reach. Customer breadth must still be weighed against the severity of harm.”
-
-The sample sequence demonstrates the interaction. Do not describe the switch between prepared responses as an agent rerun or measured improvement.
-
-## Show a real handoff separately
-
-Download the current instructions, run them in an existing agent session, and import the actual JSON response. Preserve the system name, original response, and conversation reference. Show unresolved checks and an honest human review. The [command-line guide](../work-review.md) provides the reproducible file path.
-
-For a shareable result, use **Download decision brief**. Keep the original mistake, correction, and result on new evidence together. Redact private content and label prepared and imported material separately.
+Use the [offline quickstart](../../examples/eval-adapters/README.md) to generate actual harness records. Import its claim-only run into the studio, or use “Inspect a recorded simulation” on the Run and learn page. Explain that the target is simulated and the state checks actually executed.
 
 ## LinkedIn draft
 
-Draft for review. Not posted.
+The PM's most important contribution to an AI product is defining success.
 
-An AI teammate can count every customer message correctly and still recommend the wrong thing to build.
+What should an agent produce? Under which conditions? What evidence proves the work happened? And how do we know a failed test reflects the agent, rather than our own broken evaluation?
 
-Six requests might come from one customer. Five customers asking for dark mode might matter less than one customer losing their work.
+I rebuilt pmstack around those questions, using Anthropic's agent evaluation taxonomy as the foundation.
 
-I'm building pmstack around that kind of product judgment. Review the recommendation, explain the correction, and save the standard. Then test whether it helps on the next week's evidence.
+The studio explains the framework first. Then it helps you define tasks, environments, references, graders, case mixes, and repeated trials for your own system. Examples cover coding, customer support, research, flight booking, and teammates with memory.
 
-The demo uses prepared examples to teach the workflow. You can give the same job to your own agent, import its response, and keep the decision with its supporting evidence.
+One demo target says “resolved” without fixing the problem. The independent state check fails it. That distinction is the point.
 
-I believe PMs building AI products should make serious room for this work. My starting philosophy is 40% of PM time spent understanding behavior, testing assumptions, and improving decisions.
+The demo is a labeled simulation, not a model benchmark. You can replace it with your own target using the same harness.
 
-Try the workflow in [pmstack](https://github.com/RyanAlberts/pmstack).
+Try it: [pmstack evaluation studio](https://ryanalberts.github.io/pmstack/workspace/).
 
-## Before publishing
+Draft only. Nothing has been posted.
 
-Verify the public link and attach a recording that matches this walkthrough. Posting or sending the draft is a separate action.
+## Shareable assets
 
-## Ready-to-share visual walkthrough
-
-[Download the 30-second MP4](walkthrough.mp4) or [animated GIF](walkthrough.gif). These files sequence six actual browser states from the prepared example. They are a visual walkthrough, not a recording of a live agent execution. Use the script above for a narrated demonstration.
-
-The [real Claude handoff](../../examples/work-review/README.md) separately records the tested execution path and its limits.
+The [visual walkthrough](walkthrough.mp4) sequences actual studio screens and the labeled offline example. The [preview image](preview.png) shows the framework-first entry point. These are teaching assets, not claims about agent reliability.

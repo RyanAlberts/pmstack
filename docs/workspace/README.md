@@ -1,10 +1,8 @@
-# pmstack workspace
+# The evaluation studio
 
-Teach your AI teammate how you make a product decision, then test whether the lesson holds on new work.
+The studio teaches the evaluation framework before introducing any example. Its first screen explains why evals exist and the relationship among task, trial, transcript, outcome, grader, and harness.
 
-Start with a Customer problem decision: which customer problem deserves attention this week, and why? Inspect the conversations, correct a misleading count, save the reasoning standard, and review a second week's evidence.
-
-## Open it
+## Open locally
 
 From the repository root:
 
@@ -12,43 +10,32 @@ From the repository root:
 python3 -m http.server 4173 --directory docs
 ```
 
-Open [the local workspace](http://localhost:4173/workspace/). The same files can run on [GitHub Pages](https://ryanalberts.github.io/pmstack/workspace/) when this repository's Pages deployment is active. Use a local server rather than opening the HTML file directly, because the page loads its sample data and JavaScript modules.
+Open [the studio](http://localhost:4173/workspace/). Use a web server rather than opening the HTML file directly. The app loads JavaScript modules and the [example library](eval-library.json).
 
-## Make the first judgment
+## Author your own suite
 
-1. On **Customer problem decision**, read **Week 1 · First draft**. The recommendation treats six messages as six customers.
-2. Click **Check against the sources**. Six export requests came from one customer; four onboarding reports came from four customers. Click a conversation to inspect the evidence.
-3. Choose **Teach a lesson**. Review the proposed standard and its counterexample, explain why the correction matters, and choose **Accept the standard**.
-4. Open **Customer problem decision** again. Use the **Review** selector to inspect **Week 1 · After the lesson**, then **Week 2 · New evidence**.
-5. Notice the new mistake: customer breadth does not settle the priority when one customer reports critical data loss. Review **Week 2 · Revised decision** and record your judgment with **Review this decision**.
+Choose **Define my evaluation** to begin with your customer and target. A model and an agent use the same basic framework; an agent adds a runtime, tools, state, and possibly memory. The guidance changes with the selected target type.
 
-The four responses are prepared teaching examples. Selecting one does not run an agent. A live agent may get the first decision right; the example is not a prediction or benchmark.
+Use the numbered steps to write tasks, supply context and reference evidence, choose an environment strategy, add graders, and plan trials. You can edit every field in an example. **New suite** opens a blank draft after confirmation. **Import** accepts a saved suite or harness run.
 
-## What the lesson changes
+The case library is explicitly illustrative. Its proposed references establish an intended result, not a successful live execution. Browser reference checks exercise the same code-grading logic as the terminal, while subjective reference judgments stay unresolved.
 
-An eval is a repeatable check of whether AI does a particular job well enough. Here, checks compare counts and evidence references against the supplied conversations. A human decides whether the recommendation follows from the evidence.
+**Export suite** saves portable JSON. Incomplete drafts can also be downloaded, but the harness refuses structurally incomplete evaluations. Valid JSON and a clean design checklist do not establish customer value or grader fairness.
 
-Accepting a lesson saves its text and reason, increments the standard version, and activates the built-in checks for counts, contradictory evidence, and severity. Existing acceptance becomes stale when its standard version differs. The lesson is included in future agent instructions; it does not train a model or create arbitrary new code checks from your prose.
+## Execute and review
 
-**What good looks like** shows the active rules. **What we’ve learned** preserves accepted lessons. A passing check establishes only the property it describes: a cited source can exist while the surrounding argument is still wrong.
+The browser never executes adapter commands or makes target calls. Follow [the adapter guide](../eval-adapters.md) or begin with the [offline executable example](../../examples/eval-adapters/README.md).
 
-## Give the job to your own teammate
+On **Run and learn**, import the resulting `run.json`. The viewer recomputes grades from supplied evidence and keeps errors, unknowns, and missing trials visible. Imported evidence is not independently authenticated.
 
-Open **Use with your teammate**:
+Expand a trial to inspect its output, observed outcome, graders, and transcript. **Record human grade** appears when the task includes a human grader. It records an explicit score and reason, without overriding failed code checks or infrastructure errors. Save the reviewed run to preserve those grades.
 
-- Choose **Use your own evidence** to add a named batch of structured customer conversations. The form shows the required JSON fields.
-- Choose **Download agent instructions** for the current batch. Give the file to your existing Claude, Codex, or Grok session and ask it to return the specified decision JSON.
-- Choose **Import the response** and identify the system you used. Review the imported evidence and record your decision.
-- Choose **Download decision brief** to save the recommendation, checks, evidence, and lessons as Markdown.
+**Diagnose this trial** records whether the likely issue belongs to the agent, task, grader, environment, or missing evidence. The diagnosis appears in the downloadable report and does not alter original grades. Download the report before leaving the page to preserve these session notes.
 
-This is a file handoff. The page does not connect to a provider or independently authenticate an imported response. The [command-line workflow](../work-review.md) uses the same checks and explains `prompt`, `import`, `check`, and `brief`.
+## Storage and cost
 
-## Keep and share your work
+Draft edits save in this browser when storage is available. Export important work separately. Run evidence and review notes remain in the current page until downloaded; they are not a hosted database.
 
-**Export your workspace** saves a JSON project containing the job, standards, conversations, responses, reviews, and lessons. **Import a workspace** opens a saved project after confirmation. Browser storage saves changes locally when available; exporting gives you a separate portable copy. Different browsers and site addresses have separate storage.
+No accounts, credentials, or provider connections are created by the page. The static studio and offline example incur no API charges. A real target or model grader uses the account and billing configured by its adapter.
 
-The downloads are a JSON workspace, Markdown agent instructions, and a Markdown decision brief. Review customer and company information before sharing them. Opening a fresh example replaces the current browser workspace after confirmation, so export work you want to keep first.
-
-**COST: $0.00 in browser API calls; payment: none.** Actual execution happens in your existing agent account and uses its subscription or provider billing.
-
-The suggested 40% evaluation time is an operating philosophy, not an industry benchmark. Use it to improve product judgment and reduce repeated corrections. See the [research thesis](../research-thesis.md) and [90-second demo](DEMO.md).
+See [the framework guide](../eval-framework.md) for the underlying PM decisions and [verification notes](VERIFICATION.md) for what was tested.
