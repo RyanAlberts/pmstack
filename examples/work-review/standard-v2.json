@@ -1,0 +1,403 @@
+{
+  "version": 1,
+  "job": {
+    "name": "Choose the customer problem to act on",
+    "goal": "Recommend what deserves action this week, using customer evidence and explicit tradeoffs.",
+    "owner": "Product team",
+    "standardVersion": 2,
+    "rules": [
+      {
+        "id": "citations",
+        "title": "Show the source",
+        "description": "Cite source IDs for the recommended problem. Distinguish signal from counterevidence.",
+        "check": "citations",
+        "enabled": true
+      },
+      {
+        "id": "customer-counts",
+        "title": "Count customers, not just messages",
+        "description": "For every problem, report signal messages and distinct customer names separately. Repeated messages are not additional customers.",
+        "check": "customer-counts",
+        "enabled": true
+      },
+      {
+        "id": "counterevidence",
+        "title": "Show what challenges the recommendation",
+        "description": "Include supplied counterevidence for the recommended problem and explain its implication.",
+        "check": "counterevidence",
+        "enabled": true
+      },
+      {
+        "id": "severity",
+        "title": "Do not let popularity hide severity",
+        "description": "Discuss every high or critical signal using its source ID. Explain the severity tradeoff, even when one customer is affected.",
+        "check": "severity",
+        "enabled": true
+      }
+    ]
+  },
+  "batches": [
+    {
+      "id": "week-one",
+      "title": "This week · 12 conversations",
+      "sources": [
+        {
+          "id": "w1-01",
+          "customer": "Northstar",
+          "segment": "Growth",
+          "problemId": "exports",
+          "problem": "Scheduled exports",
+          "kind": "signal",
+          "severity": "medium",
+          "text": "Can you schedule our report export?"
+        },
+        {
+          "id": "w1-02",
+          "customer": "Northstar",
+          "segment": "Growth",
+          "problemId": "exports",
+          "problem": "Scheduled exports",
+          "kind": "signal",
+          "severity": "medium",
+          "text": "Following up on scheduled exports."
+        },
+        {
+          "id": "w1-03",
+          "customer": "Northstar",
+          "segment": "Growth",
+          "problemId": "exports",
+          "problem": "Scheduled exports",
+          "kind": "signal",
+          "severity": "medium",
+          "text": "Our analyst still exports this manually."
+        },
+        {
+          "id": "w1-04",
+          "customer": "Northstar",
+          "segment": "Growth",
+          "problemId": "exports",
+          "problem": "Scheduled exports",
+          "kind": "signal",
+          "severity": "medium",
+          "text": "Any update on export scheduling?"
+        },
+        {
+          "id": "w1-05",
+          "customer": "Northstar",
+          "segment": "Growth",
+          "problemId": "exports",
+          "problem": "Scheduled exports",
+          "kind": "signal",
+          "severity": "medium",
+          "text": "Our weekly report still takes manual work."
+        },
+        {
+          "id": "w1-06",
+          "customer": "Northstar",
+          "segment": "Growth",
+          "problemId": "exports",
+          "problem": "Scheduled exports",
+          "kind": "signal",
+          "severity": "medium",
+          "text": "Checking again before the next reporting cycle."
+        },
+        {
+          "id": "w1-07",
+          "customer": "Fern",
+          "segment": "Growth",
+          "problemId": "onboarding",
+          "problem": "Invite setup",
+          "kind": "signal",
+          "severity": "medium",
+          "text": "The invitation expired before our teammate could join."
+        },
+        {
+          "id": "w1-08",
+          "customer": "Harbor",
+          "segment": "Growth",
+          "problemId": "onboarding",
+          "problem": "Invite setup",
+          "kind": "signal",
+          "severity": "medium",
+          "text": "New teammates cannot tell which workspace they are joining."
+        },
+        {
+          "id": "w1-09",
+          "customer": "Lumen",
+          "segment": "Growth",
+          "problemId": "onboarding",
+          "problem": "Invite setup",
+          "kind": "signal",
+          "severity": "medium",
+          "text": "We abandoned setup after the invite link failed."
+        },
+        {
+          "id": "w1-10",
+          "customer": "Orbit",
+          "segment": "Growth",
+          "problemId": "onboarding",
+          "problem": "Invite setup",
+          "kind": "signal",
+          "severity": "medium",
+          "text": "Our admin had to restart the invitation flow twice."
+        },
+        {
+          "id": "w1-11",
+          "customer": "Northstar",
+          "segment": "Growth",
+          "problemId": "exports",
+          "problem": "Scheduled exports",
+          "kind": "counterevidence",
+          "severity": "low",
+          "text": "We can use our existing script for now; this is inconvenient, not blocking."
+        },
+        {
+          "id": "w1-12",
+          "customer": "Harbor",
+          "segment": "Growth",
+          "problemId": "onboarding",
+          "problem": "Invite setup",
+          "kind": "counterevidence",
+          "severity": "low",
+          "text": "Support got us through setup; the account is active now."
+        }
+      ]
+    },
+    {
+      "id": "week-two",
+      "title": "Next week · 8 new conversations",
+      "sources": [
+        {
+          "id": "w2-01",
+          "customer": "Cedar",
+          "segment": "Enterprise",
+          "problemId": "data-loss",
+          "problem": "Deleted project recovery",
+          "kind": "signal",
+          "severity": "critical",
+          "text": "Deleting one project also removed another project. We cannot restore the missing work."
+        },
+        {
+          "id": "w2-02",
+          "customer": "Ash",
+          "segment": "Growth",
+          "problemId": "dark-mode",
+          "problem": "Dark mode",
+          "kind": "signal",
+          "severity": "low",
+          "text": "A dark theme would be easier on my eyes."
+        },
+        {
+          "id": "w2-03",
+          "customer": "Birch",
+          "segment": "Growth",
+          "problemId": "dark-mode",
+          "problem": "Dark mode",
+          "kind": "signal",
+          "severity": "low",
+          "text": "Please add dark mode."
+        },
+        {
+          "id": "w2-04",
+          "customer": "Elm",
+          "segment": "Growth",
+          "problemId": "dark-mode",
+          "problem": "Dark mode",
+          "kind": "signal",
+          "severity": "low",
+          "text": "I prefer dark interfaces."
+        },
+        {
+          "id": "w2-05",
+          "customer": "Maple",
+          "segment": "Growth",
+          "problemId": "dark-mode",
+          "problem": "Dark mode",
+          "kind": "signal",
+          "severity": "low",
+          "text": "Dark mode would be nice, but it is not blocking us."
+        },
+        {
+          "id": "w2-06",
+          "customer": "Pine",
+          "segment": "Growth",
+          "problemId": "dark-mode",
+          "problem": "Dark mode",
+          "kind": "signal",
+          "severity": "low",
+          "text": "I would like a dark theme."
+        },
+        {
+          "id": "w2-07",
+          "customer": "Cedar",
+          "segment": "Growth",
+          "problemId": "data-loss",
+          "problem": "Deleted project recovery",
+          "kind": "counterevidence",
+          "severity": "high",
+          "text": "This occurred once in our account; we have not reproduced it in a second workspace."
+        },
+        {
+          "id": "w2-08",
+          "customer": "Maple",
+          "segment": "Growth",
+          "problemId": "dark-mode",
+          "problem": "Dark mode",
+          "kind": "counterevidence",
+          "severity": "low",
+          "text": "We can use the current theme without affecting our work."
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "id": "first-draft",
+      "batchId": "week-one",
+      "standardVersion": 1,
+      "system": "Prepared teaching example",
+      "provenance": "prepared",
+      "decision": {
+        "recommendation": "Prioritize scheduled exports this week.",
+        "problemId": "exports",
+        "rationale": "Exports have six customer requests, more than the four onboarding reports. The strongest demand is clear.",
+        "counts": [
+          {
+            "problemId": "exports",
+            "messages": 6,
+            "customers": 6
+          },
+          {
+            "problemId": "onboarding",
+            "messages": 4,
+            "customers": 4
+          }
+        ],
+        "supportingIds": [
+          "w1-01",
+          "w1-02",
+          "w1-03",
+          "w1-04",
+          "w1-05",
+          "w1-06"
+        ],
+        "counterevidenceIds": [],
+        "severityNote": ""
+      },
+      "review": null
+    },
+    {
+      "id": "revised-draft",
+      "batchId": "week-one",
+      "standardVersion": 2,
+      "system": "Prepared teaching example",
+      "provenance": "prepared",
+      "decision": {
+        "recommendation": "Fix invitation setup before scheduling exports.",
+        "problemId": "onboarding",
+        "rationale": "Four distinct customers report invitation friction. The six export messages come from one customer with a workaround. Harbor is now active, so four reports do not mean four currently blocked accounts.",
+        "counts": [
+          {
+            "problemId": "exports",
+            "messages": 6,
+            "customers": 1
+          },
+          {
+            "problemId": "onboarding",
+            "messages": 4,
+            "customers": 4
+          }
+        ],
+        "supportingIds": [
+          "w1-07",
+          "w1-08",
+          "w1-09",
+          "w1-10"
+        ],
+        "counterevidenceIds": [
+          "w1-12"
+        ],
+        "severityNote": "The supplied signal reports are medium severity. There is no high or critical incident in this batch."
+      },
+      "review": null
+    },
+    {
+      "id": "next-week",
+      "batchId": "week-two",
+      "standardVersion": 2,
+      "system": "Prepared teaching example",
+      "provenance": "prepared",
+      "decision": {
+        "recommendation": "Build dark mode next.",
+        "problemId": "dark-mode",
+        "rationale": "Five distinct customers requested dark mode; only one reported deleted work. Customer breadth makes dark mode the priority. Maple can continue using the current theme.",
+        "counts": [
+          {
+            "problemId": "data-loss",
+            "messages": 1,
+            "customers": 1
+          },
+          {
+            "problemId": "dark-mode",
+            "messages": 5,
+            "customers": 5
+          }
+        ],
+        "supportingIds": [
+          "w2-02",
+          "w2-03",
+          "w2-04",
+          "w2-05",
+          "w2-06"
+        ],
+        "counterevidenceIds": [
+          "w2-08"
+        ],
+        "severityNote": ""
+      },
+      "review": null
+    },
+    {
+      "id": "next-week-revised",
+      "batchId": "week-two",
+      "standardVersion": 2,
+      "system": "Prepared teaching example",
+      "provenance": "prepared",
+      "decision": {
+        "recommendation": "Investigate deleted project recovery before starting dark mode.",
+        "problemId": "data-loss",
+        "rationale": "The critical report needs immediate investigation and containment, not an assumed full rewrite. Five customers request a cosmetic improvement; that breadth does not outweigh potential irreversible loss. Cedar has not reproduced it elsewhere, so scope remains unknown.",
+        "counts": [
+          {
+            "problemId": "data-loss",
+            "messages": 1,
+            "customers": 1
+          },
+          {
+            "problemId": "dark-mode",
+            "messages": 5,
+            "customers": 5
+          }
+        ],
+        "supportingIds": [
+          "w2-01"
+        ],
+        "counterevidenceIds": [
+          "w2-07"
+        ],
+        "severityNote": "w2-01 describes critical lost work. Prioritize investigation and protect affected data. w2-07 limits our confidence about reach; verify reproduction before estimating the broader impact."
+      },
+      "review": null
+    }
+  ],
+  "lessons": [
+    {
+      "id": "lesson-1",
+      "text": "Separate message count from customer count. Preserve counterevidence and weigh severity.",
+      "reason": "One customer can send many messages; a single critical incident can outrank a popular preference.",
+      "date": "2026-09-12T02:35:55.151Z",
+      "standardVersion": 2
+    }
+  ],
+  "activeRunId": "first-draft"
+}

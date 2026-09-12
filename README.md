@@ -1,36 +1,52 @@
 # pmstack
 
-### This is how you ship evals as a PM.
+## Teach your AI teammate how you make product decisions.
 
-> [!TIP]
-> ### How do you measure the success of AI features?
-> **[Take the 2-minute Eval-Readiness check →](https://ryanalberts.github.io/pmstack/eval-readiness/)** &nbsp; · &nbsp; 8 questions · no email · instant score.
-> Most PMs find out they're shipping on vibes — then it names the one gap to fix first.
+**Test whether the lesson holds next time.**
 
----
+[**Try the interactive workspace →**](https://ryanalberts.github.io/pmstack/workspace/) · [Use your own agent](docs/work-review.md) · [Research and product thesis](docs/research-thesis.md)
 
-An **eval** is how you prove an AI feature is actually good — and *stays* good after the next model update. In 2025 it became the line between a real AI PM and one who ships and hopes (OpenAI's CPO, Lenny, and a16z all said as much). But every eval tool is built for ML engineers: dashboards, SDKs, CI pipelines. **pmstack is the one a PM runs.** Here, `/eval` is a command — not a $2,000 course.
+[![The pmstack customer problem decision workflow](docs/workspace/walkthrough.gif)](https://ryanalberts.github.io/pmstack/workspace/)
 
-It's a set of commands you run inside Claude — terminal *or* phone, no code. The eval lifecycle is the core; the rest of your PM workflow (PRDs, competitive teardowns, launch-readiness gates, the Monday memo) rides along in the same place.
+Your AI teammate recommends a feature. Six messages look like six customers. They came from one.
 
-> If gstack is the engineer's setup, pmstack is the PM's. Prove you know whether the model is any good. A feature flag won't tell you your model got quietly dumber overnight after a version bump. An eval will.
+You catch the mistake, explain your judgment, and save a standard. Next week brings a harder case: a critical failure affecting one customer. Did the teammate learn to reason better, or just learn to count votes?
 
-**See it in 30 seconds.** Point it at any AI feature — get a real test suite, not advice:
+pmstack makes that loop usable: **real work → explicit standards → evidence → a human decision → a lesson tested on new work.** The interactive example teaches the process while you use it. File handoff carries the same standards to Claude, Codex, Grok Bot, or another agent that can return JSON.
 
+### What is an eval?
+
+An eval is a repeatable check of whether an AI system does a defined job well enough. It brings together a situation, expected behavior, the actual result, and a way to judge the difference. A score summarizes evidence; it does not prove customer value.
+
+The PM owns the job, customer tradeoffs, and acceptance decision. Code checks facts such as citations and customer counts. Human review decides whether the recommendation makes sense. When a check is wrong, improve the evaluator; when behavior is wrong, improve the instructions or system, then test again.
+
+### Make your first decision
+
+1. [Open the workspace](https://ryanalberts.github.io/pmstack/workspace/). No install or account.
+2. Check the recommendation against the customer conversations.
+3. Teach the judgment behind your correction. See which checks become active.
+4. Test it against next week's evidence, including a severe single-customer issue.
+5. Download instructions for your own teammate, import its response, and record your decision.
+
+The walkthrough uses **prepared teaching examples**, not a model benchmark. The browser makes no AI calls. Your workspace stays in browser storage until you export it. JSON keeps the job, sources, standards, lessons, and reviews portable; Markdown carries the decision to your team. Accepted lessons change explicit instructions, not model weights.
+
+### Continue in your existing workflow
+
+```sh
+# Node.js 20+; no package installation
+node bin/work-review.mjs prompt docs/workspace/demo-data.json week-one
+node bin/work-review.mjs check docs/workspace/demo-data.json
 ```
-/eval "AI code-review bot that comments on pull requests"
-```
 
-<p align="center">
-  <img src="docs/demo.gif" alt="Terminal demo: running /eval on an AI code-review bot and getting back a runnable eval YAML with tasks, graders, and a pass^k bar" width="800">
-  <br><sub><em>A real run — the YAML shown is actual /eval output, not a mockup.</em></sub>
-</p>
+The second command exits 1 because the prepared decision still needs human review. [The workflow guide](docs/work-review.md) explains importing a response and exporting a brief. Use your existing agent runtime for execution and scheduling. pmstack supplies the review contract and evidence trail.
 
-→ a runnable eval YAML: tasks, graders (code / model / human), negative cases, and the **pass^k** bar you'd gate a launch on. [See a full one ›](./examples/walkthrough-code-review/eval-code-review-2026-05-06.yaml) Then `/run-eval` scores it against the real system and flags the week it regresses.
+The original PM skills remain available below: product briefs, research, PRDs, eval design, launch reviews, and weekly workflows. The new workspace gives them a concrete destination: a decision you can inspect and improve.
 
-That's the wedge. The PRDs, voice-of-customer synthesis, and stakeholder briefs are table stakes — every AI writes those. **An eval a PM can actually run is the part nobody else ships.**
+### A weekly practice, not a one-time score
 
-**Brand new?** Run `/onboarding` once — it walks the whole stack on a real example, start to finish. If it earns a place in your workflow, star the repo so you can find your way back.
+We propose spending **40% of AI product management time** understanding behavior, reviewing real work, improving tests, and learning from failures. This is an operating philosophy, not an industry benchmark. Start with one recurring customer decision and measure whether the next one is more useful.
+
+[Demo script and LinkedIn draft](docs/workspace/DEMO.md) · [Real agent handoff](examples/work-review/README.md) · [Local setup](docs/workspace/README.md) · [Eval-readiness check](https://ryanalberts.github.io/pmstack/eval-readiness/)
 
 ---
 
@@ -123,7 +139,7 @@ An **eval** is the test suite for an AI feature - it's how we evaluate non-deter
 
 - **`/vibe-test`** — Read raw transcripts of your AI feature in action; surface failure patterns and draft task candidates *before* you formalize a test suite. (Anthropic's "start with manual testing" ritual.)
 - **`/eval`** — Design the suite. Output: a YAML with tasks, metrics, graders (`code` / `model` / `human`), and pass-bars.
-- **`/run-eval`** — Execute the suite against a real AI system; report **pass@k** AND **pass^k**. Hard-stops if no target is configured — never invents fake scores.
+- **`/run-eval`** — Execute supported `test_cases` against a configured AI system and report available scores. The current runner invokes each case once; it does not compute repeated-trial metrics. Hard-stops if no target is configured — never invents fake scores.
 - **`/transcript-review`** — Walk every failed trial asking the diagnostic question: *model mistake, grader mistake, or task-spec error?* (Anthropic's "read the transcripts" ritual.)
 - **`/eval-drift`** — Re-run the suite weekly, diff against last week, flag any regression as a release blocker.
 
@@ -161,7 +177,7 @@ Define how you'll know your work succeeded, then check whether it did — using 
 | `/metrics "<feature>"` | "How will we know this worked?" | North Star + 2–3 supporting + 1–2 counter-metrics → [example](./examples/walkthrough-code-review/metrics-code-review-2026-05-06.md) | CLI · web · desktop · mobile |
 | `/vibe-test "<feature>"` | "What does this AI feature actually do in the wild?" | A vibe-test memo — failure patterns + task candidates + 'ready for `/eval`?' verdict (reads transcripts via paste, attach, or `--from-folder`) | CLI · web · desktop · mobile |
 | `/eval "<AI feature>"` | "What does 'good' actually look like for this AI feature?" | A test-suite YAML — tasks, metrics, graders (code/model/human), pass@k or pass^k → [example](./examples/walkthrough-code-review/eval-code-review-2026-05-06.yaml) | CLI · web · desktop · mobile |
-| `/run-eval <eval-yaml-path>` | "Does this AI feature actually pass the bar?" | A scored summary.md with **both pass@k AND pass^k**, top failures, cost → [example](./examples/walkthrough-code-review/eval-runs/code-review-eval-2026-05-06/summary.md) | CLI only (needs a real target) |
+| `/run-eval <eval-yaml-path>` | "Does this AI feature actually pass the bar?" | A scored summary.md, top failures, and cost; one invocation per supported test case → [example](./examples/walkthrough-code-review/eval-runs/code-review-eval-2026-05-06/summary.md) | CLI only (needs a real target) |
 | `/transcript-review <run-folder>` | "Why did these trials fail — model, grader, or task?" | A diagnosis memo — per-trial verdicts + proposed eval changes (reads `/run-eval` output) | CLI · web · desktop · mobile |
 | `/eval-self [--skill <name>]` | "Is pmstack itself still good?" | Scores every pmstack skill against canonical scenarios | CLI only |
 

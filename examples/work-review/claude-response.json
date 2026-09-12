@@ -1,0 +1,26 @@
+{
+  "decision": {
+    "recommendation": "Act on the deleted-project data loss (data-loss). Although dark mode is far more popular, a critical, unrecoverable data-loss incident outranks a widely requested cosmetic preference.",
+    "problemId": "data-loss",
+    "rationale": "data-loss carries the only critical signal (w2-01): deleting one project also removed another and the work cannot be restored. This is severe and irreversible even though it comes from a single customer. dark-mode has more volume (5 signal messages from 5 distinct customers: w2-02, w2-03, w2-04, w2-05, w2-06), but every message is low severity and explicitly non-blocking (w2-05, and counterevidence w2-08). Per the 'do not let popularity hide severity' standard, the tradeoff favors the critical data-loss incident: potential permanent loss of customer work is a higher-order risk than an eye-comfort preference. The main caveat is reproducibility (see severity note and counterevidence).",
+    "counts": [
+      {
+        "problemId": "data-loss",
+        "messages": 1,
+        "customers": 1
+      },
+      {
+        "problemId": "dark-mode",
+        "messages": 5,
+        "customers": 5
+      }
+    ],
+    "supportingIds": [
+      "w2-01"
+    ],
+    "counterevidenceIds": [
+      "w2-07"
+    ],
+    "severityNote": "w2-01 is the critical signal: cross-project deletion with unrecoverable work loss \u2014 the driver of this recommendation despite affecting one customer. w2-07 is high-severity counterevidence tied to the same problem: the incident occurred once in one account and has not been reproduced in a second workspace, so scope and root cause remain uncertain. Implication: prioritize investigation and a safeguard/backup path, but treat blast radius as unconfirmed pending reproduction. Note also that w2-01 (Cedar, Enterprise) and w2-07 (Cedar, Growth) share the name 'Cedar' but differ by segment; counted as one distinct signal customer for data-loss. All dark-mode signals are low severity."
+  }
+}

@@ -24,3 +24,13 @@ venv/
 
 # Per-run eval execution artifacts (the parent outputs/ stays tracked for canonical examples)
 outputs/eval-runs/
+
+# Local research retrievals and discarded design exploration
+outputs/research-2026-09-12/
+
+# Credentials
+.env
+.env.*
+*.pem
+*.key
+credentials.json
