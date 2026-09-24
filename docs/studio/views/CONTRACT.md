@@ -57,6 +57,8 @@ State (read with `useStore`):
 - `ui.filters` starts as `DEFAULT_FILTERS` from `store.mjs`: `{ status: 'all', meta: {}, modeId: null, stage: null, text: '', version: null }` (the shape `filterTraces` takes). Replace it whole: `setUi({ filters: { ...filters, status: 'recheck' } })`.
 - `ui.showHidden` is `null` until the reader toggles it; then use `defaultShowHidden(viewId)` as the fallback.
 - `ui.traceId` follows `#/review/<id>`; other tabs can use it to link back to the trace the reader was on.
+- `ui.focusMode` (a failure mode id) asks Failure modes to scroll to that mode and focus its stage menu; the Funnel's Unknown stage box sets it. `ui.focusStep` asks Review to scroll to one step.
+- `externalChange` is `'changed'` or `'deleted'` once another tab saved, replaced, or deleted the open project. Opening any project clears it.
 
 Change the project only through `updateProject(fn, reason)`. `fn` gets the current project and returns the next one from an engine mutator. The store marks the changed top-level keys and saves 400 ms later.
 
@@ -69,7 +71,8 @@ updateProject((p) => lib.acceptSuggestion(p, sid, { traceIds }).project, 'accept
 
 - Return the same project to do nothing. Never mutate the project in place and never deep-clone it; engine mutators share structure on purpose.
 - When a mutator returns extra data (`{ project, id }`, `{ project, openTraceId }`), read it inside `fn` and keep it in a local variable: `let newId; updateProject((p) => { const r = lib.addMode(p, m); newId = r.id; return r.project; });`.
-- Other exports: `store.get()`, `store.subscribe(fn)`, `flush()` (save now; returns a promise), `navigate(tab, param, { replace })`, `setUi(patch)`, `openProject(id)`, `openSample(id)`, `importProjectFile(text, { onClash })` (onClash resolves to `'replace'`, `'keep'`, or `null` to cancel; returns `{ ok, errors, id }`), `createProjectFrom({ name, experience, traces })`, `deleteProject(id)`, `resetSample(id)`, `getSampleIndex()` (samples/index.json, or `[]`), `projectFile(project)` (`{ filename, text }` for "Download project"), `noteBackup()` (call after the reader downloads the project), `hashFor(tab, param)`.
+- Other exports: `store.get()`, `store.subscribe(fn)`, `flush()` (save now; returns a promise), `navigate(tab, param, { replace })`, `setUi(patch)`, `openProject(id)`, `openSample(id)`, `importProjectFile(text, { onClash })` (onClash resolves to `'replace'`, `'keep'`, or `null` to cancel; returns `{ ok, errors, id }`), `createProjectFrom({ name, experience, traces })`, `deleteProject(id)`, `resetSample(id)`, `getSampleIndex()` (samples/index.json, or `[]`), `projectFile(project)` (`{ filename, text }` for "Download project"), `noteBackup()` (call after the reader downloads the project), `hashFor(tab, param)`, `setLeaveGuard(fn)` (while a view holds unsaved input, `fn(tab, param)` runs before every route change and returns true to stay; the view asks, then navigates itself after `setLeaveGuard(null)`), `leaveBlocked(tab, param)`.
+- Routes a view can link to: `#/setup/new` (the wizard) and `#/setup/<section>` (settings open at `product`, `traces`, `pattern`, `stages`, `view`, `filters`, or `people`).
 - Folder mode has one project. `createProjectFrom`, `importProjectFile`, `deleteProject`, `openSample`, and `resetSample` refuse there with a plain message; the wizard edits the folder project with `updateProject`.
 - In folder mode with `tracesFile` set, trace changes are not written back to the trace file. Adding traces in folder mode needs its own plan; flag it if your view offers it.
 

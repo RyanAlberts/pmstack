@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // build-visuals.mjs: draws the README and landing page visuals from the pmstack engine.
 //
-//   node scripts/build-visuals.mjs            write docs/assets/visuals/<name>-light.svg, <name>-dark.svg, <name>.svg
+//   node scripts/build-visuals.mjs            write docs/assets/visuals/<name>-light.svg, <name>-dark.svg, <name>.svg,
+//                                             and <name>-narrow-*.svg for phones (heading wrapped to fit)
 //   node scripts/build-visuals.mjs --check    rebuild in memory; exit 1 if any committed visual differs
 //   node scripts/build-visuals.mjs --png      also render docs/assets/og.png (social card, 1200 x 630)
 //   node scripts/build-visuals.mjs --screens  also capture docs/assets/screens/<name>-<theme>.png
@@ -189,14 +190,27 @@ class Svg {
   }
 }
 
-/** Wrap a drawing into a complete SVG document with title, alt text, and the background card. */
-function svgDocument(visual, theme) {
-  const svg = new Svg(theme, `pmv-${visual.name}`);
-  svg.rect(0.5, 0.5, visual.width - 1, visual.height - 1, { r: 20, fill: 'surface', stroke: 'line' });
+/**
+ * Wrap a drawing into a complete SVG document with title, alt text, and the background card.
+ * The narrow version is for phones, where a visual scrolls sideways: its title, subtitle, and
+ * legend wrap to fit the first view, and the rest of the drawing moves down to make room.
+ */
+function svgDocument(visual, theme, { narrow = false } = {}) {
+  const name = narrow ? `${visual.name}-narrow` : visual.name;
+  const svg = new Svg(theme, `pmv-${name}`);
+  svg.narrow = narrow;
   visual.draw(svg);
-  const head = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${visual.width} ${visual.height}" width="${visual.width}" height="${visual.height}" role="img" aria-labelledby="${svg.id('title')} ${svg.id('desc')}" font-family="${esc(FONT)}">`;
-  const out = [head, `<title id="${svg.id('title')}">${esc(visual.title)}</title>`, `<desc id="${svg.id('desc')}">${esc(visual.desc)}</desc>`, ...svg.parts, '</svg>', ''].join('\n');
-  lintSvg(visual.name, theme, out);
+  const shift = narrow ? svg.shift : 0;
+  if (narrow && !(shift >= 0)) throw new Error(`${name}: the narrow version needs a heading and a legend.`);
+  const height = visual.height + shift;
+  const card = new Svg(theme, svg.prefix);
+  card.rect(0.5, 0.5, visual.width - 1, height - 1, { r: 20, fill: 'surface', stroke: 'line' });
+  const body = narrow
+    ? [...svg.parts.slice(0, svg.contentStart), `<g transform="translate(0 ${n(shift)})">`, ...svg.parts.slice(svg.contentStart), '</g>']
+    : svg.parts;
+  const head = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${visual.width} ${n(height)}" width="${visual.width}" height="${n(height)}" role="img" aria-labelledby="${svg.id('title')} ${svg.id('desc')}" font-family="${esc(FONT)}">`;
+  const out = [head, `<title id="${svg.id('title')}">${esc(visual.title)}</title>`, `<desc id="${svg.id('desc')}">${esc(visual.desc)}</desc>`, ...card.parts, ...body, '</svg>', ''].join('\n');
+  lintSvg(name, theme, out);
   return out;
 }
 
@@ -214,12 +228,12 @@ function lintSvg(name, theme, text) {
 
 // ------------------------------------------------------------------ shared marks (one legend grammar)
 
-const GLYPH_WIDTH = { success: 28, failure: 18, check: 30, person: 16, sparkle: 18, start: 32 };
+const GLYPH_WIDTH = { success: 28, failure: 10, check: 30, person: 16, sparkle: 18, start: 32 };
 
 /** Draw a legend glyph with its left edge at x, vertically centered on cy. */
 function glyph(svg, kind, x, cy) {
   if (kind === 'success') svg.rect(x, cy - 8, 28, 16, { r: 8, fill: 'good-soft', stroke: 'good', sw: 1.5 });
-  else if (kind === 'failure') svg.path(strandPath(x, cy), { fill: 'bad' });
+  else if (kind === 'failure') svg.path(dropPath(x, cy), { fill: 'bad' });
   else if (kind === 'check') svg.rect(x, cy - 8, 30, 16, { r: 8, fill: 'surface-2', stroke: 'ink-3', sw: 1.3 });
   else if (kind === 'person') person(svg, x + 8, cy, 'accent');
   else if (kind === 'sparkle') sparkle(svg, x + 9, cy, 9, 'ai');
@@ -229,11 +243,10 @@ function glyph(svg, kind, x, cy) {
   }
 }
 
-/** The failure mark: a strand that peels off to the right and falls, like the drops in the funnel. */
-function strandPath(x, cy, k = 1) {
-  const w = 5.5 * k, r = 6 * k, top = cy - 9 * k, R = r + w;
-  return `M${n(x)} ${n(top)}H${n(x + 1)}A${n(R)} ${n(R)} 0 0 1 ${n(x + 1 + R)} ${n(top + R)}V${n(cy + 7 * k)}`
-    + `a${n(w / 2)} ${n(w / 2)} 0 0 1 ${n(-w)} 0V${n(top + R)}A${n(r)} ${n(r)} 0 0 0 ${n(x + 1)} ${n(top + w)}H${n(x)}Z`;
+/** The failure mark: a red drop, the same glyph as the live funnel's legend in Eval Studio. */
+function dropPath(x, cy) {
+  const w = GLYPH_WIDTH.failure;
+  return `M${n(x)} ${n(cy - 9)}h${n(w)}v13a${n(w / 2)} ${n(w / 2)} 0 0 1 ${n(-w)} 0Z`;
 }
 
 function person(svg, cx, cy, color, s = 1) {
@@ -247,8 +260,28 @@ function sparkle(svg, cx, cy, r, color) {
     + `Q${n(cx - k)} ${n(cy + k)} ${n(cx - r)} ${n(cy)}Q${n(cx - k)} ${n(cy - k)} ${n(cx)} ${n(cy - r)}Z`, { fill: color });
 }
 
+// The narrow version's heading and legend fit in this width, starting at x 32: what a 360 px wide
+// phone shows of a visual drawn 760 px wide, before the reader scrolls sideways.
+const NARROW_WIDTH = 470;
+
 /** Legend in the top right: items [{ glyph, label }], right-aligned at `right`, text baseline `y`. */
 function legend(svg, items, right, y) {
+  if (svg.narrow) {
+    // Under the heading, from the left edge. The drawing below moves down by the height the
+    // wrapped heading and the legend add, so it keeps its distance from the text above it.
+    const ly = svg.headEnd + 40;
+    let x = 32;
+    for (const it of items) {
+      glyph(svg, it.glyph, x, ly - 6);
+      x += GLYPH_WIDTH[it.glyph] + 10;
+      svg.text(x, ly, it.label, { color: 'ink-2' });
+      x += measure(it.label, 18) * FIT + 30;
+    }
+    if (x - 30 > 32 + NARROW_WIDTH) throw new Error(`The legend "${items.map((it) => it.label).join(', ')}" is too wide for the narrow version.`);
+    svg.shift = ly + 12 - 102;
+    svg.contentStart = svg.parts.length;
+    return 32;
+  }
   let x = right;
   const placed = [];
   for (const it of [...items].reverse()) {
@@ -265,10 +298,32 @@ function legend(svg, items, right, y) {
   return x + 30;
 }
 
-/** Title and subtitle, top left. */
+/** One or two lines within NARROW_WIDTH, split between sentences when both fit, else balanced. */
+function narrowLines(text, size, weight = 400) {
+  const fits = (s) => measure(s, size, weight) * FIT <= NARROW_WIDTH;
+  if (fits(text)) return [text];
+  const at = text.indexOf('. ');
+  if (at > 0 && fits(text.slice(0, at + 1)) && fits(text.slice(at + 2))) return [text.slice(0, at + 1), text.slice(at + 2)];
+  return wrapBalanced(text, NARROW_WIDTH, size, weight);
+}
+
+/** Title and subtitle, top left. The narrow version wraps each one to fit NARROW_WIDTH. */
 function heading(svg, title, subtitle, x = 32) {
-  svg.text(x, 68, title, { size: 40, weight: 700 });
-  if (subtitle) svg.text(x, 102, subtitle, { size: 22, color: 'ink-2' });
+  if (!svg.narrow) {
+    svg.text(x, 68, title, { size: 40, weight: 700 });
+    if (subtitle) svg.text(x, 102, subtitle, { size: 22, color: 'ink-2' });
+    return;
+  }
+  const lines = narrowLines(title, 40, 700);
+  svg.text(x, 68, lines, { size: 40, weight: 700, lh: 46 });
+  let y = 68 + 46 * (lines.length - 1);
+  if (subtitle) {
+    const sub = narrowLines(subtitle, 22);
+    y += 34;
+    svg.text(x, y, sub, { size: 22, color: 'ink-2', lh: 28 });
+    y += 28 * (sub.length - 1);
+  }
+  svg.headEnd = y;
 }
 
 /** A filled arrowhead with its tip at (x, y) pointing in direction dir. */
@@ -340,7 +395,7 @@ function funnelVisual(D) {
   const repeats = modes.get('sm-repeats-the-booking-back');
   const desc = `The funnel of an AI experience for a dental booking assistant. ${funnel.counted} reviewed conversations move left to right through ${NUMBER_WORDS[stages.length]} stages: ${stages.map((s) => lowerFirst(s.label)).join(', ')}. `
     + `At each stage, failing conversations drop out under a named failure mode, such as ${personMode ? personMode.firstHere : 0} that ignored requests for a person, and green chips show success modes, such as ${repeats ? 'repeating the booking back' : 'what went right'}. `
-    + `A bottom row shows the check that catches each failure mode. ${funnel.passed} of ${funnel.counted} reach a good outcome.`;
+    + `A bottom row shows the check for each failure mode, where one exists. ${funnel.passed} of ${funnel.counted} reach a good outcome.`;
 
   return {
     name: 'funnel', width: 1200, height: 720, title: 'The funnel of an AI experience', desc,
@@ -437,10 +492,7 @@ function funnelVisual(D) {
       // The band: flat top; the lower edge steps up exactly where each ribbon leaves.
       svg.raw(`<defs><linearGradient id="${svg.id('band')}" x1="0" y1="0" x2="1" y2="0">`
         + `<stop offset="0" style="stop-color:${svg.color('accent')};stop-opacity:0.28"/>`
-        + `<stop offset="1" style="stop-color:${svg.color('accent')};stop-opacity:0.13"/></linearGradient>`
-        + `<linearGradient id="${svg.id('drop')}" x1="0" y1="0" x2="0" y2="1">`
-        + `<stop offset="0" style="stop-color:${svg.color('bad')};stop-opacity:0.5"/>`
-        + `<stop offset="1" style="stop-color:${svg.color('bad')};stop-opacity:1"/></linearGradient></defs>`);
+        + `<stop offset="1" style="stop-color:${svg.color('accent')};stop-opacity:0.13"/></linearGradient></defs>`);
       const RC = 10;
       let d = `M${X0 + RC} ${TB}H${END + 14}V${n(TB + T(nexts[stages.length - 1]))}`;
       for (let i = stages.length - 1; i >= 0; i--) {
@@ -461,12 +513,12 @@ function funnelVisual(D) {
         const xi = p.xs + RUN, xo = xi + p.w;
         const outer = `C${n(p.xs + C * (xo - p.xs))} ${n(p.ya)} ${n(xo)} ${n(Y1 - C * (Y1 - p.ya))} ${n(xo)} ${Y1}`;
         const inner = `C${n(xi)} ${n(Y1 - C * (Y1 - p.yb))} ${n(p.xs + C * (xi - p.xs))} ${n(p.yb)} ${n(p.xs)} ${n(p.yb)}`;
-        svg.raw(`<path d="M${n(p.x0)} ${n(p.ya)}H${n(p.xs)}${outer}H${n(xi)}${inner}H${n(p.x0)}Z" style="fill:url(#${svg.id('drop')});stroke:none"/>`);
+        svg.raw(`<path d="M${n(p.x0)} ${n(p.ya)}H${n(p.xs)}${outer}H${n(xi)}${inner}H${n(p.x0)}Z" style="fill:${svg.color('bad')};fill-opacity:.85;stroke:none"/>`);
       });
 
-      // Counts inside the band: where it starts, then how many are still on track at each stage.
+      // Counts inside the band: how many are still on track at each stage.
       stages.forEach((s, i) => {
-        const runs = [{ t: String(s.onTrack), size: 22, weight: 700, color: 'accent' }, { t: i ? ' on track' : ' reviewed', color: 'ink-2' }];
+        const runs = [{ t: String(s.onTrack), size: 22, weight: 700, color: 'accent' }, { t: ' on track', color: 'ink-2' }];
         const w = measure(runs[0].t, 22, 700) + measure(runs[1].t, 18);
         if (w * FIT > CW - 20) throw new Error(`The band label "${runs[0].t}${runs[1].t}" does not fit its stage.`);
         svg.text(colX(i) + 14, TB + 30, [runs]);
@@ -660,7 +712,7 @@ function notesVisual(D) {
         for (let s = p.stack; s > 0; s -= 5) shape(s, true);
         shape(0, false);
         const cy = p.y + p.h / 2;
-        if (p.kind === 'failure') glyph(svg, 'failure', PX + 14, cy + 1);
+        if (p.kind === 'failure') glyph(svg, 'failure', PX + 17, cy + 1);
         else if (p.kind === 'success') glyph(svg, 'success', PX + 10, cy);
         else svg.rect(PX + 14, cy - 8, 16, 16, { r: 4, stroke: 'ink-3', sw: 1.4, dash: '3 3' });
         svg.text(PX + NAME_X, cy - ((p.lines.length - 1) * 22) / 2 + 6.3, p.lines, { weight: 600, color: p.kind === 'ignore' ? 'ink-2' : 'ink', lh: 22 });
@@ -940,9 +992,9 @@ function toolCallsVisual() {
       const bracket = { stroke: 'ink-3', sw: 1.8, cap: 'round', join: 'round' };
       const title = (cx, y, label) => svg.text(cx, y, label, { size: 20, weight: 700, anchor: 'middle' });
       const redMark = (cx, y, label) => {
-        const w = 14 + 10 + measure(label, 18, 600);
+        const w = GLYPH_WIDTH.failure + 10 + measure(label, 18, 600);
         glyph(svg, 'failure', cx - w / 2, y - 6);
-        svg.text(cx - w / 2 + 24, y, label, { weight: 600, color: 'bad' });
+        svg.text(cx - w / 2 + GLYPH_WIDTH.failure + 10, y, label, { weight: 600, color: 'bad' });
       };
 
       // Policy: above the call.
@@ -974,12 +1026,17 @@ function toolCallsVisual() {
 
 // ------------------------------------------------------------------ build, check, write
 
+// The visuals the landing page and Eval Studio's Welcome show, which scroll sideways on phones.
+const NARROW_VISUALS = ['funnel', 'loop', 'patterns', 'tool-calls'];
+
 function buildVisuals() {
   const D = loadData();
   const visuals = [funnelVisual(D), loopVisual(), notesVisual(D), judgeVisual(D), patternsVisual(), toolCallsVisual()];
   const files = new Map();
   for (const v of visuals) {
     for (const theme of THEMES) files.set(`${v.name}${theme === 'vars' ? '' : `-${theme}`}.svg`, svgDocument(v, theme));
+    if (!NARROW_VISUALS.includes(v.name)) continue;
+    for (const theme of THEMES) files.set(`${v.name}-narrow${theme === 'vars' ? '' : `-${theme}`}.svg`, svgDocument(v, theme, { narrow: true }));
   }
   return { files, data: D };
 }
@@ -1197,8 +1254,7 @@ function ogHtml() {
   // Each slice runs along the bottom of its stage, then swings down as a ribbon, as in the funnel visual.
   const X0 = 24, TB = 236, CW = 138, END = X0 + CW * 3, RUN = 64, FALL = 60, C = 0.5523;
   const thick = [150, 124, 106, 94];
-  svg.raw('<defs><linearGradient id="og-band" x1="0" y1="0" x2="1" y2="0"><stop offset="0" style="stop-color:#3A56D4;stop-opacity:0.30"/><stop offset="1" style="stop-color:#3A56D4;stop-opacity:0.14"/></linearGradient>'
-    + `<linearGradient id="og-drop" gradientUnits="userSpaceOnUse" x1="0" y1="${TB + 90}" x2="0" y2="${TB + 250}"><stop offset="0" style="stop-color:#BE3E29;stop-opacity:0.5"/><stop offset="1" style="stop-color:#BE3E29;stop-opacity:1"/></linearGradient></defs>`);
+  svg.raw('<defs><linearGradient id="og-band" x1="0" y1="0" x2="1" y2="0"><stop offset="0" style="stop-color:#3A56D4;stop-opacity:0.30"/><stop offset="1" style="stop-color:#3A56D4;stop-opacity:0.14"/></linearGradient></defs>');
   const drops = [0, 1, 2].map((i) => {
     const w = thick[i] - thick[i + 1];
     return { w, x0: i ? X0 + i * CW : X0 + 16, xs: X0 + i * CW + 34, ya: TB + thick[i + 1], yb: TB + thick[i] };
@@ -1211,7 +1267,7 @@ function ogHtml() {
   for (const p of drops) {
     const xi = p.xs + RUN, xo = xi + p.w, y2 = p.yb + FALL;
     svg.raw(`<path d="M${p.x0} ${p.ya}H${p.xs}C${n(p.xs + C * (xo - p.xs))} ${p.ya} ${xo} ${n(y2 - C * (y2 - p.ya))} ${xo} ${y2}V640`
-      + `H${xi}V${y2}C${xi} ${n(y2 - C * FALL)} ${n(p.xs + C * RUN)} ${p.yb} ${p.xs} ${p.yb}H${p.x0}Z" style="fill:url(#og-drop)"/>`);
+      + `H${xi}V${y2}C${xi} ${n(y2 - C * FALL)} ${n(p.xs + C * RUN)} ${p.yb} ${p.xs} ${p.yb}H${p.x0}Z" style="fill:#BE3E29;fill-opacity:.85"/>`);
   }
   [[X0 + 10, 118], [X0 + 2 * CW + 10, 118]].forEach(([x, w]) => {
     svg.rect(x, 156, w, 48, { r: 24, fill: 'good-soft', stroke: 'good', sw: 2 });

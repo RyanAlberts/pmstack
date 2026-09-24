@@ -111,7 +111,12 @@ function frontmatter(rel) {
   const out = {};
   for (const line of m[1].split('\n')) {
     const kv = line.match(/^([A-Za-z-]+):\s*(.*)$/);
-    if (kv) out[kv[1]] = kv[2].replace(/^"(.*)"$/, '$1');
+    if (!kv) continue;
+    // YAML reads an unquoted value with ": " or " #" in it, or one that starts with a YAML symbol, as
+    // something else (or fails), and the skill then loads with no name or description.
+    const quoted = /^"[^"]*"$/.test(kv[2]) || /^'[^']*'$/.test(kv[2]);
+    assert.ok(quoted || !/:(\s|$)| #|^[[\]{}#&*!|>'"%@`]|^[-?:](\s|$)/.test(kv[2]), `${rel}: put the ${kv[1]} value in double quotes so YAML can read it`);
+    out[kv[1]] = kv[2].replace(/^"(.*)"$/, '$1');
   }
   return out;
 }
@@ -239,7 +244,9 @@ const VISUALS = ['funnel', 'loop', 'notes-to-modes', 'judge-trust', 'patterns', 
 
 test('every visual exists as a light, dark, and inline (CSS variable) triple', () => {
   const files = list('docs/assets/visuals').filter((f) => f.endsWith('.svg'));
-  const expected = VISUALS.flatMap((n) => [`${n}-dark.svg`, `${n}-light.svg`, `${n}.svg`]).sort();
+  // The four visuals that scroll sideways on phones also come in a narrow version (heading wrapped).
+  const names = [...VISUALS, ...['funnel', 'loop', 'patterns', 'tool-calls'].map((n) => `${n}-narrow`)];
+  const expected = names.flatMap((n) => [`${n}-dark.svg`, `${n}-light.svg`, `${n}.svg`]).sort();
   assert.deepEqual(files, expected);
   for (const f of files) {
     const svg = read(`docs/assets/visuals/${f}`);

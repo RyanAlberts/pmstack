@@ -72,10 +72,12 @@ test('flagged and disagree use checks and judge results', () => {
     modes: [{ id: 'fm-x', kind: 'failure', name: 'x', definition: '', stage: null, createdAt: '2026-01-01T00:00:00Z' }],
     checks: [
       { id: 'ck', modeId: 'fm-x', type: 'code', rule: { op: 'contains', target: 'assistant', value: 'sure sure' }, failWhen: 'match' },
-      { id: 'jd', modeId: 'fm-x', type: 'judge', results: { t001: { verdict: 'fail' }, t002: { verdict: 'pass' } } },
+      { id: 'jd', modeId: 'fm-x', type: 'judge', results: { t001: { verdict: 'fail' }, t002: { verdict: 'pass' }, t003: { verdict: 'pass' }, t004: { verdict: 'pass' } } },
     ],
-    labels: { 'fm-x': { t001: 'pass', t002: 'pass' } },
-    reviews: { t001: review(null, 1), t002: review(null, 2) },
+    labels: { 'fm-x': { t001: 'pass', t002: 'pass', t003: 'fail', t004: 'fail' } },
+    reviews: { t001: review(null, 1), t002: review(null, 2), t003: review(null, 3), t004: review(null, 4) },
+    // t003 is in the final test and t004 has no split yet: neither may show where the judge is wrong.
+    splits: { 'fm-x': { seed: 7, assign: { t001: 'tuning', t002: 'tuning', t003: 'test' }, revealedAt: null } },
   };
   const flagged = nextBatch(p, { size: 20, strategy: 'flagged' });
   const f = flagged.filter((b) => b.reason === 'Flagged by a check').map((b) => b.traceId);
@@ -92,4 +94,11 @@ test('setBatch and coverage', () => {
   assert.equal(setBatch(q, null).batch, null);
   const r = { ...p, reviews: { t000: review('pass', 0), t003: review('fail', 1), t001: review('skip', 2) } };
   assert.deepEqual(coverage(r), { channel: [{ value: 'sms', total: 3, reviewed: 2 }, { value: 'voice', total: 3, reviewed: 0 }, { value: 'web', total: 3, reviewed: 0 }] });
+});
+
+test('"Judge disagrees with you" never picks a final test trace before the reveal', async () => {
+  const { readFileSync } = await import('node:fs');
+  const clinic = JSON.parse(readFileSync(new URL('../../docs/studio/samples/clinic-booking.json', import.meta.url), 'utf8'));
+  const picked = nextBatch(clinic, { strategy: 'disagree', seed: 7 }).filter((b) => b.reason === 'Judge disagrees with your label').map((b) => b.traceId);
+  assert.deepEqual(picked.sort(), ['t-0137', 't-0139', 't-0141']);
 });

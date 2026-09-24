@@ -4,7 +4,7 @@
 
 import { html, Icon, classes, plural } from 'pmstack/ui';
 import {
-  ItemCard, BehindTheScenes, StepMeta, SurfaceLabel, PickButton, LongText, EmptyTrace, pairSteps, withHidden, itemIds,
+  ItemCard, BehindTheScenes, StepMeta, SurfaceLabel, PickButton, LongText, Markdown, EmptyTrace, pairSteps, withHidden, itemIds,
   isErrorStep, stepAttrs, highlightsFor, userName, duration, kindInfo,
 } from './common.mjs';
 import { OutputBody } from './auto.mjs';
@@ -53,7 +53,8 @@ export default function AgentView(props) {
         <h3 class="rv-label">${firstUser ? `${who} asked` : 'Task'}</h3>
         ${firstUser && html`<${PickButton} stepId=${firstUser.id} stageId=${firstUser.stage} onPickStep=${props.onPickStep} picked=${props.pickedStepId === firstUser.id} />`}
       </div>
-      <${LongText} class="rv-agent-task-text" text=${task} limit=${700} highlights=${thl} />
+      <${LongText} class="rv-agent-task-text" text=${task} limit=${700} highlights=${thl}
+        render=${(t) => html`<${Markdown} text=${t} highlights=${thl} />`} />
       ${firstUser && html`<${StepMeta} ...${props} stepId=${firstUser.id} stageId=${firstUser.stage} />`}
     </section>`}
 

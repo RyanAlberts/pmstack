@@ -202,7 +202,7 @@ test('review with keys: Problem, a note, a stage, next trace; counts update and 
   await expect(page.locator('.review-progress-count')).toHaveText(`${stats.reviewed + 1} of ${stats.total} reviewed`);
   await expect(page.locator('.review-progress-split .is-fail')).toHaveText(`${stats.fail + 1} Problem`);
 
-  await page.keyboard.press('n');
+  // Problem with no note moves focus to the note box, so typing goes straight into the note.
   await expect(page.locator('#review-note-box')).toBeFocused();
   const note = 'Says the cleaning moved to Friday, but never asked her to confirm the time.';
   await page.keyboard.type(note);
@@ -237,7 +237,7 @@ test('create a failure mode, add a note to it, and see the new count in the funn
   const traceId = await page.locator('.review-head .review-id').textContent();
 
   await page.keyboard.press('2');
-  await page.keyboard.press('n');
+  await expect(page.locator('#review-note-box')).toBeFocused();
   const note = 'Told her the booking was done while the calendar still showed it as pending.';
   await page.keyboard.type(note);
   await judgePanel(page).locator('section[aria-labelledby="review-stage-title"]').getByRole('button', { name: /Reply to the patient/ }).click();
@@ -325,9 +325,12 @@ test('tool call checks: the policy check groups violations by rule, and Review b
   const groups = new Map();
   for (const [id, n] of lib.normalizeAll(agent)) {
     for (const v of lib.runCheck(check, n, lib.checkOptions(agent)).violations || []) {
-      const g = groups.get(v.ruleId) || { label: v.label, ids: new Set() };
+      // Rules made from the tools list (confirm, max-per-trace) group per tool.
+      const perTool = v.ruleId === 'confirm' || v.ruleId === 'max-per-trace';
+      const key = perTool ? `${v.ruleId}:${v.tool}` : v.ruleId;
+      const g = groups.get(key) || { label: perTool ? `${v.label} (${v.tool})` : v.label, ids: new Set() };
       g.ids.add(id);
-      groups.set(v.ruleId, g);
+      groups.set(key, g);
     }
   }
   expect(groups.size).toBeGreaterThan(1);
@@ -405,7 +408,7 @@ test('import round-trip: a downloaded project opens in a clean browser with ever
   await openSample(page, 'clinic-booking');
   const traceId = await page.locator('.review-head .review-id').textContent();
   await page.keyboard.press('2');
-  await page.keyboard.press('n');
+  await expect(page.locator('#review-note-box')).toBeFocused();
   const note = 'Offered Thursday at 9 after she said she works Thursdays.';
   await page.keyboard.type(note);
   await page.keyboard.press('Escape');
@@ -428,6 +431,42 @@ test('import round-trip: a downloaded project opens in a clean browser with ever
   await fresh.goto('/studio/#/review/' + traceId);
   await expect(fresh.locator('#review-note-box')).toHaveValue(note);
   await expect(judgePanel(fresh).getByRole('button', { name: /^Problem/ })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('a note and a verdict made just before a reload are still there after it', async ({ page }) => {
+  await openSample(page, 'clinic-booking');
+  const traceId = await page.locator('.review-head .review-id').textContent();
+  await page.locator('#review-note-box').click();
+  const note = 'Asked for her birthday twice.';
+  await page.keyboard.type(note);
+  await page.reload();
+  await page.goto('/studio/#/review/' + traceId);
+  await expect(page.locator('#review-note-box')).toHaveValue(note);
+  await page.locator('.review-center').focus();
+  await page.keyboard.press('1');
+  await page.reload();
+  await page.goto('/studio/#/review/' + traceId);
+  await expect(judgePanel(page).getByRole('button', { name: /^Good/ })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('a change in another tab stops saving that project only', async ({ page, context }) => {
+  await openSample(page, 'clinic-booking');
+  const other = await context.newPage();
+  await openSample(other, 'clinic-booking');
+  await page.bringToFront();
+  await page.keyboard.press('1');
+  await expect(other.locator('.save')).toContainText('Read only');
+  await other.bringToFront();
+  await openSample(other, 'gift-finder');
+  await expect(other.locator('.save')).toContainText('Saved in this browser only');
+  const traceId = await other.locator('.review-head .review-id').textContent();
+  await other.keyboard.press('2');
+  await other.keyboard.type('Suggests a gift over the budget.');
+  await other.keyboard.press('Escape');
+  await expect(other.locator('.save')).toContainText('Saved in this browser only');
+  await other.reload();
+  await other.goto('/studio/#/review/' + traceId);
+  await expect(other.locator('#review-note-box')).toHaveValue('Suggests a gift over the budget.');
 });
 
 // ---------------------------------------------------------------------------
@@ -544,7 +583,7 @@ test.describe('folder mode', () => {
       const target = await page.locator('.review-head .review-id').textContent();
 
       await page.keyboard.press('2');
-      await page.keyboard.press('n');
+      await expect(page.locator('#review-note-box')).toBeFocused();
       const note = 'Offered a tandem when the rider asked for two hybrids.';
       await page.keyboard.type(note);
       await page.keyboard.press('ControlOrMeta+Enter');

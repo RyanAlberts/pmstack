@@ -15,7 +15,8 @@ test('judge runs the tuning set, fills {model}, never sends examples, and record
   const { dir, projectPath } = await setup(t);
   const r = await run(['judge', projectPath, '--check', 'ck-judge', '--cmd', fake('single'), '--concurrency', '3'], dir);
   assert.equal(r.code, 0, r.err);
-  assert.match(r.err, /Judging 18 traces \(tuning set\) for "Bad reply" with: node ".*fake-judge\.mjs" single --model test-model-1/);
+  // The path is quoted only when it has a space, so accept it either way.
+  assert.match(r.err, /Judging 18 traces \(tuning set\) for "Bad reply" with: node "?[^"\n]*fake-judge\.mjs"? single --model test-model-1/);
   assert.match(r.out, /Judged 18 traces \(tuning set\) with "Bad reply judge"\./);
   assert.match(r.out, /Catches real failures\s+100%\s+\(9 of 9\)/);
   assert.match(r.out, /Agrees on good traces\s+100%\s+\(9 of 9\)/);
@@ -80,6 +81,45 @@ test('the final test needs --final, then reveals it; estimate works on unlabeled
   const outdated = await run(['estimate', projectPath, '--check', 'ck-judge'], dir);
   assert.equal(outdated.code, 2);
   assert.match(outdated.err, /Label new traces for a fresh final test\./);
+});
+
+test('a revealed final test is never run again; it can only be finished', async (t) => {
+  const { dir, projectPath } = await setup(t);
+  const final = ['judge', projectPath, '--check', 'ck-judge', '--cmd', fake('single'), '--split', 'test', '--final'];
+  const first = await run([...final, '--limit', '5'], dir);
+  assert.equal(first.code, 0, first.err);
+  assert.match(first.out, /The final test is now revealed\./);
+  const revealed = readJson(projectPath).checks[0].test;
+  const finish = await run(final, dir);
+  assert.equal(finish.code, 0, finish.err);
+  assert.match(finish.out, /Judged 11 traces \(final test\)/, 'only the final test traces with no answer');
+  assert.match(finish.out, /Added answers to the final test revealed on \d{4}-\d{2}-\d{2}\./);
+  assert.deepEqual(readJson(projectPath).checks[0].test, revealed, 'the first reveal is kept');
+  const again = await run(final, dir);
+  assert.equal(again.code, 2);
+  assert.match(again.err, /every final test trace has an answer\. It is used once, so it cannot run again\./);
+
+  // After the prompt changes, the final test is out of date and stays that way.
+  const p = readJson(projectPath);
+  write(projectPath, JSON.stringify({ ...p, checks: [{ ...p.checks[0], prompt: 'A new prompt.\n{{trace}}' }] }));
+  const before = fs.readFileSync(projectPath, 'utf8');
+  const outdated = await run(final, dir);
+  assert.equal(outdated.code, 2);
+  assert.match(outdated.err, /was used on \d{4}-\d{2}-\d{2}, and the judge or your labels changed since\. Label 30 new traces and start a fresh final test in Eval Studio \(Checks\)\./);
+  assert.equal(fs.readFileSync(projectPath, 'utf8'), before, 'check.test and everything else unchanged');
+  assert.match((await run(['estimate', projectPath, '--check', 'ck-judge'], dir)).err, /Label new traces for a fresh final test\./);
+});
+
+test('a timeout also stops what the command started', { skip: process.platform === 'win32' }, async (t) => {
+  const { dir, projectPath } = await setup(t);
+  // sh runs sleep as its own child, which keeps the output open after sh is stopped.
+  const script = write(path.join(dir, 'slow.sh'), 'cat > /dev/null\nsleep 20\necho \'{"critique": "late", "result": "Pass"}\'\n');
+  const start = Date.now();
+  const r = await run(['judge', projectPath, '--check', 'ck-judge', '--cmd', `sh "${script}"`, '--timeout', '0.5', '--limit', '1'], dir);
+  const took = Date.now() - start;
+  assert.equal(r.code, 2);
+  assert.match(r.err, /No answer within 0\.5 seconds\./);
+  assert.ok(took < 5000, `returned after ${took} ms`);
 });
 
 test('batches of traces in one call', async (t) => {

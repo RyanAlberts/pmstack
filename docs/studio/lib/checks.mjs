@@ -52,6 +52,28 @@ export function checkTypeLabel(check) {
   return 'Code check';
 }
 
+/**
+ * True for a code check with no rule yet: its operator needs a value (a pattern, words, a number,
+ * a field) and it is empty. A new check starts this way. Drafts measure nothing, are skipped by
+ * runChecks, and stay out of the report's check list and its downloads.
+ */
+export function isDraftCheck(check) {
+  if (check?.type !== 'code') return false;
+  const rule = check.rule || {};
+  const op = OPERATORS.find((o) => o.id === rule.op);
+  if (!op || !op.needs) return false;
+  const empty = (v) => String(v ?? '').trim() === '';
+  const path = String(rule.target || '').startsWith('field:') ? String(rule.target).slice(6) : rule.path;
+  switch (op.needs) {
+    case 'pattern': case 'text': case 'list': return empty(rule.value);
+    case 'number': return empty(rule.n ?? rule.value) || !Number.isFinite(numberOf(rule));
+    case 'tool+number': return empty(rule.n) || !Number.isFinite(Number(rule.n));
+    case 'field': return empty(path);
+    case 'field+text': return empty(path) || empty(rule.value);
+    default: return false;
+  }
+}
+
 /** What runCheck needs from the project: { userLabel, policy } (the policy of the first policy check, for success-after-error). */
 export function checkOptions(p) {
   return { userLabel: userWord(p?.experience), policy: projectPolicy(p) };
@@ -258,7 +280,7 @@ export function runCheck(check, normalized, opts = {}) {
  * pass every included check. Returns { byCheck: { [checkId]: { [traceId]: verdict } }, summary, passAll, total }.
  */
 export function runChecks(p, { onlyCi = false, traceIds = null, checkIds = null } = {}) {
-  const checks = (p.checks || EMPTY).filter((c) => isCodeCheck(c) && (!onlyCi || c.ci) && (!checkIds || checkIds.includes(c.id)));
+  const checks = (p.checks || EMPTY).filter((c) => isCodeCheck(c) && !isDraftCheck(c) && (!onlyCi || c.ci) && (!checkIds || checkIds.includes(c.id)));
   const norm = normalizeAll(p);
   const opts = checkOptions(p);
   const ids = traceIds || [...norm.keys()];
@@ -293,12 +315,14 @@ function judgeVerdict(check, traceId) {
 /**
  * Agreement between a check and your labels. Code checks (policy and relevance checks too) use
  * every labeled trace. Judge checks use the tuning set (default) or the final test once it is
- * revealed; never examples.
+ * revealed; never examples. Labels without a split yet are placed the way assignSplits will place
+ * them, so every view shows the same numbers before the Checks tab saves the new splits.
  */
-export function checkAgreement(p, checkId, { split = 'tuning' } = {}) {
-  const check = (p.checks || EMPTY).find((c) => c.id === checkId);
+export function checkAgreement(project, checkId, { split = 'tuning' } = {}) {
+  const check = (project.checks || EMPTY).find((c) => c.id === checkId);
   const empty = { ...agreement([]), split: null, unreadable: [], errors: [], missing: 0, locked: false };
-  if (!check) return empty;
+  if (!check || isDraftCheck(check)) return empty;
+  const p = check.type === 'judge' ? assignSplits(project, check.modeId) : project;
   const modeId = check.modeId;
   const pairs = [];
   const unreadable = [];
@@ -341,10 +365,14 @@ export function checkTestState(p, checkId) {
 
 const replaceCheck = (p, checkId, fn, t) => ({ ...p, checks: p.checks.map((c) => (c.id === checkId ? fn(c) : c)), updatedAt: t });
 
-/** Reveal the final test for a judge: records what was tested and locks the mode's test split. */
+/**
+ * Reveal the final test for a judge: records what was tested and locks the mode's test split.
+ * A final test is used once, so a judge whose final test is already revealed is left as it is
+ * (startFreshTest clears it for a fresh one).
+ */
 export function revealTest(p, checkId, opts = {}) {
   const check = (p.checks || EMPTY).find((c) => c.id === checkId);
-  if (!check) return p;
+  if (!check || check.test) return p;
   const t = stamp(opts);
   let q = p.splits?.[check.modeId] ? p : assignSplits(p, check.modeId, {}, { now: t });
   const mode = modeMap(q).get(check.modeId);

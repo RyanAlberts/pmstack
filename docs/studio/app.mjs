@@ -2,10 +2,10 @@
 
 import {
   html, render, useStore, useKeys, useState, useEffect, useMemo, useRef, shallowEqual, classes, formatCount,
-  Button, Chip, Drawer, Tabs, Icon, Kbd, Menu, Toaster, toast, download, MOD_LABEL,
+  Button, Chip, Drawer, Tabs, Icon, Kbd, Menu, Toaster, toast, dismissToast, download, MOD_LABEL,
 } from './ui.mjs';
 import {
-  store, init, navigate, setRoute, setUi, onNotice, openProject, openSample, flush, projectFile, noteBackup, hashFor,
+  store, init, navigate, setRoute, setUi, onNotice, openProject, openSample, flush, projectFile, noteBackup, hashFor, leaveBlocked,
 } from './store.mjs';
 import { reviewStats, userWord } from './lib/index.mjs';
 import welcome from './views/welcome.mjs';
@@ -58,6 +58,12 @@ function parseHash(hash) {
 
 function followHash() {
   const r = parseHash(location.hash);
+  if (r.known && leaveBlocked(r.tab, r.param)) {
+    // A view with unsaved input asks first: put its address back until the reader decides.
+    const cur = store.get().route;
+    history.replaceState(null, '', hashFor(cur.tab, cur.param));
+    return;
+  }
   if (!r.known) navigate('welcome', null, { replace: true });
   else setRoute(r.tab, r.param);
 }
@@ -99,7 +105,7 @@ function useRouteGuards(ready, route, hasProject, kind) {
 // Top bar
 
 function Brand() {
-  return html`<a class="brand" href="#/" aria-label="pmstack Eval Studio, home">
+  return html`<a class="brand" href="#/" aria-label="pmstack Eval Studio, home" onClick=${(e) => { if (leaveBlocked('welcome')) e.preventDefault(); }}>
     <svg class="brand-mark" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
       <rect x="3" y="5" width="26" height="6" rx="3" />
       <rect x="7.5" y="13" width="17" height="6" rx="3" />
@@ -115,6 +121,8 @@ function ProjectSwitcher() {
   const projects = useStore((s) => s.projects);
   const kind = useStore((s) => s.storageKind);
   const tab = useStore((s) => s.route.tab);
+  // The new project wizard is a project of its own until it is created.
+  const creating = useStore((s) => s.storageKind === 'browser' && s.route.tab === 'setup' && s.route.param === 'new');
 
   const open = async (id) => {
     try {
@@ -145,9 +153,9 @@ function ProjectSwitcher() {
   }
 
   return html`<div class="project-switch">
-    <${Menu} kind="ghost" label=${project ? project.name : 'No project open'} icon=${kind === 'folder' ? 'folder' : null}
+    <${Menu} kind="ghost" label=${creating ? 'New project' : project ? project.name : 'No project open'} icon=${kind === 'folder' ? 'folder' : null}
       items=${items} title="Switch project" />
-    ${project && project.sample && html`<${Chip} class="sample-badge">Sample data<//>`}
+    ${!creating && project && project.sample && html`<${Chip} class="sample-badge">Sample data<//>`}
   </div>`;
 }
 
@@ -170,7 +178,10 @@ function NavTabs() {
   const tab = useStore((s) => s.route.tab);
   const project = useStore((s) => s.project);
   const traceId = useStore((s) => s.ui.traceId);
-  const badges = useMemo(() => tabBadges(project), [project && project.reviews, project && project.traces, project && project.modes]);
+  // While a new project is being made, the switcher reads "New project", so the old project's counts stay hidden.
+  const creating = useStore((s) => s.storageKind === 'browser' && s.route.tab === 'setup' && s.route.param === 'new');
+  const counts = useMemo(() => tabBadges(project), [project && project.reviews, project && project.traces, project && project.modes]);
+  const badges = creating ? {} : counts;
   const nav = useRef(null);
   useEffect(() => {
     // On narrow screens the tab row scrolls sideways: keep the current tab in view.
@@ -192,7 +203,8 @@ function NavTabs() {
           <a class=${classes('navtab', active && 'is-active', disabled && 'is-disabled')}
             href=${hashFor(t.id, t.id === 'review' ? traceId : null)} title=${t.line}
             aria-current=${active ? 'page' : undefined} aria-disabled=${disabled ? 'true' : undefined}
-            tabindex=${disabled ? -1 : undefined} onClick=${disabled ? (e) => e.preventDefault() : undefined}>
+            tabindex=${disabled ? -1 : undefined}
+            onClick=${(e) => { if (disabled || leaveBlocked(t.id, t.id === 'review' ? traceId : null)) e.preventDefault(); }}>
             <span class="navtab-num" aria-hidden="true">${t.n}</span>
             <span class="navtab-label">${t.label}</span>
             ${badges[t.id] && html`<span class="badge">${badges[t.id]}</span>`}
@@ -223,7 +235,8 @@ function SaveIndicator() {
     title = 'Select to try again';
   } else if (s.save === 'readonly') {
     text = 'Read only';
-    title = s.other ? 'This project changed in another tab. Reload to keep working.' : 'Eval Studio saves again once pmstack/project.json can be read.';
+    title = s.other === 'deleted' ? 'This project was deleted in another tab. Reload to keep working.'
+      : s.other ? 'This project changed in another tab. Reload to keep working.' : 'Eval Studio saves again once pmstack/project.json can be read.';
   } else if (s.kind === 'folder') {
     text = `Saving to ${folderName(s.folder)}`;
     title = s.folder && s.folder.projectPath ? s.folder.projectPath : 'pmstack/project.json';
@@ -509,7 +522,17 @@ function BootError({ message }) {
 }
 
 const root = document.getElementById('app');
-onNotice((message, opts = {}) => toast(message, { action: noticeAction(opts.action), sticky: !!opts.sticky }));
+// A notice with a key can be taken down later with { clear: key } (for example once another project opens).
+const keyedToasts = new Map();
+onNotice((message, opts = {}) => {
+  if (opts.clear) {
+    if (keyedToasts.has(opts.clear)) dismissToast(keyedToasts.get(opts.clear));
+    keyedToasts.delete(opts.clear);
+    return;
+  }
+  const id = toast(message, { action: noticeAction(opts.action), sticky: !!opts.sticky });
+  if (opts.key) keyedToasts.set(opts.key, id);
+});
 addEventListener('hashchange', followHash);
 render(html`<${App} />`, root);
 

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   OPERATORS, TARGETS, COMMON_PATTERNS, runCheck, runChecks, targetText, checkAgreement, checkTestState, revealTest, recordRun,
   addCheck, updateCheck, deleteCheck, setJudgeResults, likelyFailureRate, normalizeTrace, defaultExperience,
-  setLabel, assignSplits, splitOf, updateMode, labelsHash,
+  setLabel, assignSplits, splitOf, updateMode, labelsHash, isDraftCheck, reportModel, ciChecks,
 } from '../../docs/studio/lib/index.mjs';
 import { makeProject, chatTrace } from '../fixtures/build.mjs';
 
@@ -170,6 +170,15 @@ test('test state turns outdated when the prompt, model, test labels, or definiti
   assert.equal(checkTestState(updateCheck(q, id, { name: 'Renamed' }), id), 'current', 'a new name changes nothing');
 });
 
+test('a revealed final test is never revealed again, so "out of date" stays out of date', () => {
+  const id = 'ck-stray-symbols-judge';
+  const edited = updateCheck(revealTest(judged(), id, now), id, { prompt: 'New prompt {{trace}}' });
+  assert.equal(checkTestState(edited, id), 'outdated');
+  const again = revealTest(edited, id, { now: '2026-09-30T00:00:00Z' });
+  assert.equal(again, edited, 'unchanged');
+  assert.equal(checkTestState(again, id), 'outdated');
+});
+
 test('recordRun appends agreement rounds', () => {
   const id = 'ck-stray-symbols-judge';
   let p = judged();
@@ -222,4 +231,39 @@ test('addCheck, updateCheck, deleteCheck', () => {
   assert.equal(p.checks[0].ci, true);
   p = deleteCheck(p, made.id, now);
   assert.deepEqual(p.checks, []);
+});
+
+test('a new code check with no rule yet is a draft: it measures nothing and stays out of runs and downloads', () => {
+  let p = project();
+  p = addCheck(p, { modeId: 'fm-x', type: 'code', ci: true }, now).project;
+  const id = p.checks[0].id;
+  assert.equal(isDraftCheck(p.checks[0]), true);
+  assert.equal(checkAgreement(p, id).n, 0);
+  assert.deepEqual(runChecks(p).summary, []);
+  assert.deepEqual(reportModel(p).checks, []);
+  assert.deepEqual(ciChecks(p).checks, []);
+  for (const rule of [{ op: 'max-chars', value: '' }, { op: 'tool-count-max', value: 'find_slots' }, { op: 'field-exists', target: 'field:' }]) {
+    assert.equal(isDraftCheck({ type: 'code', rule }), true, rule.op);
+  }
+  assert.equal(isDraftCheck({ type: 'code', rule: { op: 'json-valid' } }), false);
+  assert.equal(isDraftCheck({ type: 'code', rule: { op: 'tool-called', value: '' } }), false);
+  p = updateCheck(p, id, { rule: { op: 'regex', target: 'assistant', value: '\\*\\*' } }, now);
+  assert.equal(isDraftCheck(p.checks[0]), false);
+  assert.equal(checkAgreement(p, id).n, 40);
+  assert.equal(ciChecks(p).checks.length, 1);
+});
+
+test('judge agreement places labels that have no split yet the way assignSplits will', () => {
+  const p = judged();
+  const id = 'ck-stray-symbols-judge';
+  // New labels after the splits were saved: agreement counts them exactly as the saved splits would.
+  let next = p;
+  const added = Array.from({ length: 10 }, (_, i) => `t${40 + i}`);
+  for (const t of added) next = setLabel(next, 'fm-x', t, 'pass', now);
+  assert.equal(splitOf(next, 'fm-x', 't45'), null);
+  const saved = assignSplits(next, 'fm-x');
+  const inTuning = added.filter((t) => splitOf(saved, 'fm-x', t) === 'tuning').length;
+  assert.ok(inTuning > 0);
+  assert.equal(checkAgreement(next, id).n, checkAgreement(p, id).n + inTuning);
+  assert.deepEqual(checkAgreement(next, id), checkAgreement(saved, id));
 });

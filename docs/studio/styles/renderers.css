@@ -43,6 +43,7 @@
   cursor: pointer;
 }
 .rv-more:hover { text-decoration: underline; text-underline-offset: 2px; }
+.rv-long > .rv-text:not(.rv-hl-block) + .rv-more { margin-left: 6px; }
 
 .rv-empty {
   display: flex;
@@ -276,6 +277,8 @@ ol.rv-md-list { list-style-type: decimal; }
 .rv-args-row { display: contents; }
 .rv-args dt { max-width: 22ch; color: var(--ink-3); overflow-wrap: anywhere; }
 .rv-args dd { margin: 0; min-width: 0; color: var(--ink); overflow-wrap: anywhere; }
+/* Values a step returned use the same typeface as the values it was called with. */
+.rv-io .rv-dv dd { font-family: var(--font-mono); }
 
 .rv-json { min-width: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
 .rv-json-sum { display: flex; align-items: center; gap: 6px; padding: 6px 10px; color: var(--ink-2); font-size: var(--text-xs); cursor: pointer; }
@@ -458,6 +461,17 @@ ol.rv-md-list { list-style-type: decimal; }
 .rv-sms .rv-msg-us .rv-bubble { background: var(--accent); color: var(--on-accent); }
 .rv-sms .rv-msg-us .rv-more { color: var(--on-accent); text-decoration: underline; }
 .rv-sms .rv-msg-us .rv-more:focus-visible { outline-color: var(--on-accent); }
+/* On the solid reply bubble a purple fill or outline disappears, so the AI mark becomes a dashed
+   underline and the bubble itself carries the dashed AI outline. */
+.rv-sms .rv-msg-us mark.rv-hl-ai {
+  background: none;
+  color: inherit;
+  outline: none;
+  text-decoration: underline 2px dashed var(--on-accent);
+  text-underline-offset: 3px;
+}
+.rv-sms .rv-msg-us .rv-hl-block.rv-hl-ai { outline: none; }
+.rv-sms .rv-msg-us .rv-bubble:has(.rv-hl-ai) { outline: 1.5px dashed var(--ai); outline-offset: 3px; }
 .rv-sms-item.is-us.is-last .rv-bubble { border-bottom-right-radius: 6px; }
 .rv-sms-item.is-them.is-last .rv-bubble { border-bottom-left-radius: 6px; }
 .rv-sms-home { align-self: center; width: 120px; height: 4px; margin: 2px 0 9px; border-radius: 4px; background: var(--line); }
@@ -559,7 +573,7 @@ ol.rv-md-list { list-style-type: decimal; }
 .rv-ask-head, .rv-agent-task-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .rv-ask-head .rv-pick, .rv-agent-task-head .rv-pick { margin-left: auto; }
 .rv-ask-text .rv-text { font-size: var(--text-md); line-height: 1.5; }
-.rv-request-text .rv-text, .rv-agent-task-text .rv-text { font-size: var(--text-sm); line-height: 1.55; }
+.rv-request-text .rv-text, .rv-agent-task-text .rv-text, .rv-agent-task-text .rv-md { font-size: var(--text-sm); line-height: 1.55; }
 .rv-ask.is-picked::before, .rv-agent-task.is-picked::before { left: 0; top: 0; bottom: 0; width: 4px; border-radius: var(--radius) 0 0 var(--radius); }
 
 /* ------------------------------------------------------------------ email */

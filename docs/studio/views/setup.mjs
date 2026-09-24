@@ -9,7 +9,7 @@ import {
 } from 'pmstack/ui';
 import {
   store, updateProject, navigate, openProject, importProjectFile, createProjectFrom,
-  deleteProject, resetSample, getSampleIndex, projectFile, noteBackup, loadProjectCopy,
+  deleteProject, resetSample, getSampleIndex, projectFile, noteBackup, loadProjectCopy, setLeaveGuard,
 } from '../store.mjs';
 import * as lib from '../lib/index.mjs';
 import { TraceView } from '../renderers/index.mjs';
@@ -389,6 +389,17 @@ function cardArrows(e) {
 // ---------------------------------------------------------------------------
 // Import a project file (used by Set up and Welcome)
 
+// A trace file picked by mistake in "Open a project file", handed to the new project wizard.
+let wizardFile = null;
+
+function looksLikeTraces(text, name) {
+  try {
+    return lib.parseTraceFile(text, name).traces.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 /** Button that imports a downloaded project file, with plain errors and a Replace / Keep both choice. */
 export function ImportProjectButton({ label = 'Import project (.json)', kind = 'secondary', size = 'md', onImported }) {
   const projects = useStore((s) => s.projects);
@@ -413,7 +424,8 @@ export function ImportProjectButton({ label = 'Import project (.json)', kind = '
         toast(`Opened ${p ? p.name : 'the project'}.`, { tone: 'good' });
         if (onImported) onImported(res);
       } else if (!res.canceled) {
-        setProblem({ file: file.name, errors: res.errors && res.errors.length ? res.errors : ['This file could not be opened.'] });
+        const traces = store.get().storageKind === 'browser' && looksLikeTraces(text, file.name) ? file : null;
+        setProblem({ file: file.name, traces, errors: res.errors && res.errors.length ? res.errors : ['This file could not be opened.'] });
       }
     } catch (err) {
       setProblem({ file: file.name, errors: [errorMessage(err)] });
@@ -434,11 +446,17 @@ export function ImportProjectButton({ label = 'Import project (.json)', kind = '
         <p class="soft">Replace puts the file's version in its place. Keep both adds the file as a copy.</p>
       </div>
     <//>
-    <${Modal} open=${!!problem} title="This file could not be opened" onClose=${() => setProblem(null)} class="setup-modal"
-      footer=${html`<${Button} kind="primary" onClick=${() => setProblem(null)}>OK<//>`}>
+    <${Modal} open=${!!problem} title=${problem && problem.traces ? 'This looks like a trace file' : 'This file could not be opened'}
+      onClose=${() => setProblem(null)} class="setup-modal"
+      footer=${problem && problem.traces
+        ? html`<${Button} kind="ghost" onClick=${() => setProblem(null)}>Cancel<//>
+          <${Button} kind="primary" icon="arrow-right" onClick=${() => { wizardFile = problem.traces; setProblem(null); navigate('setup', 'new'); }}>Start a new project with it<//>`
+        : html`<${Button} kind="primary" onClick=${() => setProblem(null)}>OK<//>`}>
       <div class="setup-modal-body">
         ${problem && html`<p class="soft mono">${problem.file}</p>
-          <${ErrorList} errors=${problem.errors} max=${8} />`}
+          ${problem.traces
+            ? html`<p>This looks like a trace file, not a project file. Project files come from "Download project". Start a new project to review these traces.</p>`
+            : html`<${ErrorList} errors=${problem.errors} max=${8} />`}`}
       </div>
     <//>
   </span>`;
@@ -979,7 +997,7 @@ function FieldMapper({ experience, traces, user, onChange }) {
         <label class="label" for=${uid + key}>${label}</label>
         <select id=${uid + key} value=${fm[key] || ''} onChange=${(e) => set(key, e.currentTarget.value)}>
           <option value="">Not in these traces</option>
-          ${(fm[key] && !paths.includes(fm[key]) ? [fm[key], ...paths] : paths).map((p) => html`<option key=${p} value=${p}>${p}</option>`)}
+          ${(fm[key] && !paths.includes(fm[key]) ? [fm[key], ...paths] : paths).map((p) => html`<option key=${p} value=${p}>${p === 'metadata' ? 'Details' : p.replace(/^metadata\./, '')}</option>`)}
         </select>
       </div>`)}
     </div>
@@ -1160,9 +1178,25 @@ function Wizard() {
   const [step, setStep] = useState(1);
   const [nameError, setNameError] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [leaving, setLeaving] = useState(false);
+  const [leaving, setLeaving] = useState(null); // { tab, param } the reader asked to go to
   const top = useRef(null);
   const user = (d.userLabel || '').trim() || 'customer';
+  const started = !folder && !!(d.name.trim() || d.traces.length || d.file);
+  const fallback = () => ({ tab: folder || store.get().project ? 'setup' : 'welcome', param: null });
+
+  // Unsaved input: top bar tabs, links, and Back ask before leaving, like Cancel does.
+  useEffect(() => {
+    if (!started || busy) {
+      setLeaveGuard(null);
+      return undefined;
+    }
+    setLeaveGuard((tab, param) => {
+      if (tab === 'setup' && param === 'new') return false;
+      setLeaving({ tab, param });
+      return true;
+    });
+    return () => setLeaveGuard(null);
+  }, [started, busy]);
 
   const exp = useMemo(() => draftExperience(d), [d.name, d.userLabel, d.goal, d.pattern, d.suggestedPattern, d.stages, d.renderer,
     d.suggestedView, d.rendererBy, d.layout, d.filters, d.fieldMap, d.showHiddenDefault]);
@@ -1227,7 +1261,7 @@ function Wizard() {
       setStep(1);
       return;
     }
-    if (!cur.traces.length) {
+    if (!cur.traces.length || noText) {
       setStep(2);
       return;
     }
@@ -1250,6 +1284,7 @@ function Wizard() {
         await createProjectFrom({ name: cur.name.trim(), experience, traces: cur.traces });
         updateProject((p) => lib.setBatch(p, lib.nextBatch(p, { size: 20, strategy: 'mix' }), 'mix'), 'first set');
       }
+      setLeaveGuard(null);
       navigate('review');
     } catch (err) {
       setBusy(false);
@@ -1258,9 +1293,26 @@ function Wizard() {
   };
 
   const leave = () => {
-    if (!folder && ref.current.traces.length) setLeaving(true);
-    else navigate(folder ? 'setup' : store.get().project ? 'setup' : 'welcome');
+    const to = fallback();
+    if (started) setLeaving(to);
+    else navigate(to.tab, to.param);
   };
+
+  const confirmLeave = () => {
+    const to = leaving || fallback();
+    setLeaving(null);
+    setLeaveGuard(null);
+    navigate(to.tab, to.param);
+  };
+
+  // A trace file picked in "Open a project file" starts here, at Add traces.
+  useEffect(() => {
+    if (folder || !wizardFile) return;
+    const file = wizardFile;
+    wizardFile = null;
+    setStep(2);
+    onFile(file);
+  }, []);
 
   const setPattern = (id) => {
     update({ pattern: id, stages: stagesFor(id), touched: { ...ref.current.touched, pattern: true, stages: false } });
@@ -1272,8 +1324,13 @@ function Wizard() {
     update({ ...patch, touched });
   };
 
-  const canFinish = !!d.name.trim() && d.traces.length > 0;
+  // Traces that need the field menus must show some text before reviewing starts.
+  const noText = (d.mapping || !!d.fieldMap) && !!scan && scan.visible === 0;
+  const canFinish = !!d.name.trim() && d.traces.length > 0 && !noText;
   const next = STEPS[step] || null;
+  const why = !d.name.trim() ? 'Name your product first.'
+    : !d.traces.length ? 'Add a trace file to start reviewing.'
+      : `Pick the field that holds what the ${user} asked, so each trace shows text.`;
 
   let body;
   if (step === 1) {
@@ -1331,7 +1388,7 @@ function Wizard() {
         ${step > 1 && html`<${Button} kind="ghost" icon="arrow-left" onClick=${() => go(step - 1)}>Back<//>`}
       </div>
       <div class="row setup-wizard-next">
-        ${step >= 2 && !canFinish && !d.loading && html`<p class="hint setup-wizard-why">${!d.name.trim() ? 'Name your product first.' : 'Add a trace file to start reviewing.'}</p>`}
+        ${step >= 2 && !canFinish && !d.loading && html`<p class="hint setup-wizard-why">${why}</p>`}
         ${step === 1 && html`<${Button} kind="primary" size="lg" icon="arrow-right" onClick=${() => go(2)}>Next: Add traces<//>`}
         ${step === 2 && canFinish && html`<${Button} kind="secondary" size="lg" onClick=${() => go(3)}>Adjust before you start<//>`}
         ${step >= 3 && step < 5 && next && html`<${Button} kind="secondary" size="lg" onClick=${() => go(step + 1)}>Next: ${say(next.label, user)}<//>`}
@@ -1339,10 +1396,9 @@ function Wizard() {
           ${busy ? 'Creating...' : 'Start reviewing'}<//>`}
       </div>
     </footer>
-    <${ConfirmModal} open=${leaving} title="Leave without creating the project?" confirmLabel="Leave"
-      onConfirm=${() => { setLeaving(false); navigate(store.get().project ? 'setup' : 'welcome'); }}
-      onClose=${() => setLeaving(false)}>
-      <p>The trace file you added is not saved until you start reviewing.</p>
+    <${ConfirmModal} open=${!!leaving} title="Leave without creating the project?" confirmLabel="Leave"
+      onConfirm=${confirmLeave} onClose=${() => setLeaving(null)}>
+      <p>${d.traces.length ? 'The trace file you added is not saved until you start reviewing.' : 'What you typed is not saved until you start reviewing.'}</p>
     <//>
   </section>`;
 }
@@ -1439,16 +1495,15 @@ function ProjectRow({ summary, active, sampleInfo, actions, sampleIds }) {
     <div class="setup-row-main">
       <p class="setup-row-name">
         <span class="setup-row-title">${summary.name}</span>
-        ${summary.sample && html`<${Chip}>Sample data<//>`}
         ${active && html`<span class="setup-row-open">Open now</span>`}
       </p>
       <p class="setup-row-meta num">${meta}</p>
     </div>
     <div class="setup-row-actions">
+      <${Menu} label="More" kind="ghost" size="sm" align="end" items=${items} />
       ${active
         ? html`<${Button} kind="secondary" size="sm" onClick=${() => navigate('review')}>Review traces<//>`
         : html`<${Button} kind="secondary" size="sm" disabled=${busy} onClick=${() => actions.open(summary)}>${busy ? 'Working...' : 'Open'}<//>`}
-      <${Menu} label="More" kind="ghost" size="sm" align="end" items=${items} />
     </div>
   </li>`;
 }
@@ -1457,7 +1512,7 @@ function SampleRow({ sample }) {
   return html`<li class="setup-row">
     <span class="setup-row-icon" aria-hidden="true"><${Icon} name=${VIEW_ICONS[sample.view] || 'doc'} size=${18} /></span>
     <div class="setup-row-main">
-      <p class="setup-row-name"><span class="setup-row-title">${sample.name}</span><${Chip}>Sample data<//></p>
+      <p class="setup-row-name"><span class="setup-row-title">${sample.name}</span></p>
       <p class="setup-row-meta num">${plural(sample.traceCount, 'trace')} · ${sampleStateLine(sample)}</p>
     </div>
     <div class="setup-row-actions">
@@ -1845,8 +1900,20 @@ function FolderCard({ project, info }) {
   </section>`;
 }
 
-function Settings({ project, kind, info }) {
-  const [section, setSection] = useState('product');
+function Settings({ project, kind, info, initial }) {
+  const [section, setSection] = useState(() => (SECTIONS.some((s) => s.id === initial) ? initial : 'product'));
+  const headRef = useRef(null);
+  useEffect(() => {
+    // Opened from a link to one section (#/setup/traces): bring the settings into view once the tab has settled.
+    if (!initial) return undefined;
+    const f = requestAnimationFrame(() => {
+      const el = headRef.current;
+      if (!el) return;
+      const bar = document.querySelector('.topbar');
+      scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + scrollY - (bar ? bar.offsetHeight : 0) - 16) });
+    });
+    return () => cancelAnimationFrame(f);
+  }, []);
   const user = lib.userWord(project.experience);
   const stats = lib.reviewStats(project);
   let panel;
@@ -1858,7 +1925,7 @@ function Settings({ project, kind, info }) {
   else if (section === 'filters') panel = html`<${FiltersSection} project=${project} />`;
   else panel = html`<${PeopleSection} project=${project} />`;
   return html`<section class="setup-settings" aria-labelledby="setup-settings-title">
-    <header class="setup-settings-head">
+    <header class="setup-settings-head" ref=${headRef}>
       <p class="setup-eyebrow">Project settings</p>
       <h2 id="setup-settings-title" class="setup-settings-name"><span>${project.name}</span>${project.sample && html`<${Chip}>Sample data<//>`}</h2>
       <p class="hint num">${plural((project.traces || []).length, 'trace')} · ${formatCount(stats.reviewed)} reviewed${project.updatedAt ? ` · Updated ${shortDate(project.updatedAt)}` : ''}</p>
@@ -1876,7 +1943,7 @@ function Settings({ project, kind, info }) {
 // ---------------------------------------------------------------------------
 // The tab
 
-function SetupHome() {
+function SetupHome({ section }) {
   const project = useStore((s) => s.project);
   const kind = useStore((s) => s.storageKind);
   const info = useStore((s) => s.folder);
@@ -1898,7 +1965,7 @@ function SetupHome() {
         : html`<p class="setup-empty-line" role="status">The folder project is loading.</p>`
       : html`<${ProjectList} />`}
     ${project
-      ? html`<${Settings} key=${project.id} project=${project} kind=${kind} info=${info} />`
+      ? html`<${Settings} key=${project.id} project=${project} kind=${kind} info=${info} initial=${section} />`
       : !folder && html`<div class="card setup-noproject">
         <${EmptyState} icon="folder" title="No project open"
           body="Open a project from the list, start one with your own traces, or open a sample product."
@@ -1907,7 +1974,7 @@ function SetupHome() {
   </section>`;
 }
 
-/** Set up tab: #/setup shows projects and settings; #/setup/new starts the wizard. */
+/** Set up tab: #/setup shows projects and settings; #/setup/new starts the wizard; #/setup/<section> opens one settings section. */
 export default function SetupView({ param }) {
   const kind = useStore((s) => s.storageKind);
   const hasProject = useStore((s) => !!s.project);
@@ -1917,5 +1984,5 @@ export default function SetupView({ param }) {
     }
     return html`<${Wizard} />`;
   }
-  return html`<${SetupHome} />`;
+  return html`<${SetupHome} section=${param} />`;
 }

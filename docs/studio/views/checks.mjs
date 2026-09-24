@@ -146,7 +146,7 @@ function starterPolicy(project) {
   if (verify) {
     rules.push({ id: 'verify-first', type: 'requires-before', tools: inv.list.filter((t) => t.name !== verify.name).map((t) => t.name), before: verify.name, why: 'Verify identity before reading or changing an account.' });
   }
-  rules.push({ id: 'no-card-numbers', type: 'arg-not-match', tools: '*', pattern: CARD_PATTERN, why: 'Never pass card numbers to tools.' });
+  rules.push({ id: 'no-card-numbers', type: 'arg-not-match', tools: '*', pattern: CARD_PATTERN, luhn: true, why: 'Never pass card numbers to tools.' });
   const product = String(project.experience?.product || project.name || 'Agent').trim();
   return { format: 'pmstack.policy/1', name: `${product} tool policy`, onlyListedTools: true, confirmationPatterns: CONFIRM_WORDS.slice(), tools, rules };
 }
@@ -344,7 +344,7 @@ function checkRow(project, c, mm) {
     split = c.type === 'judge' ? 'tuning set' : 'all labels';
   }
   const judged = c.type === 'judge' ? Object.keys(c.results || {}).length : null;
-  return { check: c, mode: mm.get(c.modeId) || null, a, split, state, judged };
+  return { check: c, mode: mm.get(c.modeId) || null, a, split, state, judged, draft: lib.isDraftCheck(c) };
 }
 
 function orderedModes(project) {
@@ -393,9 +393,11 @@ function AllChecksTable({ rows, selectedId }) {
               <span class="checks-sub">${r.mode ? r.mode.name : 'Failure mode missing'}</span>
             </td>
             <td><span class="checks-type"><${Icon} name=${TYPE_ICON[r.check.type] || 'code'} />${typeLabel(r.check)}</span></td>
-            <${RateCell} value=${r.a.catchesFailures} num=${r.a.tn} den=${r.a.tn + r.a.fp} />
-            <${RateCell} value=${r.a.agreesOnGood} num=${r.a.tp} den=${r.a.tp + r.a.fn} />
-            <td class="num">${r.a.n
+            ${r.draft
+              ? html`<td class="num muted">Draft</td><td class="num muted">Draft</td>`
+              : html`<${RateCell} value=${r.a.catchesFailures} num=${r.a.tn} den=${r.a.tn + r.a.fp} />
+                <${RateCell} value=${r.a.agreesOnGood} num=${r.a.tp} den=${r.a.tp + r.a.fn} />`}
+            <td class="num">${r.draft ? html`<span class="muted">No rule yet</span>` : r.a.n
               ? html`${r.a.nFail} Problem<span class="checks-rate-of">${r.a.nPass} Good</span>`
               : html`<span class="muted">${r.check.type === 'judge' && !r.judged ? 'No answers yet' : 'None yet'}</span>`}</td>
             <td>
@@ -423,6 +425,7 @@ function modeStatus(rows) {
   const more = rows.length > 1 ? ` + ${rows.length - 1} more` : '';
   const type = typeLabel(r.check);
   if (r.check.type === 'judge' && !r.judged) return { text: `${type}${more}: draft, no answers yet` };
+  if (r.draft) return { text: `${type}${more}: draft, no rule yet` };
   if (!r.a.n) return { text: `${type}${more}: no labels to compare` };
   return { text: `${type}${more}: catches ${fmtPct(r.a.catchesFailures)}, agrees ${fmtPct(r.a.agreesOnGood)}` };
 }
@@ -802,12 +805,12 @@ function CheckHeader({ check, onDelete }) {
       <input class="checks-name-input" type="text" aria-label="Check name" value=${name.value}
         onInput=${name.onInput} onFocus=${name.onFocus} onBlur=${name.onBlur} />
     </div>
-    <div class="row checks-check-actions">
-      ${isCodeLike(check) && html`<${Switch} checked=${!!check.ci} label="Run on every change"
+    ${isCodeLike(check) && html`<div class="row checks-check-actions">
+      <${Switch} checked=${!!check.ci} label="Run on every change"
         hint="Your engineers run it on every code change. Download it from Report."
-        onChange=${(v) => updateProject((p) => lib.updateCheck(p, check.id, { ci: v }), 'run on every change')} />`}
-      <${Button} kind="ghost" size="sm" icon="trash" title="Delete this check" onClick=${onDelete} />
-    </div>
+        onChange=${(v) => updateProject((p) => lib.updateCheck(p, check.id, { ci: v }), 'run on every change')} />
+    </div>`}
+    <${Button} kind="ghost" size="sm" icon="trash" class="checks-check-delete" title="Delete this check" onClick=${onDelete} />
   </div>`;
 }
 
@@ -950,14 +953,14 @@ function TraceLinks({ project, ids, detailOf, limit = 6, empty }) {
   </div>`;
 }
 
-function AgreementPanel({ project, check, a, detailOf, openLabels, who = 'Check', intro, empty }) {
+function AgreementPanel({ project, check, a, detailOf, openLabels, who = 'Check', intro, empty, inStep = false }) {
   const exp = project.experience || {};
   const counts = labelCounts(project, check.modeId);
   return html`<section class="checks-agree" aria-label="Agreement with your labels">
-    <div class="row-between">
+    ${!inStep && html`<div class="row-between">
       <h4 class="checks-h4">Agreement with your labels</h4>
       <${Button} kind="secondary" size="sm" icon="check" onClick=${() => openLabels()}>Label more traces<//>
-    </div>
+    </div>`}
     <p class="hint">${intro || `Compared on ${plural(a.n, 'trace')} you labeled for this failure mode (${counts.fail} Problem, ${counts.pass} Good).`}</p>
     ${a.n === 0
       ? html`<p class="checks-empty-note">${empty || (counts.total
@@ -1320,7 +1323,9 @@ function ruleDetail(rule) {
   const arg = rule.argPath ? html`<code>${rule.argPath}</code>` : 'the value';
   switch (rule.type) {
     case 'deny-tools': return 'The agent may never call these.';
-    case 'deny-access': return html`No ${rule.access || 'write'} actions.`;
+    case 'deny-access': return Array.isArray(rule.tools) && rule.tools.length
+      ? html`No ${rule.access || 'write'} actions with these tools.`
+      : html`No ${rule.access || 'write'} actions with any tool.`;
     case 'requires-before': return html`Call <code>${rule.before}</code> first, and it must not fail.`;
     case 'approval-above': return html`When ${arg} is over ${rule.max}, an earlier <code>${rule.approvalTool}</code> call is needed.`;
     case 'arg-max': return html`${arg} at most ${rule.max}.`;
@@ -1378,7 +1383,7 @@ function PolicyRules({ policy, ruleIds, onEdit, onRemove, onAdd }) {
       ${(policy.rules || EMPTY).map((r, i) => html`<li key=${r.id || i} class=${classes('checks-rule', only && !only.has(r.id) && 'is-off')}>
         <div class="checks-rule-main">
           <p class="checks-rule-label">${ruleLabel(r.type)}${only && !only.has(r.id) ? html` <span class="badge">not used by this check</span>` : ''}</p>
-          ${r.type !== 'deny-access' && html`<div class="row checks-rule-tools"><${ToolChips} tools=${r.tools} /></div>`}
+          ${(r.type !== 'deny-access' || (Array.isArray(r.tools) && r.tools.length > 0)) && html`<div class="row checks-rule-tools"><${ToolChips} tools=${r.tools} /></div>`}
           <p class="checks-rule-detail">${ruleDetail(r)}</p>
           ${r.why && html`<p class="checks-rule-why">${r.why}</p>`}
           ${r.when && html`<p class="checks-rule-when small"><${Icon} name="filter" size=${13} />${whenText(r.when)}</p>`}
@@ -1397,7 +1402,7 @@ function blankRule(type) {
   return { id: '', type, tools: [], why: '' };
 }
 
-function ToolPicker({ value, onChange, names, allowAll }) {
+function ToolPicker({ value, onChange, names, allowAll, emptyMeans }) {
   const [extra, setExtra] = useState('');
   const all = value === '*';
   const list = Array.isArray(value) ? value : EMPTY;
@@ -1410,7 +1415,8 @@ function ToolPicker({ value, onChange, names, allowAll }) {
     setExtra('');
   };
   return html`<fieldset class="checks-toolpick">
-    <legend class="label">Which tools</legend>
+    <legend class="label">Which tools${emptyMeans ? ' (optional)' : ''}</legend>
+    ${emptyMeans && !all && !list.length && html`<p class="hint">None picked: ${emptyMeans}.</p>`}
     ${allowAll && html`<label class="check-row small"><input type="checkbox" checked=${all} onChange=${(e) => onChange(e.currentTarget.checked ? '*' : [])} /> Every tool</label>`}
     ${!all && html`<div class="checks-toolpick-list">
       ${known.map((name) => html`<label key=${name} class=${classes('checks-toolpick-item', list.includes(name) && 'is-on')}>
@@ -1426,7 +1432,21 @@ function ToolPicker({ value, onChange, names, allowAll }) {
   </fieldset>`;
 }
 
-function RuleModal({ rule, names, details, onSave, onClose }) {
+// Dotted paths to the details recorded in calls to the given tools (all tools when none are given).
+function argPaths(project, tools) {
+  const pick = Array.isArray(tools) && tools.length ? new Set(tools) : null;
+  const args = [];
+  for (const n of lib.normalizeAll(project).values()) {
+    for (const c of lib.toolCallList(n)) {
+      if (pick && !pick.has(c.name)) continue;
+      if (c.args && typeof c.args === 'object') args.push(c.args);
+    }
+    if (args.length >= 200) break;
+  }
+  return lib.fieldPaths(args, 200).filter(Boolean).slice(0, 80);
+}
+
+function RuleModal({ project, rule, names, details, onSave, onClose }) {
   const [draft, setDraft] = useState(() => rule || blankRule('deny-tools'));
   const [errors, setErrors] = useState([]);
   const set = (patch) => { setDraft((d) => ({ ...d, ...patch })); setErrors([]); };
@@ -1435,12 +1455,19 @@ function RuleModal({ rule, names, details, onSave, onClose }) {
   const toolOptions = (name) => html`<datalist id=${name}>${names.map((n) => html`<option key=${n} value=${n} />`)}</datalist>`;
   const source = draft.source || {};
   const sourceKind = source.detail != null && source.tool == null ? 'detail' : 'tool';
+  const pathKey = Array.isArray(draft.tools) ? draft.tools.join('|') : String(draft.tools || '');
+  const paths = useMemo(() => (needArg || t === 'arg-not-match' ? argPaths(project, draft.tools) : EMPTY), [project.traces, pathKey, needArg, t]);
+  const argList = html`<datalist id="checks-rule-args">${paths.map((p) => html`<option key=${p} value=${p} />`)}</datalist>`;
 
   const save = () => {
     const errs = [];
     const r = { ...draft };
     if (t !== 'deny-access' && !(r.tools === '*' || (Array.isArray(r.tools) && r.tools.length))) errs.push('Pick at least one tool.');
-    if (t === 'deny-access') { delete r.tools; r.access = r.access || 'write'; }
+    if (t === 'deny-access') {
+      // No tools picked means every write tool; a list limits the rule to those tools.
+      if (!(Array.isArray(r.tools) && r.tools.length)) delete r.tools;
+      r.access = r.access || 'write';
+    }
     if (needArg && !String(r.argPath || '').trim()) errs.push('Name the value in the call, for example amount.');
     if ((t === 'arg-max' || t === 'approval-above') && (r.max === '' || r.max == null || !Number.isFinite(Number(r.max)))) errs.push('Add a limit.');
     if (t === 'arg-min' && (r.min === '' || r.min == null || !Number.isFinite(Number(r.min)))) errs.push('Add a limit.');
@@ -1452,7 +1479,8 @@ function RuleModal({ rule, names, details, onSave, onClose }) {
       if (pe) errs.push(pe);
     }
     if (t === 'arg-equals' && !(r.source && (r.source.tool || r.source.detail))) errs.push('Say what the value must match.');
-    if (r.when && (!r.when.path || r.when.equals === '')) delete r.when;
+    if (r.when && r.when.path && (r.when.equals == null || r.when.equals === '')) errs.push('Pick a value for Only when, or untick it.');
+    if (r.when && !r.when.path) delete r.when;
     if (!r.when) delete r.when;
     for (const k of ['max', 'min']) if (r[k] !== undefined && r[k] !== '') r[k] = Number(r[k]);
     if (errs.length) { setErrors(errs); return; }
@@ -1470,12 +1498,14 @@ function RuleModal({ rule, names, details, onSave, onClose }) {
         </select>
       </label>
       ${t !== 'deny-access' && html`<${ToolPicker} value=${draft.tools} names=${names} allowAll=${STAR_OK.has(t)} onChange=${(v) => set({ tools: v })} />`}
-      ${t === 'deny-access' && html`<p class="hint">Blocks every tool marked Write in the tool list. Add "Only when" below to limit it, for example to text messages.</p>`}
+      ${t === 'deny-access' && html`<p class="hint">Blocks tools marked Write in the tool list: all of them, or only the ones you pick. Add "Only when" below to limit it, for example to text messages.</p>`}
+      ${t === 'deny-access' && html`<${ToolPicker} value=${Array.isArray(draft.tools) ? draft.tools : EMPTY} names=${names} allowAll=${false}
+        emptyMeans="the rule covers all write tools" onChange=${(v) => set({ tools: v })} />`}
       ${t === 'requires-before' && html`<label class="field"><span class="label">Tool that must come first</span>
         <input class="input mono" list="checks-rule-tools" value=${draft.before || ''} onInput=${(e) => set({ before: e.currentTarget.value.trim() })} spellcheck="false" />${toolOptions('checks-rule-tools')}</label>`}
       ${needArg && html`<label class="field"><span class="label">Which value in the call</span>
-        <input class="input mono" value=${draft.argPath || ''} onInput=${(e) => set({ argPath: e.currentTarget.value.trim() })} placeholder="amount" spellcheck="false" />
-        <span class="hint">The name of the detail passed to the tool, such as amount or account_id.</span></label>`}
+        <input class="input mono" list="checks-rule-args" value=${draft.argPath || ''} onInput=${(e) => set({ argPath: e.currentTarget.value.trim() })} placeholder="amount" spellcheck="false" />${argList}
+        <span class="hint">The name of the detail passed to the tool, such as amount or account_id. Use dots for nested values, like change.percent.</span></label>`}
       ${(t === 'arg-max' || t === 'approval-above') && html`<label class="field"><span class="label">${t === 'arg-max' ? 'Highest allowed' : 'Needs approval above'}</span>
         <input class="input num" type="number" value=${draft.max ?? ''} onInput=${(e) => set({ max: e.currentTarget.value })} /></label>`}
       ${t === 'arg-min' && html`<label class="field"><span class="label">Lowest allowed</span>
@@ -1487,8 +1517,8 @@ function RuleModal({ rule, names, details, onSave, onClose }) {
       ${t === 'arg-not-match' && html`<label class="field"><span class="label">Pattern that must never appear</span>
         <input class="input mono" value=${draft.pattern || ''} onInput=${(e) => set({ pattern: e.currentTarget.value })} spellcheck="false" /></label>`}
       ${t === 'arg-not-match' && html`<label class="field"><span class="label">Which value in the call (optional)</span>
-        <input class="input mono" value=${draft.argPath || ''} onInput=${(e) => set({ argPath: e.currentTarget.value.trim() || undefined })} spellcheck="false" />
-        <span class="hint">Leave it empty to check every detail of the call.</span></label>`}
+        <input class="input mono" list="checks-rule-args" value=${draft.argPath || ''} onInput=${(e) => set({ argPath: e.currentTarget.value.trim() || undefined })} spellcheck="false" />${argList}
+        <span class="hint">Leave it empty to check every detail of the call. Use dots for nested values, like change.percent.</span></label>`}
       ${t === 'arg-equals' && html`<div class="stack">
         <${Segmented} label="Compare with" value=${sourceKind}
           onChange=${(v) => set({ source: v === 'detail' ? { detail: 'metadata.' + ((details.find((d) => /account/i.test(d.key)) || details[0] || { key: 'account_id' }).key) } : { tool: names[0] || '', path: draft.argPath || '' } })}
@@ -1515,9 +1545,11 @@ function RuleModal({ rule, names, details, onSave, onClose }) {
             ${details.map((d) => html`<option key=${d.key} value=${d.key}>${d.key}</option>`)}
           </select>
           <span class="small soft">is</span>
-          <select class="select checks-inline-select" aria-label="Value" value=${draft.when.equals}
+          <select class="select checks-inline-select" aria-label="Value" value=${String(draft.when.equals ?? '')}
             onChange=${(e) => set({ when: { ...draft.when, equals: e.currentTarget.value } })}>
             <option value="">Pick a value</option>
+            ${draft.when.equals != null && draft.when.equals !== '' && !((details.find((d) => d.key === whenKey) || { values: [] }).values).some((v) => v.value === String(draft.when.equals))
+              && html`<option value=${String(draft.when.equals)}>${String(draft.when.equals)}</option>`}
             ${((details.find((d) => d.key === whenKey) || { values: [] }).values).map((v) => html`<option key=${v.value} value=${v.value}>${v.value}</option>`)}
           </select>`}
       </div>
@@ -1597,14 +1629,46 @@ function ToolTable({ check, policy, inventory }) {
   </div>`;
 }
 
+// The first line that is not a valid pattern (1-based), or 0 when every line works.
+function badPatternLine(text) {
+  const lines = String(text || '').split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    try {
+      new RegExp(line, 'i');
+    } catch {
+      return i + 1;
+    }
+  }
+  return 0;
+}
+
 function ConfirmWords({ check, policy }) {
-  const d = useDraft(check.id + '|confirm', (policy.confirmationPatterns || EMPTY).join('\n'), (text) => setPolicyOn(check.id, (pol) => ({
-    ...pol, confirmationPatterns: text.split('\n').map((s) => s.trim()).filter(Boolean),
-  }), 'confirmation words'));
+  // A list with a broken pattern is not saved: the check keeps the last list that works, and the
+  // reader's text stays on screen with the line to fix.
+  const [broken, setBroken] = useState(null); // { text, line }
+  const d = useDraft(check.id + '|confirm', (policy.confirmationPatterns || EMPTY).join('\n'), (text) => {
+    if (badPatternLine(text)) return;
+    setPolicyOn(check.id, (pol) => ({ ...pol, confirmationPatterns: text.split('\n').map((s) => s.trim()).filter(Boolean) }), 'confirmation words');
+  });
+  const onInput = (e) => {
+    d.onInput(e);
+    if (broken) setBroken(null);
+  };
+  const onBlur = (e) => {
+    const text = e.currentTarget.value;
+    d.onBlur(e);
+    const line = badPatternLine(text);
+    setBroken(line ? { text, line } : null);
+  };
   return html`<label class="field">
     <span class="label">What counts as a yes (one pattern per line)</span>
-    <textarea class="textarea mono checks-confirm-area" rows="4" value=${d.value} onInput=${d.onInput} onFocus=${d.onFocus} onBlur=${d.onBlur} spellcheck="false"></textarea>
-    <span class="hint">Used by "Ask before acting". Capital letters do not matter.</span>
+    <textarea class="textarea mono checks-confirm-area" rows="4" value=${broken ? broken.text : d.value} onInput=${onInput} onFocus=${d.onFocus} onBlur=${onBlur}
+      spellcheck="false" aria-invalid=${broken ? 'true' : undefined}></textarea>
+    ${broken
+      ? html`<span class="error-text" role="alert">Line ${broken.line} is not a valid pattern. The check keeps using the last list that worked until you fix it.</span>`
+      : html`<span class="hint">Used by "Ask before acting". Capital letters do not matter.</span>`}
   </label>`;
 }
 
@@ -1640,11 +1704,15 @@ function violationGroups(data) {
   if (!data) return [];
   for (const [id, r] of data.results) {
     for (const v of r.violations || EMPTY) {
-      const g = groups.get(v.ruleId) || { ruleId: v.ruleId, label: v.label || ruleLabel(v.ruleType), why: v.why || '', traces: new Map() };
+      // Rules made from the tools list give each tool its own why, so they group per tool.
+      const perTool = v.ruleId === 'confirm' || v.ruleId === 'max-per-trace';
+      const key = perTool ? `${v.ruleId}:${v.tool}` : v.ruleId;
+      const label = v.label || ruleLabel(v.ruleType);
+      const g = groups.get(key) || { key, ruleId: v.ruleId, label: perTool ? `${label} (${v.tool})` : label, why: v.why || '', traces: new Map() };
       const list = g.traces.get(id) || [];
       list.push(v);
       g.traces.set(id, list);
-      groups.set(v.ruleId, g);
+      groups.set(key, g);
     }
   }
   return [...groups.values()].sort((a, b) => b.traces.size - a.traces.size || byText(a.label, b.label));
@@ -1656,7 +1724,7 @@ function ViolationGroups({ project, data }) {
   if (!groups.length) return data && data.total && !data.error ? html`<p class="checks-empty-note"><${Icon} name="check" />No trace breaks the policy.</p>` : null;
   return html`<div class="checks-violations">
     <h5 class="checks-h5">Violations by rule</h5>
-    ${groups.map((g, gi) => html`<details key=${g.ruleId} class="checks-vgroup" open=${gi < 2}>
+    ${groups.map((g, gi) => html`<details key=${g.key} class="checks-vgroup" open=${gi < 2}>
       <summary>
         <span class="checks-vgroup-name">${g.label}</span>
         <span class="checks-vgroup-count num">${plural(g.traces.size, 'trace')}</span>
@@ -1724,14 +1792,22 @@ function PolicyEditor({ project, check, openLabels }) {
     </section>
 
     <section class="checks-results" aria-label="Results">
-      <${ResultsHead} project=${project} run=${run} headline=${(d) => `Breaks the policy in ${formatCount(d.fail)} of ${plural(total, 'trace')}`} />
+      <${ResultsHead} project=${project} run=${run} headline=${(d) => {
+        // Every trace errored: the policy itself cannot run, so say why instead of "0 of N".
+        if (d.total && d.error === d.total) {
+          const first = d.results.values().next().value;
+          const why = first && first.detail ? String(first.detail).replace(/^The policy has a problem: /, '') : 'it has a problem';
+          return `The policy can't run: ${why}`;
+        }
+        return `Breaks the policy in ${formatCount(d.fail)} of ${plural(total, 'trace')}`;
+      }} />
       <${ViolationGroups} project=${project} data=${run.data} />
       <${AgreementPanel} project=${project} check=${check} a=${a} openLabels=${openLabels}
         detailOf=${(id) => run.data?.results.get(id)?.detail || ''} />
       <${ErrorList} project=${project} data=${run.data} />
     </section>
 
-    ${editing && html`<${RuleModal} key=${String(editing.index)}
+    ${editing && html`<${RuleModal} key=${String(editing.index)} project=${project}
       rule=${editing.index >= 0 ? policy.rules[editing.index] : null}
       names=${names} details=${details} onSave=${saveRule} onClose=${() => setEditing(null)} />`}
   </div>`;
@@ -2069,16 +2145,23 @@ function RunBrowser({ project, check, revealed }) {
   </div>`;
 }
 
-function RunFolder({ check, folder, revealed }) {
-  const [split, setSplit] = useState(revealed ? 'unlabeled' : 'tuning');
+function RunFolder({ project, check, folder, revealed }) {
+  const [picked, setSplit] = useState(revealed ? 'unlabeled' : 'tuning');
+  // The final test runs once. After the reveal it can only be finished: final test traces with
+  // no answer yet, while the judge is unchanged (the command refuses anything else).
+  const final = revealed && lib.checkTestState(project, check.id) === 'current' ? lib.checkAgreement(project, check.id, { split: 'test' }) : null;
+  const unanswered = final ? final.missing + final.unreadable.length : 0;
+  const offerTest = !revealed || unanswered > 0;
+  const split = picked === 'test' && !offerTest ? 'unlabeled' : picked;
   const cli = folder && folder.cliPath ? folder.cliPath : 'bin/pmstack.mjs';
   const projectPath = folder && folder.projectPath ? folder.projectPath : 'pmstack/project.json';
   const extra = split === 'test' ? ' --split test --final' : split === 'unlabeled' ? ' --split unlabeled' : '';
   const cmd = `node ${quoteArg(cli)} judge ${quoteArg(projectPath)} --check ${check.id} --cmd "claude -p --model {model}" --batch 10${extra}`;
   const judged = Object.keys(check.results || {}).length;
+  const options = [{ value: 'tuning', label: 'Tuning set' }, { value: 'unlabeled', label: 'Not labeled' }];
+  if (offerTest) options.push({ value: 'test', label: revealed ? `Finish the final test (${unanswered} with no answer)` : 'Final test' });
   return html`<div class="stack">
-    <${Segmented} label="Which traces" value=${split} onChange=${setSplit}
-      options=${[{ value: 'tuning', label: 'Tuning set' }, { value: 'unlabeled', label: 'Not labeled' }, { value: 'test', label: 'Final test' }]} />
+    <${Segmented} label="Which traces" value=${split} onChange=${setSplit} options=${options} />
     ${split === 'test' && !revealed && html`<p class="hint">This runs the final test and reveals it. Do it once, when the tuning numbers look right.</p>`}
     <div class="checks-command">
       <code class="mono">${(cmd.match(/"[^"]*"|\S+/g) || []).map((part, i) => html`${i ? ' ' : ''}<span class=${part.length > 28 ? 'checks-cmd-long' : 'checks-cmd-part'}>${part}</span>`)}</code>
@@ -2126,7 +2209,7 @@ function Disagreements({ project, check, a, onRelabel }) {
       </header>
       <div class="checks-disagree-cols">
         <div class="checks-disagree-col">
-          <p class="checks-disagree-who">The judge said <${Chip} tone=${r.judge === 'pass' ? 'good' : 'bad'}>${r.judge === 'pass' ? 'Pass' : 'Fail'}<//></p>
+          <p class="checks-disagree-who">The judge said <${Chip} tone=${r.judge === 'pass' ? 'good' : 'bad'}>${r.judge === 'pass' ? 'Good' : 'Problem'}<//></p>
           <p class="checks-disagree-text">${check.results?.[r.id]?.critique || html`<span class="muted">No critique.</span>`}</p>
         </div>
         <div class="checks-disagree-col">
@@ -2341,12 +2424,9 @@ function JudgeBuilder({ project, check, mode, storageKind, folder, openLabels })
     <//>
 
     <${Step} n="2" id=${check.id + '-splits'} title="Final test set aside">
-      <div class="row">
-        <p class="grow">${counts.total ? `We set aside ${testShare}% of your labels as a final test.` : 'Once you have labels, we set aside 40% of them as a final test.'}</p>
-        <${Button} kind="ghost" size="sm" aria-expanded=${showSplits ? 'true' : 'false'} onClick=${() => setShowSplits(!showSplits)}>
-          ${showSplits ? 'Hide details' : 'Details'}
-        <//>
-      </div>
+      <p>${counts.total ? `We set aside ${testShare}% of your labels as a final test.` : 'Once you have labels, we set aside 40% of them as a final test.'}${' '}
+        <button type="button" class="checks-link checks-link-inline" aria-expanded=${showSplits ? 'true' : 'false'} onClick=${() => setShowSplits(!showSplits)}>
+          ${showSplits ? 'Hide details' : 'Details'}</button></p>
       ${showSplits && html`<div class="stack checks-splits">
         <div class="table-wrap">
           <table class="table">
@@ -2384,13 +2464,14 @@ function JudgeBuilder({ project, check, mode, storageKind, folder, openLabels })
       ${!open ? html`<p class="small muted">Opens with the prompt.</p>`
         : !check.model ? html`<p class="soft">Pin a model in step 4 first, so every answer comes from the same version.</p>`
           : storageKind === 'folder'
-            ? html`<${RunFolder} check=${check} folder=${folder} revealed=${revealed} />`
+            ? html`<${RunFolder} project=${project} check=${check} folder=${folder} revealed=${revealed} />`
             : html`<${RunBrowser} project=${project} check=${check} revealed=${revealed} />`}
     <//>
 
-    <${Step} n="6" id=${check.id + '-tuning'} title="Agreement on the tuning set">
+    <${Step} n="6" id=${check.id + '-tuning'} title="Agreement on the tuning set"
+      aside=${html`<${Button} kind="secondary" size="sm" icon="check" onClick=${() => openLabels()}>Label more traces<//>`}>
       <div class="stack-lg">
-        <${AgreementPanel} project=${project} check=${check} a=${tuning} who="Judge" openLabels=${openLabels}
+        <${AgreementPanel} project=${project} check=${check} a=${tuning} who="Judge" openLabels=${openLabels} inStep=${true}
           empty=${counts.total ? 'The judge has not answered any tuning set trace yet. Run it in step 5.' : null}
           intro=${`Measured on ${plural(tuning.n, 'tuning set trace')} with a judge answer.${tuning.missing ? ` ${plural(tuning.missing, 'tuning set trace has', 'tuning set traces have')} no answer yet.` : ''}`}
           detailOf=${(id) => check.results?.[id]?.critique || ''} />
@@ -2398,6 +2479,7 @@ function JudgeBuilder({ project, check, mode, storageKind, folder, openLabels })
           <span>${plural(tuning.unreadable.length, 'judge answer')} could not be read. ${tuning.unreadable.length === 1 ? 'That trace goes' : 'Those traces go'} back in the queue in step 5.</span></p>`}
         <div class="stack">
           <h5 class="checks-h5">Agreement by round</h5>
+          <p class="hint">Each round keeps the numbers from the time it ran.</p>
           <${Rounds} runs=${check.runs || EMPTY} promptHash=${lib.promptHash(check)} />
         </div>
         <div class="stack">
@@ -2466,10 +2548,13 @@ export default function ChecksView({ param }) {
     return html`<section class="page checks">
       <header class="checks-head">
         <h1 class="page-title">Checks</h1>
+        <p class="page-lead">Turn the failure modes that matter into checks, and confirm they agree with you.</p>
       </header>
-      <${EmptyState} icon="judge" title="No failure modes yet"
-        body="You build a check for one failure mode at a time. Name your failure modes first."
-        action=${{ label: 'Next: Failure modes', onClick: () => navigate('modes') }} />
+      <div class="card checks-empty-card">
+        <${EmptyState} icon="judge" title="No failure modes yet"
+          body="You build a check for one failure mode at a time. Name your failure modes first."
+          action=${{ label: 'Next: Failure modes', onClick: () => navigate('modes') }} />
+      </div>
       ${tools && html`<div class="checks-empty-tools">
         <p class="small soft">Your agent uses tools. Policy rules come from your company, so they are the one kind of check you can write before reading traces.</p>
         <${ToolCallPanel} project=${project} summary=${summary} onFlow=${setFlow} startOpen=${true} />

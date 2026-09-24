@@ -40,7 +40,7 @@ function AgentStatus({ project }) {
   else if (poll && poll.at) status = `Checked for new suggestions ${ago(poll.at, now)}. ${plural(open, 'open suggestion')}.`;
   else status = 'Checking for new suggestions...';
   return html`<section class="assist-agent" aria-label="Claude Code">
-    <p><strong>Claude Code can do this for you:</strong> run <code>/pmstack:error-discovery</code> in this folder. New suggestions appear here automatically.</p>
+    <p><strong>Claude Code can do this for you:</strong> run <code>/pmstack:error-discovery</code> (or <code>/pmstack-error-discovery</code> if you installed with setup) in this folder. New suggestions appear here automatically.</p>
     <p class="assist-poll" role="status"><span class=${'assist-poll-dot' + (poll && poll.error ? ' is-error' : '')} aria-hidden="true"></span>${status}</p>
   </section>`;
 }

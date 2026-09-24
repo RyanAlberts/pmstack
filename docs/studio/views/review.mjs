@@ -425,6 +425,25 @@ function GuessedBanner({ project }) {
   </div>`;
 }
 
+// Views that draw fields straight from the raw trace, so they show text even without messages.
+const LISTS_FIELDS = new Set(['auto', 'layout']);
+
+// True when the trace shows the reader some text: what the user asked, or a step they saw.
+function showsText(trace) {
+  if (trace.input && String(trace.input).trim()) return true;
+  return (trace.steps || EMPTY).some((st) => st.customerVisible && st.text && String(st.text).trim());
+}
+
+function NoTextBanner({ who }) {
+  return html`<div class="review-banner" role="status">
+    <${Icon} name="warning" />
+    <p>This trace shows no text. Pick the field that holds what the ${who} asked, so each trace shows text.</p>
+    <div class="review-banner-actions">
+      <${Button} kind="secondary" size="sm" onClick=${() => navigate('setup', 'traces')}>Pick the fields in Set up<//>
+    </div>
+  </div>`;
+}
+
 function RecheckBanner({ project, queue, filters }) {
   const [hidden, setHidden] = useState(false);
   const modeIds = new Set();
@@ -800,6 +819,7 @@ function Workbench({ project, param }) {
             <${Button} kind="secondary" size="sm" icon="arrow-right" title="Next trace" onClick=${() => go(1, 'button')} />
           </div>`}
           <${GuessedBanner} project=${project} />
+          ${trace && !LISTS_FIELDS.has(viewId) && !String(viewId).startsWith('custom:') && !showsText(trace) && html`<${NoTextBanner} who=${who} />`}
           <${RecheckBanner} project=${project} queue=${queue} filters=${filters} />
           <${IntroStrip} key=${project.id} project=${project} stats=${stats} who=${who} />
           ${trace

@@ -68,7 +68,8 @@ export function checkBeforeRunning({ id, metadata, messages }, call) {
   const next = [...messages, { role: 'assistant', content: '', tool_calls: [call] }];
   const trace = normalizeTrace({ id, metadata, messages: next });
   const callStep = `m${next.length - 1}.c0`; // only the new call decides; earlier calls already ran
-  const blocking = evaluatePolicy(policy, trace).violations.filter((v) => v.stepId === callStep);
+  // userLabel is the word the reasons use for your users: replace 'customer' with your product's word.
+  const blocking = evaluatePolicy(policy, trace, { userLabel: 'customer' }).violations.filter((v) => v.stepId === callStep);
   return { allowed: blocking.length === 0, reasons: blocking.map((v) => v.message) };
 }
 ```

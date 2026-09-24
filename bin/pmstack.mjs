@@ -140,7 +140,9 @@ Options
                         Example: --cmd "claude -p --model {model}"
   --split <name>        Which traces: tuning (default), test, or unlabeled.
   --final               Needed with --split test. The final test is used once: running it
-                        reveals the results.
+                        reveals the results. Run it again only to answer final test traces
+                        that have no answer yet; after the judge changes, start a fresh
+                        final test in Eval Studio.
   --batch <n>           Judge up to n traces per call (1 to 10, default 1).
   --concurrency <n>     Calls at the same time (default 4).
   --limit <n>           Judge at most n traces.
@@ -197,7 +199,7 @@ original trace plus what it should do now and the input to replay.`,
 Write the code checks marked "Run on every change" to a file your engineers can run on
 every code change: pmstack check checks.json --traces <file>`,
 
-  policy: `Usage: pmstack policy <traces file | project.json> --policy <policy.json> [--json]
+  policy: `Usage: pmstack policy <traces file | project.json> --policy <policy.json> [--user <word>] [--json]
        pmstack policy <traces file | project.json> --list-tools
 
 Check every tool call against your company's rules (a pmstack policy file): which tools
@@ -208,6 +210,8 @@ Options
   --policy <file>   The policy file (format pmstack.policy/1).
   --list-tools      List each tool the traces use, how often, and a first guess at whether
                     it only reads or also changes something. A good start for a policy.
+  --user <word>     What to call the people the agent serves in the results, such as employee
+                    or patient (default: the project's word, or customer).
   --json            Print machine-readable results for scripts.
 
 Exits 0 when no call breaks the policy, 1 when any does, 2 when a file cannot be read.`,
@@ -535,9 +539,8 @@ async function appendTraces(projectPath, incoming, { version = null, now = nowIs
     if (tracesPath && !/\.(jsonl|ndjson|json)$/i.test(tracesPath)) {
       throw new CliError(`New traces can only be added to a .jsonl or .json trace file, and this project uses ${path.basename(tracesPath)}. Save it as .jsonl, point the project to it, and try again.`);
     }
-    const existing = tracesPath
-      ? readTraceFile(tracesPath, { fieldMap: disk.experience?.fieldMap || null }).traces
-      : Array.isArray(disk.traces) ? disk.traces : [];
+    const parsed = tracesPath ? readTraceFile(tracesPath, { fieldMap: disk.experience?.fieldMap || null }) : null;
+    const existing = parsed ? parsed.traces : Array.isArray(disk.traces) ? disk.traces : [];
     const ids = new Set(existing.map((t) => String(t.id)));
     let fresh = [];
     for (const t of incoming) {
@@ -548,6 +551,24 @@ async function appendTraces(projectPath, incoming, { version = null, now = nowIs
     }
     added = fresh.length;
     if (!added) return null;
+    const where = tracesPath ? path.basename(tracesPath) : labelOf(projectPath);
+    const room = lib.MAX_TRACES - existing.length;
+    if (fresh.length > room) {
+      throw new CliError(room > 0
+        ? `A project holds up to 20,000 traces. ${where} has ${commas(existing.length)}, so ${commas(room)} more fit, not ${commas(fresh.length)}. Nothing was added.`
+        : `A project holds up to 20,000 traces, and ${where} already has that many. Nothing was added.`);
+    }
+    // Rewriting the file keeps only what pmstack could read, so a file with unreadable lines or
+    // entries is never rewritten (a .json file always is; a .jsonl file is when versions are tagged).
+    const isJson = path.extname(tracesPath || '').toLowerCase() === '.json';
+    const rewrites = parsed && (isJson || (version && !existing.some(hasVersion)));
+    if (rewrites && parsed.errors.length) {
+      const places = parsed.errors.map((e) => (/^(Line|Trace) \d+/.exec(e) || [])[0]).filter(Boolean);
+      const what = places.length
+        ? `${isJson ? 'entries' : 'lines'} pmstack could not read (${places.slice(0, 3).join(', ')}${places.length > 3 ? `, and ${commas(places.length - 3)} more` : ''})`
+        : `a problem (${parsed.errors[0].replace(/\.$/, '')})`;
+      throw new CliError(`${where} has ${what}, so the file was not changed. ${isJson ? 'Fix it and try again.' : 'Fix those lines, or add the traces without --version.'}`);
+    }
     let before = existing;
     let experience = disk.experience;
     if (version) {
@@ -637,7 +658,7 @@ const COMMANDS = {
   report: { run: cmdReport, flags: { out: VALUE }, min: 1, max: 1, what: 'the project file' },
   'regression-set': { run: cmdRegressionSet, flags: { out: VALUE }, min: 1, max: 1, what: 'the project file' },
   checks: { run: cmdChecks, flags: { out: VALUE }, min: 1, max: 1, what: 'the project file' },
-  policy: { run: cmdPolicy, flags: { policy: VALUE, json: FLAG, 'list-tools': FLAG }, min: 1, max: 1, what: 'the trace or project file' },
+  policy: { run: cmdPolicy, flags: { policy: VALUE, json: FLAG, 'list-tools': FLAG, user: VALUE }, min: 1, max: 1, what: 'the trace or project file' },
 };
 
 function parseArgs(argv, name) {
@@ -1480,33 +1501,51 @@ async function cmdChecks(args, io) {
 
 const MAX_OUTPUT = 10 * 1024 * 1024;
 
+// Run one model command. Off Windows the command gets its own process group, so a timeout or
+// Ctrl+C stops it and anything it started (a shell script's sleep, a model client's helpers).
+// `children` collects { kill(signal) } for every running command.
 function runCommand(argv, input, { timeoutMs, cwd, env, children }) {
   return new Promise((resolve) => {
     let child;
     let done = false;
+    const group = process.platform !== 'win32';
+    const entry = {
+      kill(signal) {
+        if (!child || child.pid == null) return;
+        try {
+          if (group) process.kill(-child.pid, signal);
+          else child.kill(signal);
+        } catch {
+          try { child.kill(signal); } catch { /* already gone */ }
+        }
+      },
+    };
     const finish = (r) => {
       if (done) return;
       done = true;
       clearTimeout(timer);
-      if (child) children.delete(child);
+      children.delete(entry);
       resolve(r);
     };
-    let timedOut = false;
     let timer = null;
     try {
-      child = spawn(argv[0], argv.slice(1), { cwd, env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
+      child = spawn(argv[0], argv.slice(1), { cwd, env, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, detached: group });
     } catch (err) {
       finish({ ok: false, fatal: true, reason: `Could not start "${argv[0]}": ${err.message}` });
       return;
     }
-    children.add(child);
+    children.add(entry);
     const out = [];
     let outLen = 0;
     let errText = '';
+    // On a timeout, stop the whole group and answer at once: a process the command started
+    // can keep the output open long after the command itself is gone.
     timer = setTimeout(() => {
-      timedOut = true;
-      child.kill('SIGTERM');
-      setTimeout(() => { try { child.kill('SIGKILL'); } catch { /* already gone */ } }, 2000).unref();
+      entry.kill('SIGTERM');
+      setTimeout(() => entry.kill('SIGKILL'), 2000).unref();
+      child.stdout.destroy();
+      child.stderr.destroy();
+      finish({ ok: false, reason: `No answer within ${plural(Number((timeoutMs / 1000).toFixed(1)), 'second')}.` });
     }, timeoutMs);
     child.stdout.on('data', (d) => {
       if (outLen < MAX_OUTPUT) { out.push(d); outLen += d.length; }
@@ -1524,7 +1563,6 @@ function runCommand(argv, input, { timeoutMs, cwd, env, children }) {
       });
     });
     child.on('close', (code, signal) => {
-      if (timedOut) return finish({ ok: false, reason: `No answer within ${plural(Number((timeoutMs / 1000).toFixed(1)), 'second')}.` });
       if (code !== 0) {
         const first = errText.split(/\r?\n/).map((l) => l.trim()).find(Boolean);
         const how = code == null ? `was stopped (${signal})` : `exited with code ${code}`;
@@ -1574,6 +1612,13 @@ async function cmdJudge(args, io) {
   }
 
   let p = lib.assignSplits(loaded, mode.id);
+  // The final test is used once. After the reveal it can only be finished (traces with no
+  // answer yet), never run again: a second run would let you keep the best result.
+  const finishing = split === 'test' && !!check.test;
+  const usedOn = finishing ? String(check.test.revealedAt || '').slice(0, 10) : '';
+  if (finishing && lib.checkTestState(p, check.id) === 'outdated') {
+    throw new CliError(`The final test for "${check.name || check.id}" was used on ${usedOn}, and the judge or your labels changed since. Label 30 new traces and start a fresh final test in Eval Studio (Checks).`);
+  }
   const labeled = lib.labeledSet(p, mode.id);
   const nFail = labeled.filter((l) => l.label === 'fail').length;
   const nPass = labeled.length - nFail;
@@ -1616,6 +1661,10 @@ async function cmdJudge(args, io) {
   }
   // Examples appear in the prompt, so they are never judged.
   ids = ids.filter((id) => lib.splitOf(p, mode.id, id) !== 'examples');
+  if (finishing) {
+    ids = ids.filter((id) => !['pass', 'fail'].includes(check.results?.[id]?.verdict));
+    if (!ids.length) throw new CliError(`The final test for "${check.name || check.id}" was used on ${usedOn}, and every final test trace has an answer. It is used once, so it cannot run again.`);
+  }
   if (limit !== undefined) ids = ids.slice(0, limit);
   const splitName = split === 'test' ? 'final test' : split === 'tuning' ? 'tuning set' : 'unlabeled traces';
   if (!ids.length) {
@@ -1651,7 +1700,7 @@ async function cmdJudge(args, io) {
       d = lib.assignSplits(d, mode.id);
       if (Object.keys(chunk).length) d = lib.setJudgeResults(d, check.id, chunk);
       if (final && Object.keys(recorded).length) {
-        if (split === 'test') d = lib.revealTest(d, check.id);
+        if (split === 'test') d = lib.revealTest(d, check.id); // no change when already revealed
         if (split !== 'unlabeled') d = lib.recordRun(d, check.id, split);
       }
       return d;
@@ -1666,13 +1715,15 @@ async function cmdJudge(args, io) {
     if (pendingCount >= 10) await save(false);
   };
 
+  // Model commands run in their own process groups, so Ctrl+C reaches them only through here.
   const onSignal = () => {
-    if (stopping) process.exit(1); // a second Ctrl+C stops at once, without the last save
+    if (stopping) { // a second Ctrl+C stops at once, without the last save
+      for (const c of children) c.kill('SIGKILL');
+      process.exit(1);
+    }
     stopping = true;
     io.err('Stopping. Saving the results so far...');
-    for (const c of children) {
-      try { c.kill('SIGTERM'); } catch { /* already gone */ }
-    }
+    for (const c of children) c.kill('SIGTERM');
   };
   process.on('SIGINT', onSignal);
   process.on('SIGTERM', onSignal);
@@ -1730,7 +1781,7 @@ async function cmdJudge(args, io) {
     io.out(`For the likely true failure rate, run: node "${CLI_PATH}" estimate "${label}" --check ${check.id}${flags.traces ? ` --traces "${flags.traces}"` : ''}`);
   } else {
     const a = lib.checkAgreement(after, check.id, { split });
-    if (split === 'test') io.out('The final test is now revealed.');
+    if (split === 'test') io.out(finishing ? `Added answers to the final test revealed on ${usedOn}.` : 'The final test is now revealed.');
     for (const l of agreementLines(a)) io.out(l);
     io.out('Aim for both above 90%. 80% is the minimum.');
     if (a.falsePasses.length) io.out(`Check missed these failures: ${listIds(a.falsePasses)}`);
@@ -1928,7 +1979,8 @@ async function cmdPolicy({ flags, positionals }, io) {
   }
 
   if (!policy) throw new CliError(`Pass --policy <policy.json>. To start one, list the tools your agent uses: pmstack policy "${positionals[0]}" --list-tools`);
-  const userLabel = lib.userWord(p.experience);
+  if (flags.user !== undefined && !String(flags.user).trim()) throw new CliError('--user needs a word, for example --user employee.');
+  const userLabel = flags.user !== undefined ? String(flags.user).trim() : lib.userWord(p.experience);
   const results = [];
   for (const [id, n] of lib.normalizeAll(p)) results.push({ traceId: id, ...lib.evaluatePolicy(policy, n, { userLabel }) });
   const failing = results.filter((r) => r.verdict === 'fail');
@@ -1936,13 +1988,17 @@ async function cmdPolicy({ flags, positionals }, io) {
     io.out(JSON.stringify({ policy: policy.name || null, traces: results.length, failing: failing.length, results }, null, 2));
     return failing.length ? 1 : 0;
   }
+  // Rules made from the tools list (Ask before acting, At most N times) give each tool its own
+  // reason, so they group by rule and tool; every other rule has one reason and one group.
   const groups = new Map();
   for (const r of failing) {
     for (const v of r.violations) {
-      const g = groups.get(v.ruleId) || { label: v.label, why: v.why, items: [], traces: new Set() };
+      const perTool = v.ruleId === 'confirm' || v.ruleId === 'max-per-trace';
+      const key = perTool ? `${v.ruleId}, ${v.tool}` : v.ruleId;
+      const g = groups.get(key) || { label: v.label, why: v.why, items: [], traces: new Set() };
       g.items.push({ traceId: r.traceId, ...v });
       g.traces.add(r.traceId);
-      groups.set(v.ruleId, g);
+      groups.set(key, g);
     }
   }
   io.out(`Checked ${plural(results.length, 'trace')} against ${policy.name ? `"${policy.name}"` : policyLabel}.`);

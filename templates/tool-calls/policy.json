@@ -8,7 +8,8 @@
     "access: read tools only look things up. write tools change something for the customer, such as a credit, a plan, or a visit.",
     "confirm: true means the agent must propose the action, and the customer's next message must say yes (one of confirmationPatterns, any capitalization) before the call runs (rule: Ask before acting).",
     "maxPerTrace limits how many times the agent may call a tool in one conversation (rule: At most N times per conversation).",
-    "A rule with when applies only to traces where that detail has that value. tools set to \"*\" means every tool."
+    "A rule with when applies only to traces where that detail has that value. tools set to \"*\" means every tool.",
+    "luhn: true on a pattern rule counts a match only when its digits pass the check digit test every card number passes (the Luhn checksum), so timestamps and order numbers of the same length are not flagged."
   ],
   "onlyListedTools": true,
   "confirmationPatterns": ["\\byes\\b", "\\bconfirm", "go ahead", "please do", "sounds good", "do it", "that works"],
@@ -130,6 +131,7 @@
       "type": "arg-not-match",
       "tools": "*",
       "pattern": "\\b(?:\\d[ -]?){13,16}\\b",
+      "luhn": true,
       "why": "Never pass card numbers to tools. Tool logs are not secure enough for payment details."
     },
     {

@@ -66,8 +66,8 @@ node bin/pmstack.mjs import examples/quickstart/traces.jsonl --out quickstart.js
 | `--view <id>` | How a trace looks: `chat`, `email`, `document`, `answer`, `agent`, `code-review`, `fields`, `list`, `layout`, `auto`, or `custom:<id>`. |
 | `--pattern <id>` | How your AI works: `single`, `augmented`, `chain`, `routing`, `parallel`, `orchestrator`, `evaluator`, `agent`. |
 | `--name "..."` | The product name. Default: the folder name. |
-| `--append` | Add the traces to an existing project. Traces whose id is already there are skipped. |
-| `--version "..."` | With `--append`: tag the new traces with a version name, to compare before and after. The first time, earlier traces are tagged "Version 1", and version becomes a filter. |
+| `--append` | Add the traces to an existing project. Traces whose id is already there are skipped. The new traces are written to the end of the project's own trace file. |
+| `--version "..."` | With `--append`: tag the new traces with a version name, to compare before and after. The first time, earlier traces are tagged "Version 1", and version becomes a filter. This writes the version into every earlier trace in the project's trace file, so keep a copy of the original export if you need it. |
 
 Without `--view` and `--pattern`, pmstack guesses both. To add a new week of traces as a new version:
 
@@ -127,7 +127,7 @@ pmstack builds each trace's prompt, starts your command directly (no shell), sen
 | `--check <id>` | The judge to run. |
 | `--cmd "<command>"` | The model command. Any command that reads a prompt and prints an answer works. |
 | `--split <name>` | Which traces: `tuning` (default), `test`, or `unlabeled`. |
-| `--final` | Needed with `--split test`. The final test is used once, and running it reveals the results. |
+| `--final` | Needed with `--split test`. The final test is used once, and running it reveals the results. Run it again only to answer final test traces that have no answer yet. After the judge or your labels change, it exits 2: start a fresh final test in Eval Studio. |
 | `--batch <n>` | Judge up to n traces per call, 1 to 10 (default 1). |
 | `--concurrency <n>` | Calls at the same time (default 4). |
 | `--limit <n>` | Judge at most n traces. |
@@ -177,6 +177,7 @@ node bin/pmstack.mjs policy docs/studio/samples/support-agent.json --policy temp
 |---|---|
 | `--policy <file>` | The policy file (format `pmstack.policy/1`). |
 | `--list-tools` | List each tool the traces use, how often, and a first guess at read or write. |
+| `--user <word>` | What the results call the people the agent serves, such as `employee` (default: the project's word, or customer). |
 | `--json` | Print the results as JSON for scripts. |
 
 It takes a trace file or a project. Violations print grouped by rule, each with its trace, step, and the rule's reason, and the run ends with "Breaks the policy in 13 of 45 traces." Exits 1 when any call breaks the policy. [Tool call checks](tool-call-evals.md) covers every rule type.

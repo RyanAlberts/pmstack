@@ -106,3 +106,43 @@ test('mergeExternal: disk first, local dirty keys, checks merged per id', () => 
   assert.equal(clean.checks, disk.checks, 'checks not dirty: disk wins, CLI results kept');
   assert.equal(clean.name, 'Disk name');
 });
+
+test('mergeExternal: a final test revealed on disk stays revealed when the local copy changed splits', () => {
+  const modes = [{ id: 'fm-a', kind: 'failure', name: 'A' }, { id: 'fm-b', kind: 'failure', name: 'B' }, { id: 'fm-c', kind: 'failure', name: 'C' }];
+  const base = { ...createProject({ id: 'm', traces: [] }), modes };
+  const disk = {
+    ...base, revision: 6,
+    splits: {
+      'fm-a': { seed: 7, assign: { t1: 'test', t2: 'tuning' }, revealedAt: '2026-09-20T12:00:00Z' },
+      'fm-b': { seed: 7, assign: { t1: 'tuning' }, revealedAt: null },
+      'fm-c': { seed: 7, assign: { t9: 'test' }, revealedAt: null },
+    },
+  };
+  // The local copy never saw the reveal, and just assigned t3 on the same mode and t4 on another.
+  const local = {
+    ...base, revision: 5,
+    splits: {
+      'fm-a': { seed: 7, assign: { t1: 'test', t2: 'tuning', t3: 'test' }, revealedAt: null },
+      'fm-b': { seed: 7, assign: { t1: 'tuning', t4: 'test' }, revealedAt: null },
+    },
+  };
+  const m = mergeExternal(local, disk, ['labels', 'splits']);
+  assert.deepEqual(m.splits['fm-a'], { seed: 7, assign: { t1: 'test', t2: 'tuning', t3: 'tuning' }, revealedAt: '2026-09-20T12:00:00Z', afterReveal: ['t3'] }, 'a new label joins tuning after the reveal');
+  assert.deepEqual(m.splits['fm-b'], local.splits['fm-b'], 'a mode without a reveal takes the local entry');
+  assert.deepEqual(m.splits['fm-c'], disk.splits['fm-c'], 'a mode only on disk is kept');
+  const deleted = mergeExternal({ ...local, modes: modes.slice(0, 2) }, disk, ['modes', 'splits']);
+  assert.equal('fm-c' in deleted.splits, false, 'a mode deleted locally does not come back through its splits');
+});
+
+test('validateProject: parts of the wrong shape are errors, not blank pages', () => {
+  const p = fixtureJson('funnel-project.json');
+  const errors = validateProject({ ...p, checks: {}, experience: { ...p.experience, filters: 'channel' }, reviews: [], labels: 'x', splits: [] }).errors;
+  assert.deepEqual(errors, [
+    'The product setup\'s filters are not a list.',
+    'The reviews are not stored by trace id.',
+    'The labels are not stored by failure mode.',
+    'The splits are not stored by failure mode.',
+    'The checks are not a list.',
+  ]);
+  assert.deepEqual(validateProject({ ...p, checks: 'x' }).errors, ['The checks are not a list.']);
+});

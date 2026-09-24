@@ -85,7 +85,7 @@ When Recall@k is low, or look-up is the stage where most traces first fail, work
 - How many results reach the model (k).
 - Keyword search beside vector search; rewriting the question before searching.
 
-For each setting, rerun only the search on the same questions, keep every trace id unchanged, and compare Recall@k. `pmstack retrieval` has no `--traces` flag, so give each run its own copy of the project: copy `pmstack/project.json` into `lookup-runs/<setting>/`, set its `tracesFile` to the new traces file (relative to that folder, containing every trace id from the original), and run `node "$PMSTACK" retrieval lookup-runs/<setting>/project.json --k 5`. Report a table of setting, Recall@k, and mean reciprocal rank; the team picks what ships.
+For each setting, rerun only the search on the same questions, keep every trace id unchanged, and compare Recall@k. Write each run's search results to `lookup-runs/<setting>.jsonl` with the same trace ids, then run `node "$PMSTACK" retrieval pmstack/project.json --k 5 --traces lookup-runs/<setting>.jsonl`. The needed sources you marked stay in the project, so every run is measured against the same answers. Report a table of setting, Recall@k, and mean reciprocal rank; the team picks what ships.
 
 Phase 4 is done when the team has chosen search settings from measured numbers, or Recall@k was already high enough that answers are the bigger problem.
 

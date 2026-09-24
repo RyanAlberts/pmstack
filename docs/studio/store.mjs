@@ -35,7 +35,7 @@ let state = {
   ui: { traceId: null, filters: DEFAULT_FILTERS, showHidden: null, helpOpen: false, assistOpen: false, theme: readTheme() },
   // Extras beyond the frozen list, read by the shell and the AI help drawer:
   loadError: null, // folder mode: { message, line } when pmstack/project.json cannot be parsed
-  externalChange: false, // browser mode: another tab saved this project
+  externalChange: false, // browser mode: 'changed' or 'deleted' when another tab saved or deleted this project
   suggestionsPoll: null, // folder mode: { at, error } from the last suggestions check
   memoryOnly: false, // IndexedDB blocked: work lasts until the tab closes
 };
@@ -48,7 +48,10 @@ const dirty = new Set();
 let saveTimer = 0;
 let chain = Promise.resolve();
 let inFlight = 0;
-let blocked = false; // saving paused: another tab changed the project, or the folder file is unreadable
+let blocked = false; // folder mode: saving paused while pmstack/project.json cannot be read
+let otherTab = null; // browser mode: 'changed' or 'deleted' when another tab replaced the open project
+let savingKeys = []; // top-level keys in the save that is running now
+let storedStamp = null; // updatedAt of the open project's copy known to be in this browser's storage
 let lastSaveFailed = false;
 let lastSavedStamp = null; // updatedAt of the last project this tab wrote, to tell our own writes from others'
 let lastVerdictCount = 0;
@@ -61,6 +64,8 @@ let suggestionsMtime = 0;
 let pollingRevision = false;
 let pollingSuggestions = false;
 let sampleIndex = null;
+
+const paused = () => blocked || !!otherTab;
 
 // ---------------------------------------------------------------------------
 // Core store
@@ -75,7 +80,7 @@ function set(fn, { reason = '', persist = true } = {}) {
   if (persist && a && b && a !== b && a.id === b.id) {
     // Mark the top-level keys that changed identity, then save after a pause.
     for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (a[k] !== b[k]) dirty.add(k);
-    state = { ...state, dirtyKeys: [...dirty], saveState: blocked ? state.saveState : 'saving' };
+    state = { ...state, dirtyKeys: [...dirty], saveState: paused() ? state.saveState : 'saving' };
     scheduleSave();
   }
   if (next.route !== prev.route) rememberRoute(next.route);
@@ -138,8 +143,27 @@ export function setRoute(tab, param = null) {
   }, { reason: 'route', persist: false });
 }
 
+let leaveGuard = null;
+
+/**
+ * While a view holds unsaved input it can guard route changes: guard(tab, param) returns true to keep
+ * the reader where they are (the view asks first, then navigates itself). setLeaveGuard(null) removes it.
+ */
+export function setLeaveGuard(fn) {
+  leaveGuard = typeof fn === 'function' ? fn : null;
+}
+
+/** True when the leave guard kept the reader on the current route instead of going to tab/param. */
+export function leaveBlocked(tab, param = null) {
+  if (!leaveGuard) return false;
+  const r = state.route;
+  if (r.tab === (tab || 'welcome') && r.param === (param ?? null)) return false;
+  return leaveGuard(tab || 'welcome', param ?? null) === true;
+}
+
 /** Go to a tab. navigate('review', traceId); pass { replace: true } to replace the history entry. */
 export function navigate(tab, param = null, { replace = false } = {}) {
+  if (leaveBlocked(tab, param)) return;
   const hash = hashFor(tab, param);
   setRoute(tab, param);
   if (location.hash === hash) return;
@@ -157,7 +181,7 @@ function rememberRoute(route) {
 // Saving
 
 function scheduleSave() {
-  if (blocked) return;
+  if (paused()) return;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(flush, 400);
 }
@@ -189,9 +213,10 @@ function upsertSummary(list, project) {
 
 async function saveNow() {
   const project = state.project;
-  if (!adapter || !project || !dirty.size || blocked) return;
+  if (!adapter || !project || !dirty.size || paused()) return;
   const keys = [...dirty];
   dirty.clear();
+  savingKeys = keys;
   inFlight++;
   set((s) => ({ ...s, saveState: 'saving', dirtyKeys: [] }), { reason: 'saving', persist: false });
   try {
@@ -217,19 +242,26 @@ async function saveNow() {
     }
     lastSaveFailed = false;
     lastSavedStamp = project.updatedAt;
+    storedStamp = project.updatedAt;
+    savingKeys = [];
+    if (state.storageKind === 'browser') dropJournal(project.id, project.updatedAt);
     lastMtime = null; // our own write moved the mtime; the next check records it without reloading
     const known = res && res.revision != null;
     const revision = known ? res.revision : state.storageKind === 'folder' ? (state.baseRevision ?? 0) + 1 : state.baseRevision;
     set((s) => ({
       ...s,
       baseRevision: revision,
-      saveState: blocked ? 'readonly' : dirty.size ? 'saving' : 'saved',
+      saveState: paused() ? 'readonly' : dirty.size ? 'saving' : 'saved',
       dirtyKeys: [...dirty],
       projects: upsertSummary(s.projects, project),
     }), { reason: 'saved', persist: false });
     afterBrowserSave(project);
   } catch (err) {
     for (const k of keys) dirty.add(k);
+    if (err && err.deleted) {
+      stopForOtherTab('deleted');
+      return;
+    }
     set((s) => ({ ...s, saveState: 'error', dirtyKeys: [...dirty] }), { reason: 'save-error', persist: false });
     if (!lastSaveFailed) {
       if (isQuotaError(err)) notice('Could not save in this browser. Download the project to keep your work.', { action: 'download-project', sticky: true });
@@ -238,17 +270,25 @@ async function saveNow() {
     }
     lastSaveFailed = true;
   } finally {
+    savingKeys = [];
     inFlight--;
+  }
+}
+
+// Tell other tabs in this browser that a project changed: { projectId, updatedAt }, plus
+// replaced (an import or a reset put a new copy in its place) or deleted.
+function announce(msg) {
+  if (state.storageKind !== 'browser') return;
+  try {
+    if (channel) channel.postMessage(msg);
+  } catch {
+    // Another tab simply will not hear about this change.
   }
 }
 
 function afterBrowserSave(project) {
   if (state.storageKind !== 'browser') return;
-  try {
-    if (channel) channel.postMessage({ projectId: project.id, updatedAt: project.updatedAt });
-  } catch {
-    // Another tab simply will not hear about this save.
-  }
+  announce({ projectId: project.id, updatedAt: project.updatedAt });
   const count = verdictCount(project);
   const added = count - lastVerdictCount;
   lastVerdictCount = count;
@@ -285,6 +325,78 @@ async function askPersist() {
   } catch {
     // Persistent storage is a request, not a promise.
   }
+}
+
+// ---------------------------------------------------------------------------
+// Browser mode: a small journal for the last changes before the tab closes.
+// A save started while the page unloads may never finish, so on pagehide (and when the tab is hidden)
+// the changed top-level keys are also written to localStorage at once. The next open puts them back.
+
+const JOURNAL = 'pmstack-journal:';
+
+function dropJournal(id, savedStamp = null) {
+  try {
+    if (savedStamp != null) {
+      const raw = localStorage.getItem(JOURNAL + id);
+      if (!raw) return;
+      const j = JSON.parse(raw);
+      if (j && String(j.updatedAt || '') > String(savedStamp || '')) return; // newer than what was saved
+    }
+    localStorage.removeItem(JOURNAL + id);
+  } catch {
+    // Nothing to clean up.
+  }
+}
+
+/** Write the unsaved keys of the open project. Returns false when they could not all be kept. */
+function writeJournal() {
+  const p = state.project;
+  if (!p || !adapter || state.storageKind !== 'browser' || adapter.memory || paused()) return true;
+  const keys = new Set([...dirty, ...savingKeys]);
+  if (!keys.size) return true;
+  const complete = !keys.has('traces'); // traces are too large for the journal
+  keys.delete('traces');
+  keys.delete('id');
+  const values = {};
+  const removed = [];
+  for (const k of keys) {
+    if (k in p) values[k] = p[k];
+    else removed.push(k);
+  }
+  try {
+    localStorage.setItem(JOURNAL + p.id, JSON.stringify({ base: storedStamp, updatedAt: p.updatedAt || null, values, removed }));
+    return complete;
+  } catch {
+    return false;
+  }
+}
+
+// Put back what a closed tab had not finished saving. Returns { project, keys } with the keys to save again.
+function applyJournal(project) {
+  if (!project || !adapter || adapter.memory) return { project, keys: [] };
+  let j = null;
+  try {
+    j = JSON.parse(localStorage.getItem(JOURNAL + project.id) || 'null');
+  } catch {
+    j = null;
+  }
+  if (!j) return { project, keys: [] };
+  const stored = String(project.updatedAt || '');
+  const unsaved = j.values && typeof j.values === 'object' && (stored === String(j.base || '') || String(j.updatedAt || '') > stored);
+  if (!unsaved) {
+    // Saved after all, or another tab has written a newer copy since.
+    dropJournal(project.id);
+    return { project, keys: [] };
+  }
+  const next = { ...project, ...j.values, id: project.id, traces: project.traces };
+  const removed = Array.isArray(j.removed) ? j.removed.filter((k) => k !== 'id' && k !== 'traces') : [];
+  for (const k of removed) delete next[k];
+  return { project: next, keys: [...Object.keys(j.values).filter((k) => k !== 'id' && k !== 'traces'), ...removed] };
+}
+
+function beforeLeaving() {
+  writeJournal();
+  flush();
 }
 
 // ---------------------------------------------------------------------------
@@ -396,17 +508,30 @@ async function pollSuggestions() {
 // ---------------------------------------------------------------------------
 // Browser mode: another tab saved the same project
 
+// Stop saving the open project: another tab changed, replaced, or deleted it.
+function stopForOtherTab(why) {
+  if (otherTab === 'deleted' || otherTab === why) return;
+  otherTab = why;
+  clearTimeout(saveTimer);
+  set((s) => ({ ...s, externalChange: why, saveState: 'readonly' }), { reason: 'other-tab', persist: false });
+  const message = why === 'deleted' ? 'This project was deleted in another tab.' : 'This project changed in another tab.';
+  notice(message, { action: 'reload', sticky: true, key: 'other-tab' });
+}
+
 function listenToOtherTabs() {
   if (typeof BroadcastChannel !== 'function') return;
   channel = new BroadcastChannel('pmstack');
   channel.onmessage = (e) => {
     const msg = e.data || {};
+    if (!msg.projectId) return;
+    if (msg.deleted || msg.replaced) {
+      // Keep the project switcher and Set up in step with the other tab.
+      adapter.listProjects().then((projects) => set((s) => ({ ...s, projects }), { reason: 'other-tab', persist: false })).catch(() => {});
+    }
     const p = state.project;
-    if (blocked || !p || msg.projectId !== p.id || msg.updatedAt === p.updatedAt) return;
-    blocked = true;
-    clearTimeout(saveTimer);
-    set((s) => ({ ...s, externalChange: true, saveState: 'readonly' }), { reason: 'other-tab', persist: false });
-    notice('This project changed in another tab.', { action: 'reload', sticky: true });
+    if (blocked || !p || msg.projectId !== p.id) return;
+    if (!msg.deleted && !msg.replaced && msg.updatedAt === p.updatedAt) return;
+    stopForOtherTab(msg.deleted ? 'deleted' : 'changed');
   };
 }
 
@@ -426,21 +551,32 @@ async function remindAfterAbsence() {
 // ---------------------------------------------------------------------------
 // Boot and projects
 
-function activate(project) {
+// Open a project just loaded from storage or just created. A copy from storage is current, so a
+// stop from another tab no longer applies.
+function activate(loaded) {
   dirty.clear();
   clearTimeout(saveTimer);
-  lastVerdictCount = verdictCount(project);
+  storedStamp = loaded.updatedAt ?? null;
+  const { project, keys } = state.storageKind === 'browser' ? applyJournal(loaded) : { project: loaded, keys: [] };
+  if (otherTab) {
+    otherTab = null;
+    notice(null, { clear: 'other-tab' });
+  }
+  lastVerdictCount = verdictCount(loaded);
+  for (const k of keys) dirty.add(k);
   set((s) => ({
     ...s,
     project,
     activeProjectId: project.id,
     baseRevision: project.revision ?? null,
-    dirtyKeys: [],
-    saveState: blocked ? 'readonly' : 'saved',
+    dirtyKeys: [...dirty],
+    saveState: blocked ? 'readonly' : dirty.size ? 'saving' : 'saved',
+    externalChange: false,
     projects: upsertSummary(s.projects, project),
     ui: { ...s.ui, traceId: null, filters: DEFAULT_FILTERS },
   }), { reason: 'open', persist: false });
   adapter.kvSet('activeProjectId', project.id).catch(() => {});
+  if (dirty.size) flush();
 }
 
 /** Start the store: pick the storage mode, load the project list and the last open project. Returns { lastRoute }. */
@@ -481,9 +617,16 @@ export async function init() {
   }
 
   const lastRoute = await adapter.kvGet('lastRoute').catch(() => null);
-  addEventListener('pagehide', () => { flush(); });
+  addEventListener('pagehide', beforeLeaving);
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') flush();
+    if (document.visibilityState === 'hidden') beforeLeaving();
+  });
+  addEventListener('beforeunload', (e) => {
+    // Ask before closing only when the unsaved changes could not be kept in the journal.
+    if (state.storageKind !== 'browser' || paused() || (!dirty.size && !savingKeys.length)) return;
+    if (writeJournal()) return;
+    e.preventDefault();
+    e.returnValue = '';
   });
   set((s) => ({ ...s, ready: true }), { reason: 'ready', persist: false });
   return { lastRoute: lastRoute || null };
@@ -545,7 +688,7 @@ async function fetchSample(id) {
 
 async function saveWhole(project) {
   await adapter.saveTraces(project.id, project.traces || []);
-  await adapter.saveProject(project, { ifMatch: null });
+  await adapter.saveProject(project, { ifMatch: null, create: true });
 }
 
 /** Open a sample product, creating this browser's working copy on first open. */
@@ -572,6 +715,8 @@ export async function resetSample(id) {
   }
   await chain;
   await saveWhole(fresh);
+  dropJournal(id);
+  announce({ projectId: id, updatedAt: fresh.updatedAt, replaced: true });
   if (state.activeProjectId === id) activate(fresh);
   else set((s) => ({ ...s, projects: upsertSummary(s.projects, fresh) }), { reason: 'reset', persist: false });
   return fresh;
@@ -587,6 +732,8 @@ export async function deleteProject(id) {
   }
   await chain;
   await adapter.deleteProject(id);
+  dropJournal(id);
+  announce({ projectId: id, deleted: true });
   set((s) => ({
     ...s,
     projects: s.projects.filter((p) => p.id !== id),
@@ -654,6 +801,8 @@ export async function importProjectFile(text, { onClash } = {}) {
   }
   await flush();
   await saveWhole(project);
+  dropJournal(project.id);
+  announce({ projectId: project.id, updatedAt: project.updatedAt, replaced: true });
   activate(project);
   askPersist();
   return { ok: true, errors: [], id: project.id };

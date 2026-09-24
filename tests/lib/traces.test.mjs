@@ -276,3 +276,35 @@ test('memoized indexes keep identity until traces or stages change', () => {
   assert.notEqual(getNormalized(r, 'c-1'), all.get('c-1'));
   assert.equal(getNormalized(p, 'missing'), null);
 });
+
+test('CSV spreadsheet export: extra columns become details, and an id column keeps its ids', () => {
+  const rows = ['Conversation ID,Timestamp,Channel,Customer Message,Bot Reply,CSAT'];
+  for (let i = 1; i <= 30; i++) rows.push(`CX-${1000 + i},2026-09-${String(i).padStart(2, '0')},${['web', 'email', 'sms'][i % 3]},Question number ${i},Reply number ${i},${(i % 5) + 1}`);
+  rows.push(',2026-09-30,web,No id here,Reply,4');
+  const r = parseTraceFile(rows.join('\n') + '\n', 'support_export.csv');
+  assert.deepEqual(r.errors, []);
+  assert.deepEqual(r.traces.slice(0, 2).map((t) => t.id), ['CX-1001', 'CX-1002'], '"Conversation ID" is the trace id');
+  assert.match(r.traces[30].id, /^t-[0-9a-f]{8}$/, 'an empty id cell still gets a generated id');
+  assert.deepEqual(r.traces[0].metadata, { Timestamp: '2026-09-01', channel: 'email', 'Customer Message': 'Question number 1', 'Bot Reply': 'Reply number 1', CSAT: '2' });
+  assert.deepEqual(suggestFilters(r.traces), ['channel', 'CSAT']);
+  const exp = { ...defaultExperience({ pattern: 'single', renderer: 'chat' }), fieldMap: { input: 'metadata.Customer Message', output: 'metadata.Bot Reply' } };
+  const n = norm(r.traces[0], exp);
+  assert.equal(n.input, 'Question number 1');
+  assert.equal(n.output.text, 'Reply number 1');
+  assert.deepEqual(n.metadata, { Timestamp: '2026-09-01', channel: 'email', CSAT: '2' }, 'mapped text is not repeated as a detail');
+  const both = parseTraceFile('id,metadata,Plan\nm-1,"{""channel"":""sms""}",gig\n', 'mixed.csv');
+  assert.deepEqual(both.traces[0].metadata, { Plan: 'gig', channel: 'sms' }, 'a metadata cell and extra columns merge');
+});
+
+test('id keys match however a spreadsheet writes them', () => {
+  const r = parseTraceFile([{ 'Trace ID': 'a-1', input: 'x' }, { 'session-id': 's-2', input: 'y' }, { traceId: 't-3', input: 'z' }].map((t) => JSON.stringify(t)).join('\n'), 'ids.jsonl');
+  assert.deepEqual(r.traces.map((t) => t.id), ['a-1', 's-2', 't-3']);
+});
+
+test('a CSV header cannot reach Object.prototype', () => {
+  const r = parseTraceFile('id,input,output,__proto__.polluted,constructor\nt1,hi,hello,yes,z\n', 'traces.csv');
+  assert.deepEqual(r.errors, ['Header "__proto__.polluted" was skipped: that name is not allowed.', 'Header "constructor" was skipped: that name is not allowed.']);
+  assert.deepEqual(r.traces, [{ id: 't1', input: 'hi', output: 'hello' }]);
+  assert.equal(({}).polluted, undefined);
+  assert.equal(String({}), '[object Object]');
+});

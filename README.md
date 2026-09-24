@@ -8,10 +8,10 @@ pmstack helps product managers read real traces (one full conversation or task, 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/visuals/funnel-dark.svg">
-  <img src="docs/assets/visuals/funnel-light.svg" alt="The funnel of an AI experience for a dental booking assistant. 100 reviewed conversations move left to right through five stages: understand the request, hand off when needed, check the calendar, book or change, reply to the patient. At each stage, failing conversations drop out under a named failure mode, such as 7 that ignored requests for a person, and green chips show success modes, such as repeating the booking back. A bottom row shows the check that catches each failure mode. 64 of 100 reach a good outcome.">
+  <img src="docs/assets/visuals/funnel-light.svg" alt="The funnel of an AI experience for a dental booking assistant. 100 reviewed conversations move left to right through five stages: understand the request, hand off when needed, check the calendar, book or change, reply to the patient. At each stage, failing conversations drop out under a named failure mode, such as 7 that ignored requests for a person, and green chips show success modes, such as repeating the booking back. A bottom row shows the check for each failure mode, where one exists. 64 of 100 reach a good outcome.">
 </picture>
 
-Green chips are success modes to keep working. Red ribbons are failure modes leaving the funnel, each counted once at the first stage that went wrong. The bottom row is the check that now catches each one: a code check (a rule a computer can test) or an AI judge (a prompt that asks a model for pass or fail).
+Green chips are success modes to keep working. Red ribbons are failure modes leaving the funnel, each counted once at the first stage that went wrong. The bottom row shows the check for each failure mode, when it has one: a code check (a rule a computer can test) or an AI judge (a prompt that asks a model for pass or fail).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screens/review-dark.png">
@@ -122,7 +122,7 @@ Try them on the [support agent sample](https://ryanalberts.github.io/pmstack/stu
   <img src="docs/assets/visuals/judge-trust-light.svg" alt="Can you trust your AI judge? Measured on 75 labeled conversations kept aside until the end, the judge caught 23 of 25 real failures (92%) and agreed on 47 of 50 good conversations (94%). On 400 new conversations it flagged 18%. Correcting for its known mistakes, the likely true failure rate is 14%, with a 95% range of 4% to 21%.">
 </picture>
 
-**Can you trust your AI judge?** A judge is a prompt, so it makes mistakes, and you measure them before you trust its numbers. pmstack sets part of your labels aside as a final test and reports two numbers: how many real failures the judge catches, and how many good traces it leaves alone. In this example the judge catches 23 of 25 real failures and leaves 47 of 50 good ones alone. It flags 18% of 400 new conversations, and after correcting for its known mistakes, the likely true failure rate is 14%.
+**Can you trust your AI judge?** A judge is a prompt, so it makes mistakes, and you measure them before you trust its numbers. pmstack sets part of your labels aside as a final test and reports two numbers: how many real failures the judge catches, and how many good traces it leaves alone. In this example the judge catches 23 of 25 real failures and leaves 47 of 50 good ones alone. It flags 18% of 400 new conversations, and after correcting for its known mistakes, the likely true failure rate is 14%, with a 95% range of 4% to 21%.
 
 ## What's inside
 
@@ -206,7 +206,7 @@ Eval Studio on the web keeps your traces and reviews in your browser's storage, 
 
 pmstack puts into practice what Hamel Husain and Shreya Shankar teach. Go to the source:
 
-- [Building eval systems that improve your AI product](https://www.lennysnewsletter.com/p/building-eval-systems-that-improve-your-ai-product), their guide in Lenny's Newsletter.
+- [Building eval systems that improve your AI product](https://www.lennysnewsletter.com/p/building-eval-systems-that-improve), their guide in Lenny's Newsletter.
 - [Advanced evals: How to find (and fix) hidden AI failures in your product](https://www.lennysnewsletter.com/p/advanced-evals-how-to-find-and-fix), the follow-up on error discovery.
 - [AI Evals For Engineers & PMs](https://maven.com/parlance-labs/evals), their course.
 - [Evals FAQ](https://hamel.dev/blog/posts/evals-faq/), their answers to the questions teams ask most.
@@ -221,6 +221,14 @@ pmstack 2.0 is rebuilt around error discovery. The earlier PM commands (`/prd`, 
 
 ```sh
 git clone --branch v1.2.0 https://github.com/RyanAlberts/pmstack pmstack-1.2
+```
+
+If you installed 1.x with `setup`, remove its skills and commands so they don't compete with the new ones. Run this for a global install; for a project install, change `~/.claude` to the project's `.claude` folder. Plugin installs need nothing: updating the plugin replaces the old files.
+
+```sh
+cd ~/.claude && rm -rf skills/pmstack-{brief,compare,competitive,eval,eval-drift,eval-grade,eval-report,eval-self,launch-readiness,lint,metrics,onboarding,prd,premortem,run-eval,sprint,transcript-review,vibe-test,voc,weekly} \
+  skills/{_decision-log.md,_graph.yaml,agent-eval-design.md,competitive-landscape.md,eval-grade.md,eval-report.md,feature-compare.md,metric-framework.md,prd-from-signal.md,run-eval.md,stakeholder-brief.md,transcript-review.md,vibe-test.md,voice-of-customer.md} \
+  commands/{brief,compare,competitive,eval,eval-drift,eval-grade,eval-report,eval-self,launch-readiness,lint,metrics,onboarding,prd,premortem,run-eval,sprint,transcript-review,vibe-test,voc,weekly}.md
 ```
 
 The [changelog](CHANGELOG.md) lists what changed and where each retired piece went.

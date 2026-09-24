@@ -127,7 +127,7 @@ Route A to `pmstack-tool-policy`. Route B and C through `pmstack-error-discovery
 ## Multiple-choice questions
 
 Every pmstack skill asks this way:
-- 2 to 5 lettered options, each in plain words a person with no context understands.
+- 2 to 5 lettered options (the first routing question may have up to 7), each in plain words a person with no context understands.
 - When one option is better, put it first, marked "(recommended)" with a short reason drawn from what you found.
 - One question at a time. Accept a single letter or a sentence.
 - Skip a question the files already answer: say what you found and continue.

@@ -72,6 +72,7 @@ export function validateProject(obj, { tracesLoaded = true } = {}) {
   if (!isObj(exp)) errors.push('The project has no product setup.');
   else {
     if (exp.showHiddenDefault != null && typeof exp.showHiddenDefault !== 'boolean') errors.push('The product setup\'s default for "Show behind-the-scenes steps" (showHiddenDefault) must be true or false.');
+    if (exp.filters != null && !Array.isArray(exp.filters)) errors.push('The product setup\'s filters are not a list.');
     const stages = Array.isArray(exp.stages) ? exp.stages : [];
     if (!Array.isArray(exp.stages)) errors.push('The product setup has no list of stages.');
     for (const s of stages) {
@@ -105,6 +106,12 @@ export function validateProject(obj, { tracesLoaded = true } = {}) {
     if (!stageOk(m.stage)) errors.push(`Mode "${m.name || m.id}" uses stage "${m.stage}", which does not exist.`);
     if (m.template != null && !MODE_TEMPLATES.has(m.template)) errors.push(`Mode "${m.name || m.id}" has an unknown template "${m.template}". Use policy, relevance, grounding, or none.`);
   }
+
+  // Views read these as a list or as entries by id, so any other shape leaves them blank.
+  if (obj.reviews != null && !isObj(obj.reviews)) errors.push('The reviews are not stored by trace id.');
+  if (obj.labels != null && !isObj(obj.labels)) errors.push('The labels are not stored by failure mode.');
+  if (obj.splits != null && !isObj(obj.splits)) errors.push('The splits are not stored by failure mode.');
+  if (obj.checks != null && !Array.isArray(obj.checks)) errors.push('The checks are not a list.');
 
   for (const [tid, r] of Object.entries(isObj(obj.reviews) ? obj.reviews : {})) {
     if (checkTraces && !traceIds.has(tid)) errors.push(`Review for "${tid}" points to a trace that does not exist.`);
@@ -170,17 +177,44 @@ export function projectForDownload(p) {
   return { ...p, tracesFile: null, traces: p.traces || [] };
 }
 
+// Splits merged per failure mode. A final test revealed on disk (pmstack judge --final) stays
+// revealed: the disk entry is kept, and traces only the local copy assigned join the tuning set,
+// because after a reveal new labels join tuning only. Disk-only entries are kept while their
+// mode still exists.
+function mergeSplits(local, disk, modes) {
+  const loc = isObj(local) ? local : {};
+  const dsk = isObj(disk) ? disk : {};
+  const known = new Set((Array.isArray(modes) ? modes : []).map((m) => m?.id));
+  const out = {};
+  for (const [modeId, d] of Object.entries(dsk)) if (!(modeId in loc) && known.has(modeId)) out[modeId] = d;
+  for (const [modeId, l] of Object.entries(loc)) {
+    const d = dsk[modeId];
+    if (!(isObj(d) && d.revealedAt)) { out[modeId] = l; continue; }
+    const assign = { ...(isObj(d.assign) ? d.assign : {}) };
+    const after = Array.isArray(d.afterReveal) ? d.afterReveal.slice() : [];
+    for (const id of Object.keys(isObj(l?.assign) ? l.assign : {})) {
+      if (id in assign) continue;
+      assign[id] = 'tuning';
+      if (!after.includes(id)) after.push(id);
+    }
+    out[modeId] = after.length ? { ...d, assign, afterReveal: after } : { ...d, assign };
+  }
+  return out;
+}
+
 /**
  * Merge a newer disk copy with local edits: start from disk, take local for each dirty
- * top-level key, and merge checks per id (results, unreadable, runs, test come from disk).
+ * top-level key, merge checks per id (results, unreadable, runs, test come from disk), and
+ * merge splits per failure mode (a final test revealed on disk stays revealed).
  */
 export function mergeExternal(local, disk, dirtyKeys = []) {
   const dirty = new Set(dirtyKeys instanceof Set ? [...dirtyKeys] : dirtyKeys);
   const out = { ...disk };
   for (const key of dirty) {
-    if (key === 'checks' || key === 'revision' || key === 'traces') continue;
+    if (key === 'checks' || key === 'splits' || key === 'revision' || key === 'traces') continue;
     if (key in local) out[key] = local[key];
   }
+  if (dirty.has('splits')) out.splits = mergeSplits(local.splits, disk.splits, out.modes);
   if (dirty.has('checks')) {
     const diskChecks = Array.isArray(disk.checks) ? disk.checks : [];
     const diskById = new Map(diskChecks.map((c) => [c.id, c]));

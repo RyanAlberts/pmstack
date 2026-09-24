@@ -213,6 +213,28 @@ export function useKeys(map, { active = true, trap = false } = {}) {
 // ---------------------------------------------------------------------------
 // Text drafts: typing never waits on the store, and store updates never reset what is being typed.
 
+// Drafts still inside their 300 ms pause. They are committed when the page hides or closes, ahead of
+// the store's own save and journal: these listeners are added at module load, before the store starts.
+const waitingDrafts = new Set();
+
+function commitWaitingDrafts() {
+  for (const d of [...waitingDrafts]) {
+    waitingDrafts.delete(d);
+    if (!d.timer) continue;
+    clearTimeout(d.timer);
+    d.timer = 0;
+    if (d.pending) d.pending(d.value);
+  }
+}
+
+if (typeof addEventListener === 'function' && typeof document !== 'undefined') {
+  addEventListener('beforeunload', commitWaitingDrafts);
+  addEventListener('pagehide', commitWaitingDrafts);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') commitWaitingDrafts();
+  });
+}
+
 /**
  * Local draft for a text field tied to one entity (a trace, a mode).
  * const note = useDraft(traceId, review.note, (text) => updateProject((p) => setNote(p, traceId, text)));
@@ -229,6 +251,7 @@ export function useDraft(entityId, storeValue, commit) {
 
   if (s.id !== entityId) {
     // New entity: save what was typed for the old one, then seed from the store.
+    waitingDrafts.delete(s);
     if (s.timer) {
       clearTimeout(s.timer);
       const fn = s.pending;
@@ -242,6 +265,7 @@ export function useDraft(entityId, storeValue, commit) {
 
   const commitNow = useCallback(() => {
     const d = st.current;
+    waitingDrafts.delete(d);
     if (!d.timer) return d.value;
     clearTimeout(d.timer);
     d.timer = 0;
@@ -257,8 +281,10 @@ export function useDraft(entityId, storeValue, commit) {
     clearTimeout(d.timer);
     d.timer = setTimeout(() => {
       d.timer = 0;
+      waitingDrafts.delete(d);
       if (d.pending) d.pending(d.value);
     }, 300);
+    waitingDrafts.add(d);
     force();
   }, []);
 

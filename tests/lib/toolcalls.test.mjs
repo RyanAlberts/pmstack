@@ -218,6 +218,19 @@ test('never include this pattern: a card number anywhere in the arguments, never
   assert.equal(evaluatePolicy(onePath, trace([['user', 'x'], ['call', 'search_help', { query: 'wifi', email: 'amy@example.com' }, {}]])).verdict, 'pass', 'only the named argument');
 });
 
+test('never include this pattern with luhn: card numbers are flagged, timestamps and order numbers are not', () => {
+  const run = (rule, args) => evaluatePolicy(P(TOOLS, [rule]), trace([['user', 'x'], ['call', 'get_bill', args, { status: 'ok' }]]));
+  const luhn = { ...FULL.rules[8], luhn: true };
+  assert.equal(run(FULL.rules[8], { slot_start_ms: 1767225600000 }).verdict, 'fail', 'without luhn, any 13 to 16 digits match');
+  assert.equal(run(luhn, { slot_start_ms: 1767225600000 }).verdict, 'pass', 'an epoch-millisecond timestamp');
+  assert.equal(run(luhn, { order: 'ORD 1234567890123' }).verdict, 'pass', 'an order number');
+  const card = run(luhn, { order: 'ORD 1234567890123', note: 'card 4111 1111 1111 1111' });
+  assert.deepEqual(card.violations.map((v) => v.fact), ['get_bill called with a value that matches a forbidden pattern in note (ending "1111").']);
+  const onePath = run({ ...luhn, argPath: 'note' }, { note: 'order 1234567890123 then 4242424242424242' });
+  assert.deepEqual(onePath.violations.map((v) => v.fact), ['get_bill called with a value that matches a forbidden pattern in note (ending "4242").'], 'a later match that passes the checksum');
+  assert.deepEqual(validatePolicy(P(TOOLS, [{ ...luhn, luhn: 'yes' }])).errors, ['Rule "no-card-numbers": luhn must be true or false.']);
+});
+
 test('must match: an earlier tool result or a trace detail', () => {
   const policy = P(PLAIN, [FULL.rules[3]]);
   const bill = (account) => ['call', 'get_bill', { account_id: account }, { status: 'ok' }];
@@ -505,6 +518,7 @@ test('validateProject checks the new fields', () => {
     'Mode "Breaks a tool policy" has an unknown template "vibes". Use policy, relevance, grounding, or none.',
     'Check "Breaks a tool policy": Rule "r" needs argPath: the argument to compare, like "amount".',
     'Check "Breaks a tool policy": Rule "r" needs max: a number.',
+    'Check "Breaks a tool policy": Rule "r" names the tool "x", which is not in tools. Check the spelling, or add the tool to tools.',
     'Check "Breaks a tool policy" lists rule "nope", which its policy does not have.',
     'Check "Breaks a tool policy": intents must be a list.',
     'Check "Magic" has an unknown type "magic".',
@@ -519,4 +533,133 @@ test('a list item\'s reason reads "Reason:" in plain text', () => {
 test('EXAMPLE_POLICY is the template policy file, so Eval Studio starts from the same rules', () => {
   assert.deepEqual(EXAMPLE_POLICY, readJson('templates/tool-calls/policy.json'));
   assert.equal(validatePolicy(EXAMPLE_POLICY).ok, true);
+});
+
+// ------------------------------------------------------------------ guardrail gaps found in QA
+
+test('limit rules: a value that is not a plain number never slips through', () => {
+  const policy = P(PLAIN, FULL.rules.slice(4, 7));
+  const facts = (amount) => evaluatePolicy(policy, trace([['user', 'x'], credit(amount)])).violations.map((v) => `${v.ruleId}: ${v.fact}`);
+  assert.deepEqual(facts('500 USD'), ['credit-approval: issue_credit called with amount 500 USD without an earlier request_approval.', 'credit-cap: issue_credit called with amount 500 USD, above the limit of 200.']);
+  const notNumber = (shown) => [
+    `credit-approval: issue_credit called with amount ${shown}, which is not a number the policy can check, without an earlier request_approval.`,
+    `credit-cap: issue_credit called with amount ${shown}, which is not a number the policy can check.`,
+    `credit-min: issue_credit called with amount ${shown}, which is not a number the policy can check.`,
+  ];
+  assert.deepEqual(facts([500]), notNumber('[500]'));
+  assert.deepEqual(facts({ value: 500 }), notNumber('{"value":500}'));
+  assert.deepEqual(facts('eight'), notNumber('"eight"'));
+  const infinity = normalizeTrace({ id: 'inf', messages: [
+    { role: 'user', content: 'x' },
+    { role: 'assistant', content: '', tool_calls: [{ id: 'c1', type: 'function', function: { name: 'issue_credit', arguments: '{"account_id":"A-1","amount":1e999,"reason":"outage"}' } }] },
+  ] }, exp);
+  assert.deepEqual(evaluatePolicy(policy, infinity).violations.map((v) => v.ruleId), ['credit-approval', 'credit-cap'], '1e999 reads as Infinity, which is over every limit');
+  assert.deepEqual(facts('80'), ['credit-approval: issue_credit called with amount 80 without an earlier request_approval.']);
+  assert.deepEqual(facts('$80'), ['credit-approval: issue_credit called with amount $80 without an earlier request_approval.']);
+  assert.deepEqual(facts('1,000.50').map((f) => f.split(':')[0]), ['credit-approval', 'credit-cap']);
+  assert.deepEqual(facts('$40'), [], 'plain numeric text under the limit');
+  assert.deepEqual(evaluatePolicy(policy, trace([['user', 'x'], approved, credit([500])])).violations.map((v) => v.ruleId), ['credit-cap', 'credit-min'], 'an approval covers the unknown amount, but the cap cannot be checked');
+  const pct = P({ raise: { access: 'write' } }, [{ id: 'cap', type: 'arg-max', tools: ['raise'], argPath: 'change.percent', max: 15 }]);
+  const raise = (percent) => evaluatePolicy(pct, trace([['user', 'x'], ['call', 'raise', { change: { percent } }, { status: 'ok' }]])).violations.map((v) => v.fact);
+  assert.deepEqual(raise('40 percent'), ['raise called with change.percent 40 percent, above the limit of 15.']);
+  assert.deepEqual(raise('18%'), ['raise called with change.percent 18%, above the limit of 15.']);
+  assert.deepEqual(raise('8%'), []);
+  assert.deepEqual(raise(undefined), [], 'a missing value is for Must include');
+});
+
+test('approvals and identity checks: a denial or a missing answer does not count', () => {
+  const policy = P(PLAIN, [FULL.rules[2], FULL.rules[4]]);
+  const facts = (items) => evaluatePolicy(policy, trace(items)).violations.map((v) => v.fact);
+  const ask = (result) => ['call', 'request_approval', { account_id: 'A-1', amount: 80 }, result];
+  assert.deepEqual(facts([['user', 'x'], verified, ask({ approved: false, reason: 'over budget' }), credit(80)]), ['issue_credit called with amount 80 after request_approval returned status "not approved".']);
+  assert.deepEqual(facts([['user', 'x'], verified, ask({ decision: 'denied' }), credit(80)]), ['issue_credit called with amount 80 after request_approval returned status "denied".']);
+  assert.deepEqual(facts([['user', 'x'], verified, ask({ approval_status: 'rejected' }), credit(80)]), ['issue_credit called with amount 80 after request_approval returned status "rejected".']);
+  assert.deepEqual(facts([['user', 'x'], verified, ask(undefined), credit(80)]), ['issue_credit called with amount 80 before request_approval returned an answer.']);
+  assert.deepEqual(facts([['user', 'x'], verified, ask({ approved: true }), credit(80)]), []);
+  const notVerified = ['call', 'verify_identity', { account_id: 'A-1' }, { verified: false }];
+  assert.deepEqual(facts([['user', 'x'], notVerified, credit(20)]), ['issue_credit called after verify_identity failed.']);
+  assert.equal(toolCallList(trace([['user', 'x'], ['call', 'verify_identity', {}, { result: { authorized: false } }]]))[0].state, 'error', 'one level down counts too');
+});
+
+test('parallel tool calls: a call in the same batch never counts as done first', () => {
+  const parallel = (calls) => normalizeTrace({ id: 'par', messages: [
+    { role: 'user', content: 'We were down two days. Can I get a credit?' },
+    { role: 'assistant', content: '', tool_calls: calls.map(([name, args], i) => ({ id: `p${i}`, type: 'function', function: { name, arguments: JSON.stringify(args) } })) },
+    ...calls.map(([, , result], i) => ({ role: 'tool', tool_call_id: `p${i}`, content: JSON.stringify(result) })),
+  ] }, exp);
+  const approval = P(PLAIN, [FULL.rules[4]]);
+  const both = parallel([['request_approval', { amount: 80 }, { status: 'approved' }], ['issue_credit', { account_id: 'A-1', amount: 80, reason: 'outage' }, { status: 'applied' }]]);
+  assert.deepEqual(evaluatePolicy(approval, both).violations.map((v) => v.fact), ['issue_credit called with amount 80 without an earlier request_approval.']);
+  const identity = P(PLAIN, [FULL.rules[2], FULL.rules[3]]);
+  const read = parallel([['verify_identity', { account_id: 'A-1' }, { status: 'verified', account_id: 'A-1' }], ['get_bill', { account_id: 'A-1' }, { status: 'ok' }]]);
+  assert.deepEqual(evaluatePolicy(identity, read).violations.map((v) => v.fact), ['get_bill called before verify_identity.', 'get_bill called with account_id A-1, but no earlier verify_identity returned account_id to match.']);
+  assert.equal(evaluatePolicy(identity, trace([['user', 'bill?'], verified, ['call', 'get_bill', { account_id: 'A-1' }, { status: 'ok' }]])).verdict, 'pass', 'one after the other still passes');
+});
+
+test('"every tool" does not check the tool a rule waits for against itself', () => {
+  const bill = (account) => ['call', 'get_bill', { account_id: account }, { status: 'ok' }];
+  const first = P(PLAIN, [{ id: 'verify-first', type: 'requires-before', tools: '*', before: 'verify_identity' }]);
+  assert.equal(evaluatePolicy(first, trace([['user', 'x'], verified, bill('A-1')])).verdict, 'pass');
+  assert.deepEqual(evaluatePolicy(first, trace([['user', 'x'], bill('A-1'), verified])).violations.map((v) => v.fact), ['get_bill called before verify_identity.']);
+  const match = P(PLAIN, [{ id: 'same', type: 'arg-equals', tools: '*', argPath: 'account_id', source: { tool: 'verify_identity', path: 'account_id' } }]);
+  assert.deepEqual(evaluatePolicy(match, trace([['user', 'x'], verified, bill('A-2')])).violations.map((v) => v.tool), ['get_bill']);
+  const approval = P(PLAIN, [{ id: 'approve', type: 'approval-above', tools: '*', argPath: 'amount', max: 50, approvalTool: 'request_approval' }]);
+  assert.deepEqual(evaluatePolicy(approval, trace([['user', 'x'], approved, credit(80)])).violations, []);
+});
+
+test('ask before acting: a refusal that contains a yes word is not a yes', () => {
+  const policy = P(TOOLS, []);
+  const answer = (reply) => evaluatePolicy(policy, trace([['assistant', 'I can add an $80 credit. Shall I go ahead?'], ['user', reply], credit()])).violations.map((v) => v.fact);
+  const no = ['issue_credit called without a yes from the customer: their last message does not agree to it.'];
+  for (const reply of ['No, do not go ahead.', "Please don't do it", "I can't confirm that yet", 'Hold on, do not do it', "No, don't do it.", 'Please do not', 'Do not confirm that.', "I'm not sure that works", 'Please don’t', 'no thanks', 'Not yet, wait']) {
+    assert.deepEqual(answer(reply), no, reply);
+  }
+  for (const reply of ['Yes, cancel it. The fiber is half the price.', 'Sure, go ahead', 'No worries, go ahead', 'yes please', 'Sounds good, do it']) {
+    assert.deepEqual(answer(reply), [], reply);
+  }
+});
+
+test('validatePolicy reports typos and tool names that would silently turn a rule off', () => {
+  const typo = P({ update_salary: { access: 'write', confrim: true }, verify_employee: { access: 'read' } }, [
+    { id: 'a', type: 'deny-access', access: 'write', when: { path: 'metadata.channel', equal: 'sms' } },
+    { id: 'b', type: 'requires-before', tools: ['update_salry'], before: 'verify_employe' },
+    { id: 'c', type: 'arg-not-match', tools: '*', argpath: 'x', pattern: 'y' },
+    { id: 'd', type: 'deny-tools', tools: ['delete_everything'] },
+  ], { onlyListedTools: true, onlyListedTool: true });
+  assert.deepEqual(validatePolicy(typo).errors, [
+    '"onlyListedTool" is not a setting pmstack knows. Did you mean "onlyListedTools"?',
+    'Tool "update_salary": "confrim" is not a setting pmstack knows. Did you mean "confirm"?',
+    'Rule "a": in when, "equal" is not a setting pmstack knows. Did you mean "equals"?',
+    'Rule "a": when needs equals, the value that turns the rule on, like { "path": "metadata.channel", "equals": "sms" }.',
+    'Rule "b" names the tool "update_salry", which is not in tools. Check the spelling, or add the tool to tools.',
+    'Rule "b" names the tool "verify_employe", which is not in tools. Check the spelling, or add the tool to tools.',
+    'Rule "c": "argpath" is not a setting pmstack knows. Did you mean "argPath"?',
+  ]);
+  const unlisted = P({ get_bill: { access: 'read' } }, [{ id: 'b', type: 'requires-before', tools: ['lookup'], before: 'verify' }]);
+  assert.equal(validatePolicy(unlisted).ok, true, 'without onlyListedTools a rule may name any tool');
+  assert.equal(validatePolicy(P(TOOLS, [{ id: 'x', type: 'deny-tools', tools: ['run_sql'], label: 'free text', notes: 'kept' }])).errors.length, 1, 'only keys close to a known one are reported');
+});
+
+test('success after a pending call: a reply about what will happen is not a claim', () => {
+  const pending = credit(80, {}, { status: 'pending_approval', credit_id: 'CR-1', amount: 80 });
+  const said = (reply) => successAfterError(trace([['user', 'credit?'], pending, ['assistant', reply]])).verdict;
+  for (const reply of [
+    'Your credit will be applied after a supervisor approves it.',
+    'A supervisor needs to approve it first; then it will be applied to your next bill.',
+    'Your request is being processed and will be applied on Oct 1 after HR signs off.',
+    'It gets applied as soon as they approve.',
+  ]) assert.equal(said(reply), 'pass', reply);
+  assert.equal(said('Done! $80 is off your next bill.'), 'fail');
+  const err = ['call', 'change_plan', { plan: 'plus' }, { status: 'error' }];
+  assert.equal(successAfterError(trace([['user', 'x'], err, ['assistant', 'Your plan will be updated tonight.']])).verdict, 'fail', 'after an error, a promise is still a false claim');
+});
+
+test('value extraction stays fast on long runs of spaces', () => {
+  for (const word of ['1', 'confirmation']) {
+    const start = Date.now();
+    extractValues(word + ' '.repeat(200000) + 'x');
+    assert.ok(Date.now() - start < 100, `${word} followed by 200,000 spaces took ${Date.now() - start} ms`);
+  }
+  assert.deepEqual(extractValues('9 AM - 5 PM, 8 to 10 AM, 9am-5pm').map((v) => v.norm), ['09:00', '17:00', '08:00', '10:00', '09:00', '17:00']);
+  assert.deepEqual(extractValues('Your confirmation number is: AB-1234, ref#5567').map((v) => v.norm), ['AB1234', '5567']);
 });

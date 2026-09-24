@@ -61,16 +61,18 @@ Every tool is `read` (it only looks something up) or `write` (it changes somethi
 | No write actions | `deny-access` | Any write call, usually limited with `when` | No account changes over text message |
 | Ask before acting | `confirm: true` on a tool | A write call without a yes from the customer. The agent must propose the action, and the customer's next message must match a confirmation pattern. | A credit applied before the customer agreed to it |
 | At most N times per conversation | `maxPerTrace` on a tool | Too many calls to one tool (failed calls don't count, so a retry is fine) | One credit per conversation |
-| Do this first | `requires-before` | A call made before a required earlier call that didn't fail | `get_bill` before `verify_identity` |
-| Needs approval above a limit | `approval-above` | A value over the limit without an earlier successful approval call. A pending or denied approval doesn't count. | An $80 credit with no supervisor approval |
-| Stay under a limit | `arg-max` | A value above a maximum | No credit over $200 |
-| Stay above a limit | `arg-min` | A value below a minimum | A credit of $0 |
+| Do this first | `requires-before` | A call made before a required earlier call that didn't fail. A call sent in the same batch doesn't count as earlier. | `get_bill` before `verify_identity` |
+| Needs approval above a limit | `approval-above` | A value over the limit, or one that isn't a number, without an earlier successful approval call. A pending, denied, or unanswered approval doesn't count. | An $80 credit with no supervisor approval |
+| Stay under a limit | `arg-max` | A value above a maximum, or one that isn't a number ("eight") | No credit over $200 |
+| Stay above a limit | `arg-min` | A value below a minimum, or one that isn't a number | A credit of $0 |
 | Only these values | `arg-in` | A value outside a list | A plan name other than basic, plus, or gig |
-| Never include this pattern | `arg-not-match` | Text in any detail of a call that matches a pattern | A full card number passed to a tool |
+| Never include this pattern | `arg-not-match` | Text in any detail of a call that matches a pattern. With `"luhn": true`, a match counts only when its digits pass the check digit test every card number passes, so timestamps and order numbers are not flagged. | A full card number passed to a tool |
 | Must include | `arg-required` | A call missing a detail | An account change with no `account_id` |
 | Must match | `arg-equals` | A value that differs from an earlier tool result or a trace detail | `get_bill` on account A-1207 when the customer verified as A-1203 |
 
 A violation reads as the fact, then the why: "issue_credit called with amount 80 without an earlier request_supervisor_approval. Credits over $50 need a supervisor." A card number in a violation is masked to its last four digits.
+
+A limit rule reads only the detail at its `argPath`. A call that leaves that detail out, or sends it under another name, passes the limit, so pair each limit rule with a Must include rule on the same `argPath`. Use dots for nested values, like `change.percent` for a tool that takes `{"change": {"percent": 20}}`.
 
 [`policy-requirements-checklist.md`](../templates/tool-calls/policy-requirements-checklist.md) turns company requirements into rules: the question to ask your policy owner for each requirement, and the rule type that encodes it. It covers tool allowlists, read and write access, confirmation, approvals and limits, identity checks, account scoping, sensitive data, channel and time limits, call limits, audit details, separation of duties, and irreversible actions.
 
@@ -99,14 +101,15 @@ export function allowCall({ id, metadata, messages }, call) {
   const next = [...messages, { role: 'assistant', content: '', tool_calls: [call] }];
   const trace = normalizeTrace({ id, metadata, messages: next }, null);
   const callStep = `m${next.length - 1}.c0`; // judge only the new call; earlier calls already ran
-  const reasons = evaluatePolicy(policy, trace).violations
+  // userLabel is the word the reasons use for your users: replace 'customer' with your product's word.
+  const reasons = evaluatePolicy(policy, trace, { userLabel: 'customer' }).violations
     .filter((v) => v.stepId === callStep)
     .map((v) => v.message);
   return { allowed: reasons.length === 0, reasons };
 }
 ```
 
-With the Northstar policy, an $80 credit after the customer's yes comes back `allowed: false` with "Credits over $50 need a supervisor." A $40 credit comes back allowed. A guardrail that blocks good requests is a bug your customers feel, so run the policy on past traces first and use only rules that flag no good call.
+With the Northstar policy, an $80 credit after the customer's yes comes back `allowed: false` with "Credits over $50 need a supervisor." A $40 credit comes back allowed. When the agent sends several calls at once (a parallel batch), check each call on its own against the conversation before the batch. A guardrail that blocks good requests is a bug your customers feel, so run the policy on past traces first and use only rules that flag no good call.
 
 ## Relevance
 
@@ -165,7 +168,7 @@ The grounding judge covers the rest. It checks that every fact in the reply is b
 
 The policy rules and the two grounding code checks are fast first-pass filters. Read what they flag before you trust the counts, and tune them where your traces need it:
 
-- **"Ask before acting" matches words, not meaning.** "Do it" is a confirmation pattern, so "no, don't do it" also counts as a yes. When your customers say no in ways that contain a pattern, tighten the patterns (`"^\\s*yes\\b"`) or move the check to a judge.
+- **"Ask before acting" matches words, not meaning.** A confirmation pattern counts as a yes unless a refusal comes right before it or "not" right after it, so "No, don't do it" and "Please do not" are not a yes. A question that contains a pattern ("Before you do it, can you confirm my balance?") still reads as a yes. When your customers answer that way, tighten the patterns (`"^\\s*yes\\b"`) or move the check to a judge.
 - **"Every number in the reply comes from a tool" needs exact values.** A reply that adds two tool results ("your bill is $110" from $80 plus $30) is flagged, because no tool returned 110. A flag on a correct sum is a false alarm to note, and a reason to keep the judge for arithmetic.
 - **"Claims success after a failed or pending call" looks for success words.** "A technician will see you Friday" after a failed booking uses none of them, so it passes. The grounding judge catches the paraphrase.
 

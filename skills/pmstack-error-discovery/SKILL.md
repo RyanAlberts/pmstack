@@ -34,6 +34,8 @@ done
 
 On A, the reviewer loads traces in Set up. When they open the AI help drawer ("Ask AI to find more", "Group my notes with AI") and paste its prompt into this chat, answer with only the JSON the prompt asks for. Never install npm packages.
 
+On B, clone it in the current directory, then set `PMSTACK="$PWD/pmstack/bin/pmstack.mjs"` (the paths above do not look there) and continue.
+
 Set `FOLDER` to the directory that holds the trace file; the project lives in `$FOLDER/pmstack/`. Save the helper at the end of this file as `pmstack-helper.mjs` in a temporary directory outside `$FOLDER`, and set `HELPER` to its path.
 
 ## Rules for every phase

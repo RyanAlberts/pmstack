@@ -155,7 +155,7 @@ The quickstart folder has a working one, [`examples/quickstart/pmstack/renderers
 A custom view follows the same rules as the built-in ones:
 
 - It imports only `pmstack/ui`, `pmstack/renderers/common`, and `preact/hooks`, and draws with `html` templates (Preact with htm).
-- It takes the same props: `trace` (the trace, already read into steps), `experience`, `showHidden`, `pickedStepId`, `onPickStep`, `highlights`, `stepBadges`, and `compact`.
+- It takes the same props: `trace` (the trace, already read into steps), `experience`, `showHidden`, `pickedStepId`, `onPickStep`, `highlights`, `stepBadges`, `retrieval`, `onRetrieval`, and `compact`. `stepBadges` is `{ [stepId]: [{ tone, text }] }`, such as a policy check's "Breaks policy: Ask before acting"; draw it next to the step with `StepBadges` and `badgesFor` from `pmstack/renderers/common`.
 - Every element that shows a step carries `data-step-id` with the step's id, so the reviewer can pick it and badges land on it.
 - It shows the output the way the customer saw it, never hides content by role, and keeps each tool call next to its result.
 

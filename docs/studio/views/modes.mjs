@@ -550,11 +550,22 @@ function NewModeModal({ project, kind, traceIds, titles, onClose, onCreated }) {
   const experience = project.experience;
   const stages = (experience && experience.stages) || EMPTY;
   const formId = 'modes-new-' + useId().replace(/[^a-zA-Z0-9_-]/g, '');
+  // Start with the stage most of the selected notes picked, when they picked one.
   const firstStage = useMemo(() => {
-    const stagesOf = traceIds.map((id) => project.reviews && project.reviews[id] && project.reviews[id].stage);
-    const set = new Set(stagesOf);
-    const only = set.size === 1 ? stagesOf[0] : null;
-    return only && lib.isStageId(experience, only) ? only : '';
+    const counts = new Map();
+    for (const id of traceIds) {
+      const st = project.reviews && project.reviews[id] && project.reviews[id].stage;
+      if (st && lib.isStageId(experience, st)) counts.set(st, (counts.get(st) || 0) + 1);
+    }
+    let best = '';
+    let most = 0;
+    for (const [st, n] of counts) {
+      if (n > most || (n === most && lib.stageIndex(experience, st) < lib.stageIndex(experience, best))) {
+        best = st;
+        most = n;
+      }
+    }
+    return best;
   }, []);
   const [name, setName] = useState('');
   const [definition, setDefinition] = useState('');
@@ -606,6 +617,7 @@ function NewModeModal({ project, kind, traceIds, titles, onClose, onCreated }) {
           <option value="">No stage yet</option>
           ${stages.map((s, i) => html`<option key=${s.id} value=${s.id}>${i + 1} ${s.label}</option>`)}
         </select>
+        ${!stage && stages.length > 0 && html`<span class="hint">Pick a stage so this ${w.one} shows in the funnel.</span>`}
       </label>
       ${notes.length > 0 && html`<div class="modes-form-notes">
         <span class="label">${notes.length === 1 ? 'This note goes in it' : `These ${notes.length} notes go in it`}</span>
@@ -727,6 +739,20 @@ function ModesPage({ project }) {
   const [dialog, setDialog] = useState(null);
   const [flash, setFlash] = useState(null);
   const headRef = useRef(null);
+  const focusMode = useStore((s) => s.ui.focusMode);
+
+  // Sent here to pick a failure mode's stage (from the funnel's Unknown stage box).
+  useEffect(() => {
+    if (!focusMode) return;
+    if (kind !== 'failure') setKind('failure');
+    requestAnimationFrame(() => {
+      setUi({ focusMode: null });
+      scrollToCard(focusMode);
+      const card = document.getElementById('modes-card-' + focusMode);
+      const select = card && card.querySelector('.modes-stage');
+      if (select) select.focus({ preventScroll: true });
+    });
+  }, [focusMode]);
 
   const experience = project.experience;
   const w = WORDS[kind];

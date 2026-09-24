@@ -1,6 +1,6 @@
 ---
 name: pmstack-eval-audit
-description: Audits an existing AI evaluation setup against the error discovery method and returns findings ordered by product impact, each with evidence and a fix. Inspects six areas: where the failure modes came from, how checks are designed, whether judges were measured against human labels, who reviews and what they see, how many labels exist, and whether checks stay current. Use when inheriting evals, when a team reports AI quality scores nobody has verified, or before a release decision rests on eval numbers.
+description: "Audits an existing AI evaluation setup against the error discovery method and returns findings ordered by product impact, each with evidence and a fix. Inspects six areas: where the failure modes came from, how checks are designed, whether judges were measured against human labels, who reviews and what they see, how many labels exist, and whether checks stay current. Use when inheriting evals, when a team reports AI quality scores nobody has verified, or before a release decision rests on eval numbers."
 ---
 
 # Audit an existing eval setup
@@ -18,7 +18,7 @@ for p in "<skill-dir>/../../../.pmstack/bin/pmstack.mjs" "<skill-dir>/../../bin/
 done
 ```
 
-Then `node "$PMSTACK" validate pmstack/project.json` and `node "$PMSTACK" report pmstack/project.json --out audit-report.md` give you reviews, failure modes, checks, and agreement numbers as evidence. If no path is found, read `project.json` directly; the rest of the audit uses only your own tools. Never install npm packages.
+Then `node "$PMSTACK" validate pmstack/project.json` and `node "$PMSTACK" report pmstack/project.json --out "${TMPDIR:-/tmp}/pmstack-audit-evidence.md"` (a temporary file, so the only report left in the folder is the audit) give you reviews, failure modes, checks, and agreement numbers as evidence. If no path is found, read `project.json` directly; the rest of the audit uses only your own tools. Never install npm packages.
 
 ## Phase 1: Gather the artifacts
 

@@ -29,7 +29,7 @@ cd tests/e2e && npm ci && npx playwright test # browser tests on the system Chro
 
 `--png` and `--screens` need `tests/e2e` installed. The web studio needs any static server over `docs/` (`tests/e2e/serve.mjs` serves port 4180). `node bin/pmstack.mjs <command> --help` documents each CLI command.
 
-A change is done when `node --test` passes, both `--check` runs exit 0, and a change to the studio has been seen working in a real browser at desktop and 375 px widths, in light and dark, with no console errors.
+A change is done when `node --test` passes, both `--check` runs exit 0, `claude plugin validate .claude-plugin/plugin.json` passes (when Claude Code is installed), and a change to the studio has been seen working in a real browser at desktop and 375 px widths, in light and dark, with no console errors.
 
 ## Numbers come from the engine
 
@@ -49,7 +49,7 @@ Reviewed counts use `reviewStats().reviewed` (Good plus Problem, including trace
 - Use the product's names verbatim: error discovery, failure modes, success modes, the funnel of an AI experience, Eval Studio.
 - The studio shows plain labels only. The Help drawer's "Words we use" list (`WORDS` in `docs/studio/app.mjs`) maps each label to its course term; use its labels in UI text, SVG text, CLI help, and skills.
 - Claim what the product does and stop. One "Sample data" badge on a sample is the only disclaimer.
-- Run the voice linter on README, guides, skills, and the changelog: `"/Users/MacBookPro15/Desktop/AI Agents/Claude Code/voice/scripts/lint-copy.sh" <file>`, and fix every error.
+- If the maintainer's voice linter is available, run it on README, guides, skills, and the changelog. `tests/repo.test.mjs` enforces the mechanical copy rules.
 
 ## Contracts
 
@@ -68,3 +68,4 @@ Users' saved projects, custom views, and build scripts depend on these. Change t
 - Author and committer on every commit: `Ryan Alberts <25306145+RyanAlberts@users.noreply.github.com>`. Before the first commit in a session, check `git config user.email` and set it with `git config user.name "Ryan Alberts"` and `git config user.email 25306145+RyanAlberts@users.noreply.github.com` (local scope) if it differs.
 - Push verified, committed work straight to `main`. Open a pull request only when asked.
 - The 1.x PM commands and eval harness live at tag `v1.2.0`.
+- A plain `git push` does not send tags. README, CHANGELOG, and the regression-checks skill (`PMSTACK_REF`) link to the tags `v1.2.0` and `v2.0.0`, so a release pushes its tag too: `git tag v2.0.0 <release commit>`, then `git push origin v1.2.0 v2.0.0`.

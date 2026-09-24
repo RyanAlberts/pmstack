@@ -33,6 +33,12 @@ function hasRules(stage) {
   return Object.values(m).some((v) => (Array.isArray(v) ? v.length > 0 : v != null && v !== '' && v !== false));
 }
 
+// A failure mode with no stage: open it in Failure modes with its stage menu focused.
+function pickModeStage(modeId) {
+  setUi({ focusMode: modeId });
+  navigate('modes');
+}
+
 function formatDay(iso) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
@@ -372,19 +378,41 @@ function FunnelChart({ layout: L, funnel, showReached, open, emptyText }) {
       <text x=${L.unknown.x + 10} y=${r1(L.unknown.y + 6 + nameSize)} font-size=${nameSize} font-weight="600" class="funnel-t-ink">${L.unknown.label}</text>
       <text x=${L.unknown.x + 10} y=${r1(L.unknown.y + 6 + nameSize + lhOf(nameSize))} font-size=${metaSize} font-weight="700" class="funnel-t-bad">${L.unknown.meta}</text>
     <//>`}
+    ${L.unknown && L.unknown.modes.map((m) => {
+      const fit = fitLines(m.name, L.unknown.width - 28 - textWidth(String(m.count), metaSize, 700), metaSize, 500, m.lines.length);
+      const h = m.lines.length * lhOf(metaSize);
+      return html`<${Hit} key=${'u' + m.id} label=${`Failure mode ${m.name}: ${plural(m.count, 'trace')} with no stage yet. Pick its stage in Failure modes.`}
+        onActivate=${() => pickModeStage(m.id)} radius=${4}
+        box=${{ x: L.unknown.x + 6, y: m.y - 2, w: L.unknown.width - 12, h: h + 2 }}>
+        ${fit.cut && html`<title>${m.name}</title>`}
+        <${Lines} x=${L.unknown.x + 10} y=${m.y + metaSize} lines=${fit.lines} size=${metaSize} weight="500" />
+        <text x=${r1(L.unknown.x + L.unknown.width - 10)} y=${r1(m.y + metaSize)} font-size=${metaSize} font-weight="700" text-anchor="end" class="funnel-t-bad">${m.count}</text>
+      <//>`;
+    })}
+    ${L.unknown && L.unknown.moreModes > 0 && html`<text x=${L.unknown.x + 10} y=${r1(L.unknown.moreModesY)} font-size=${metaSize} class="funnel-t-ink3">+ ${L.unknown.moreModes} more</text>`}
 
-    ${L.ignored && html`<${Hit} label=${`Not a product problem: ${plural(L.ignored.count, 'trace')}, not counted. Show them.`}
-      onActivate=${() => open({ type: 'ignored' })}
-      box=${{ x: L.ignored.x, y: L.ignored.y, w: L.ignored.width, h: L.ignored.height }}>
-      <rect class="funnel-ignored" x=${L.ignored.x} y=${L.ignored.y} width=${L.ignored.width} height=${L.ignored.height} rx="8" />
-      <${Lines} x=${L.ignored.x + 10} y=${L.ignored.y + 6 + metaSize} lines=${L.ignored.lines} size=${metaSize} weight="500" tone="ink2" />
-    <//>`}
+    ${L.ignored && html`<${IgnoredBucket} g=${L.ignored} size=${metaSize} open=${open} />`}
   </svg>`;
+}
+
+// "Not a product problem", fitted with the real font: the name, then the count.
+function IgnoredBucket({ g, size, open }) {
+  const w = g.width - 20;
+  const name = fitLines('Not a product problem', w, size, 600, 2);
+  const meta = fitLines(`${plural(g.count, 'trace')}, not counted`, w, size, 500, 2);
+  const lh = lhOf(size);
+  const h = 12 + (name.lines.length + meta.lines.length) * lh;
+  return html`<${Hit} label=${`Not a product problem: ${plural(g.count, 'trace')}, not counted. Show them.`}
+    onActivate=${() => open({ type: 'ignored' })} box=${{ x: g.x, y: g.y, w: g.width, h }}>
+    <rect class="funnel-ignored" x=${g.x} y=${g.y} width=${g.width} height=${h} rx="8" />
+    <${Lines} x=${g.x + 10} y=${g.y + 6 + size} lines=${name.lines} size=${size} weight="600" tone="ink2" />
+    <${Lines} x=${g.x + 10} y=${g.y + 6 + size + name.lines.length * lh} lines=${meta.lines} size=${size} weight="500" tone="ink3" />
+  <//>`;
 }
 
 // Phones and small tablets: the same funnel as a numbered list of stages, top to bottom.
 // A rail on the left narrows as traces drop out, like the band in the wide drawing.
-function MobileFunnel({ layout: L, funnel, showReached, open, emptyText }) {
+export function MobileFunnel({ layout: L, funnel, showReached, open, emptyText }) {
   const start = L.stages.length ? L.stages[0].onTrack : 0;
   const share = (v) => `${start > 0 ? Math.max(v > 0 ? 6 : 0, (v / start) * 100) : 0}%`;
   if (L.empty) return html`<p class="funnel-m-empty">${emptyText}</p>`;
@@ -437,6 +465,10 @@ function MobileFunnel({ layout: L, funnel, showReached, open, emptyText }) {
       ${L.unknown && html`<button type="button" class="funnel-m-bucket is-unknown" onClick=${() => open({ type: 'unknown' })}>
         <span>Unknown stage</span><strong>${L.unknown.meta}</strong>
       </button>`}
+      ${L.unknown && L.unknown.modes.map((m) => html`<button type="button" key=${'u' + m.id} class="funnel-m-bucket funnel-m-unknown-mode"
+        onClick=${() => pickModeStage(m.id)} aria-label=${`Failure mode ${m.name}: ${plural(m.count, 'trace')} with no stage yet. Pick its stage in Failure modes.`}>
+        <span>${m.name}</span><strong>${m.count}</strong>
+      </button>`)}
       ${L.ignored && html`<button type="button" class="funnel-m-bucket" onClick=${() => open({ type: 'ignored' })}>
         <span>Not a product problem</span><strong>${plural(L.ignored.count, 'trace')}, not counted</strong>
       </button>`}
@@ -623,7 +655,7 @@ function sortRows(rows, sort) {
   }).map((x) => x.r);
 }
 
-function CheckCell({ row, rates }) {
+function CheckCell({ row, rates, drafts }) {
   if (!row.checks.length) {
     return html`<div class="funnel-check-none">
       <span class="muted">None</span>
@@ -638,7 +670,7 @@ function CheckCell({ row, rates }) {
         <a class="funnel-check-link" href=${hashFor('checks', c.id)}>
           <${Icon} name=${judge ? 'judge' : 'code'} size=${14} />${judge ? 'AI judge' : 'Code check'}
         </a>
-        ${a
+        ${drafts.has(c.id) ? html`<span class="funnel-check-rates is-unknown">Draft: no rule yet</span>` : a
           ? html`<span class="funnel-check-rates" title=${`Catches real failures: ${a.tn} of ${a.tn + a.fp}. Agrees on good traces: ${a.tp} of ${a.tp + a.fn}.`}>
             <span>Catches real failures <strong>${lib.pct(a.catchesFailures)}</strong></span>
             <span>Agrees on good traces <strong>${lib.pct(a.agreesOnGood)}</strong></span>
@@ -675,6 +707,7 @@ function PriorityTable({ project, version }) {
     }
     return m;
   }, [project.checks, project.labels, project.reviews, project.splits, project.modes, project.traces]);
+  const drafts = useMemo(() => new Set((project.checks || EMPTY).filter((c) => lib.isDraftCheck(c)).map((c) => c.id)), [project.checks]);
   const sorted = sortRows(rows, sort);
   const severityOptions = lib.SEVERITIES.map((s) => ({ value: s.id, label: s.short }));
   const decisionOptions = lib.DECISIONS.map((d) => ({ value: d.id, label: d.label }));
@@ -736,7 +769,7 @@ function PriorityTable({ project, version }) {
                     <${FixedCell} mode=${m} />
                   </div>
                 </td>
-                <td data-label="Check"><${CheckCell} row=${r} rates=${rates} /></td>
+                <td data-label="Check"><${CheckCell} row=${r} rates=${rates} drafts=${drafts} /></td>
               </tr>`;
             })}
           </tbody>
@@ -920,7 +953,11 @@ function FunnelPage({ project }) {
             ? html`<${MobileFunnel} layout=${layout} funnel=${funnel} showReached=${showReached} open=${setReq} emptyText=${emptyText} />`
             : html`<${FunnelChart} layout=${layout} funnel=${funnel} showReached=${showReached} open=${setReq} emptyText=${emptyText} />`}
         </div>
-        <p class="sr-only">${lib.funnelDescription(funnel, TRACE_UNIT)}</p>`}
+        <p class="sr-only">${lib.funnelDescription(funnel, TRACE_UNIT)}</p>
+        ${funnel.unknown.count > 0 && html`<p class="funnel-unknown-line">
+          <${Icon} name="warning" size=${14} />
+          <span>${funnel.unknown.count === 1 ? '1 failing trace has' : `${formatCount(funnel.unknown.count)} failing traces have`} no stage yet, so ${funnel.unknown.count === 1 ? 'it shows' : 'they show'} under Unknown stage instead of in the band. Give ${funnel.unknown.modes.length ? 'each failure mode' : 'each trace'} a stage to place ${funnel.unknown.count === 1 ? 'it' : 'them'}.</span>
+        </p>`}`}
       <figcaption class="funnel-caption">Each failing trace is counted once, at the first stage that went wrong. ${compact ? 'Select any stage, mode, or count' : 'Select any label'} to see its traces.</figcaption>
     </figure>
 

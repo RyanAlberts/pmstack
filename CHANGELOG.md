@@ -39,5 +39,5 @@ Each of these is still available at the [`v1.2.0` tag](https://github.com/RyanAl
 
 ### Changed
 
-- `setup` copies the skills to `.claude/skills/` and the command-line tool with Eval Studio to `.pmstack/`, in a project or in your home folder with `--global`. It no longer writes a `CLAUDE.md` into your project.
+- `setup` copies the skills to `.claude/skills/` and the command-line tool with Eval Studio to `.pmstack/`, in a project or in your home folder with `--global`. It no longer writes a `CLAUDE.md` into your project. It leaves 1.x files in place: if you installed 1.x with `setup`, remove its old skills and commands with the command in the README's [Upgrading from pmstack 1.x](README.md#upgrading-from-pmstack-1x) section.
 - The plugin is version 2.0.0. Commands are `/pmstack:start`, `/pmstack:error-discovery`, and the ten others listed in the README.

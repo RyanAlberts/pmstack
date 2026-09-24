@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 726" width="1200" height="726" role="img" aria-labelledby="pmv-loop-narrow-title pmv-loop-narrow-desc" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif">
+<title id="pmv-loop-narrow-title">Error discovery, step by step</title>
+<desc id="pmv-loop-narrow-desc">Error discovery in six steps: read traces, write notes, group into failure modes, count by stage, build checks, then test the checks and keep them running. Steps one to three repeat until new failure modes stop appearing. A problem caused by a missing instruction is fixed right away instead of getting a check.</desc>
+<rect x="0.5" y="0.5" width="1199" height="725" rx="20" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1"/>
+<text x="32" y="68" font-size="40" font-weight="700" style="fill:var(--ink, #16191D)"><tspan x="32">Error discovery,</tspan><tspan x="32" dy="46">step by step</tspan></text>
+<text x="32" y="148" font-size="22" style="fill:var(--ink-2, #4A525C)"><tspan x="32">Your judgment sets the bar.</tspan><tspan x="32" dy="28">AI helps you go faster.</tspan></text>
+<circle cx="40" cy="205.4" r="3.8" style="fill:var(--accent, #3A56D4)"/>
+<path d="M33 218a7 6.6 0 0 1 14 0z" style="fill:var(--accent, #3A56D4)"/>
+<text x="58" y="216" font-size="18" style="fill:var(--ink-2, #4A525C)">You decide</text>
+<path d="M190.7 201Q192.5 208.2 199.7 210Q192.5 211.8 190.7 219Q188.9 211.8 181.7 210Q188.9 208.2 190.7 201Z" style="fill:var(--ai, #7A4FD1)"/>
+<text x="209.7" y="216" font-size="18" style="fill:var(--ink-2, #4A525C)">AI can help</text>
+<g transform="translate(0 126)">
+<path d="M223 354L239 354" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M242 354L233 359L233 349.1Z" style="fill:var(--ink-3, #646B73)"/>
+<path d="M407 354L423 354" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M426 354L417 359L417 349.1Z" style="fill:var(--ink-3, #646B73)"/>
+<path d="M591 354L607 354" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M610 354L601 359L601 349.1Z" style="fill:var(--ink-3, #646B73)"/>
+<path d="M775 354L791 354" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M794 354L785 359L785 349.1Z" style="fill:var(--ink-3, #646B73)"/>
+<path d="M959 354L975 354" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M978 354L969 359L969 349.1Z" style="fill:var(--ink-3, #646B73)"/>
+<path d="M508 312C508 186 140 186 140 302" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M140 311L135.1 302L145 302Z" style="fill:var(--ink-3, #646B73)"/>
+<text x="324" y="203.5" font-size="18" font-weight="600" text-anchor="middle" style="fill:var(--ink, #16191D)">Repeat until new failure modes stop appearing</text>
+<path d="M270 270L378 270" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M276 237.5L292 245.5L308 245.5L324 253.5L340 261.5L356 269.5L372 269.5" style="fill:none;stroke:var(--accent, #3A56D4)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="276" cy="237.5" r="2.8" style="fill:var(--accent, #3A56D4)"/>
+<circle cx="292" cy="245.5" r="2.8" style="fill:var(--accent, #3A56D4)"/>
+<circle cx="308" cy="245.5" r="2.8" style="fill:var(--accent, #3A56D4)"/>
+<circle cx="324" cy="253.5" r="2.8" style="fill:var(--accent, #3A56D4)"/>
+<circle cx="340" cy="261.5" r="2.8" style="fill:var(--accent, #3A56D4)"/>
+<circle cx="356" cy="269.5" r="2.8" style="fill:var(--accent, #3A56D4)"/>
+<circle cx="372" cy="269.5" r="2.8" style="fill:var(--accent, #3A56D4)"/>
+<path d="M749 312V191Q749 179 761 179H791" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M794 179L785 184L785 174.1Z" style="fill:var(--ink-3, #646B73)"/>
+<rect x="797" y="152" width="158" height="54" rx="12" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-3, #646B73)" stroke-width="1.5"/>
+<text x="876" y="186" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)">Fix it now</text>
+<text x="876" y="234" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)"><tspan x="876">Missing instruction?</tspan><tspan x="876" dy="22">Change the prompt.</tspan></text>
+<text x="613" y="262" font-size="18" style="fill:var(--ink-3, #646B73)"><tspan x="613">Eval Studio</tspan><tspan x="613" dy="22">counts this</tspan></text>
+<path d="M959 179H1151Q1165 179 1165 193V516Q1165 530 1151 530H49Q35 530 35 516V368Q35 354 49 354H55" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M58 354L49 359L49 349.1Z" style="fill:var(--ink-3, #646B73)"/>
+<path d="M1143 354L1165 354" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="459" y="514" width="282.1" height="32" rx="16" style="fill:var(--surface, #FFFFFF)"/>
+<text x="600" y="536" font-size="18" font-weight="600" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">New traces bring new failures</text>
+<rect x="61" y="314" width="158" height="80" rx="12" style="fill:var(--surface-2, #F0EEE8);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<text x="140" y="363.3" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)">Read traces</text>
+<circle cx="83" cy="314" r="13" style="fill:var(--ink, #16191D)"/>
+<text x="83" y="320.3" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--surface, #FFFFFF)">1</text>
+<circle cx="197" cy="314" r="14" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<circle cx="197" cy="309.2" r="3.1" style="fill:var(--accent, #3A56D4)"/>
+<path d="M191.3 319.6a5.7 5.4 0 0 1 11.5 0z" style="fill:var(--accent, #3A56D4)"/>
+<text x="140" y="426" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)"><tspan x="140">See what your</tspan><tspan x="140" dy="22">customer saw</tspan></text>
+<text x="140" y="474" font-size="18" text-anchor="middle" style="fill:var(--ink-3, #646B73)">in Review traces</text>
+<rect x="245" y="314" width="158" height="80" rx="12" style="fill:var(--surface-2, #F0EEE8);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<text x="324" y="363.3" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)">Write notes</text>
+<circle cx="267" cy="314" r="13" style="fill:var(--ink, #16191D)"/>
+<text x="267" y="320.3" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--surface, #FFFFFF)">2</text>
+<circle cx="381" cy="314" r="14" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<circle cx="381" cy="309.2" r="3.1" style="fill:var(--accent, #3A56D4)"/>
+<path d="M375.3 319.6a5.7 5.4 0 0 1 11.5 0z" style="fill:var(--accent, #3A56D4)"/>
+<text x="324" y="426" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)"><tspan x="324">The first thing</tspan><tspan x="324" dy="22">that went wrong</tspan></text>
+<text x="324" y="474" font-size="18" text-anchor="middle" style="fill:var(--ink-3, #646B73)">in Review traces</text>
+<rect x="429" y="314" width="158" height="80" rx="12" style="fill:var(--surface-2, #F0EEE8);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<text x="508" y="351.3" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)"><tspan x="508">Group into</tspan><tspan x="508" dy="24">failure modes</tspan></text>
+<circle cx="451" cy="314" r="13" style="fill:var(--ink, #16191D)"/>
+<text x="451" y="320.3" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--surface, #FFFFFF)">3</text>
+<circle cx="565" cy="314" r="14" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<circle cx="565" cy="309.2" r="3.1" style="fill:var(--accent, #3A56D4)"/>
+<path d="M559.3 319.6a5.7 5.4 0 0 1 11.5 0z" style="fill:var(--accent, #3A56D4)"/>
+<circle cx="533" cy="314" r="14" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<path d="M533 305.5Q534.7 312.3 541.5 314Q534.7 315.7 533 322.5Q531.3 315.7 524.5 314Q531.3 312.3 533 305.5Z" style="fill:var(--ai, #7A4FD1)"/>
+<text x="508" y="426" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)"><tspan x="508">Name what keeps</tspan><tspan x="508" dy="22">happening</tspan></text>
+<text x="508" y="474" font-size="18" text-anchor="middle" style="fill:var(--ink-3, #646B73)">in Failure modes</text>
+<rect x="613" y="314" width="158" height="80" rx="12" style="fill:var(--surface-2, #F0EEE8);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<text x="692" y="351.3" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)"><tspan x="692">Count</tspan><tspan x="692" dy="24">by stage</tspan></text>
+<circle cx="635" cy="314" r="13" style="fill:var(--ink, #16191D)"/>
+<text x="635" y="320.3" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--surface, #FFFFFF)">4</text>
+<text x="692" y="426" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)"><tspan x="692">Find where each</tspan><tspan x="692" dy="22">one starts</tspan></text>
+<text x="692" y="474" font-size="18" text-anchor="middle" style="fill:var(--ink-3, #646B73)">in Funnel</text>
+<rect x="797" y="314" width="158" height="80" rx="12" style="fill:var(--surface-2, #F0EEE8);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<text x="876" y="363.3" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)">Build checks</text>
+<circle cx="819" cy="314" r="13" style="fill:var(--ink, #16191D)"/>
+<text x="819" y="320.3" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--surface, #FFFFFF)">5</text>
+<circle cx="933" cy="314" r="14" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<path d="M933 305.5Q934.7 312.3 941.5 314Q934.7 315.7 933 322.5Q931.3 315.7 924.5 314Q931.3 312.3 933 305.5Z" style="fill:var(--ai, #7A4FD1)"/>
+<text x="876" y="426" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)"><tspan x="876">A code check or</tspan><tspan x="876" dy="22">an AI judge</tspan></text>
+<text x="876" y="474" font-size="18" text-anchor="middle" style="fill:var(--ink-3, #646B73)">in Checks</text>
+<rect x="981" y="314" width="158" height="80" rx="12" style="fill:var(--surface-2, #F0EEE8);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<text x="1060" y="351.3" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)"><tspan x="1060">Test, then</tspan><tspan x="1060" dy="24">keep running</tspan></text>
+<circle cx="1003" cy="314" r="13" style="fill:var(--ink, #16191D)"/>
+<text x="1003" y="320.3" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--surface, #FFFFFF)">6</text>
+<circle cx="1117" cy="314" r="14" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
+<circle cx="1117" cy="309.2" r="3.1" style="fill:var(--accent, #3A56D4)"/>
+<path d="M1111.3 319.6a5.7 5.4 0 0 1 11.5 0z" style="fill:var(--accent, #3A56D4)"/>
+<text x="1060" y="426" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)"><tspan x="1060">Check it agrees</tspan><tspan x="1060" dy="22">with your labels</tspan></text>
+<text x="1060" y="474" font-size="18" text-anchor="middle" style="fill:var(--ink-3, #646B73)">in Checks and Report</text>
+</g>
+</svg>

@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 926" width="1200" height="926" role="img" aria-labelledby="pmv-patterns-narrow-title pmv-patterns-narrow-desc" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif">
+<title id="pmv-patterns-narrow-title">Every product is a different funnel</title>
+<desc id="pmv-patterns-narrow-desc">Six ways AI products are built, drawn on the same stages from understand to answer, with a red mark where failures usually start in each.</desc>
+<rect x="0.5" y="0.5" width="1199" height="925" rx="20" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1"/>
+<text x="32" y="68" font-size="40" font-weight="700" style="fill:var(--ink, #16191D)"><tspan x="32">Every product is</tspan><tspan x="32" dy="46">a different funnel</tspan></text>
+<text x="32" y="148" font-size="22" style="fill:var(--ink-2, #4A525C)"><tspan x="32">Same stages, different paths.</tspan><tspan x="32" dy="28">Red marks where failures usually start.</tspan></text>
+<circle cx="48" cy="210" r="16" style="fill:var(--bad-soft, #FBE7E2)"/>
+<circle cx="48" cy="210" r="9" style="fill:var(--bad, #BE3E29)"/>
+<text x="74" y="216" font-size="18" style="fill:var(--ink-2, #4A525C)">Failures usually start here</text>
+<rect x="318.3" y="202" width="30" height="16" rx="8" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73)" stroke-width="1.3"/>
+<text x="358.3" y="216" font-size="18" style="fill:var(--ink-2, #4A525C)">Check</text>
+<g transform="translate(0 126)">
+<text x="317" y="150" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)">Understand</text>
+<text x="427" y="150" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)">Gather</text>
+<text x="537" y="150" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)">Plan</text>
+<text x="647" y="150" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)">Act</text>
+<text x="757" y="150" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)">Check</text>
+<text x="867" y="150" font-size="20" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)">Answer</text>
+<text x="944" y="150" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)">Check here first</text>
+<path d="M32 166L1168 166" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M317 172L317 740" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1.5" stroke-dasharray="2 5" stroke-linecap="round"/>
+<path d="M427 172L427 740" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1.5" stroke-dasharray="2 5" stroke-linecap="round"/>
+<path d="M537 172L537 740" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1.5" stroke-dasharray="2 5" stroke-linecap="round"/>
+<path d="M647 172L647 740" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1.5" stroke-dasharray="2 5" stroke-linecap="round"/>
+<path d="M757 172L757 740" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1.5" stroke-dasharray="2 5" stroke-linecap="round"/>
+<path d="M867 172L867 740" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1.5" stroke-dasharray="2 5" stroke-linecap="round"/>
+<text x="32" y="204" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)">One call with tools</text>
+<text x="32" y="228" font-size="18" style="fill:var(--ink-2, #4A525C)">Dental booking assistant</text>
+<path d="M317 210L867 210" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="317" cy="210" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="264.6" y="231" width="104.8" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="317" y="247" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Understand</text>
+<circle cx="427" cy="210" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="389.7" y="231" width="74.6" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="427" y="247" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Look up</text>
+<circle cx="647" cy="210" r="16" style="fill:var(--bad-soft, #FBE7E2)"/>
+<circle cx="647" cy="210" r="9" style="fill:var(--bad, #BE3E29)"/>
+<rect x="600.9" y="231" width="92.3" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="647" y="247" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--bad, #BE3E29)">Use tools</text>
+<circle cx="867" cy="210" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="839.1" y="231" width="55.8" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="867" y="247" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Reply</text>
+<rect x="944" y="178" width="224" height="64" rx="18" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="960" y="204" font-size="18" style="fill:var(--ink, #16191D)"><tspan x="960">Right tool,</tspan><tspan x="960" dy="22">right details?</tspan></text>
+<path d="M32 266L1168 266" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1" stroke-linecap="round"/>
+<text x="32" y="300" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)">Step by step chain</text>
+<text x="32" y="324" font-size="18" style="fill:var(--ink-2, #4A525C)">Sales email writer</text>
+<path d="M317 306L867 306" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="317" cy="306" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="269.8" y="327" width="94.4" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="317" y="343" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Read brief</text>
+<circle cx="537" cy="306" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="512.7" y="327" width="48.6" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="537" y="343" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Draft</text>
+<circle cx="757" cy="306" r="16" style="fill:var(--bad-soft, #FBE7E2)"/>
+<circle cx="757" cy="306" r="9" style="fill:var(--bad, #BE3E29)"/>
+<rect x="732.2" y="327" width="49.6" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="757" y="343" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--bad, #BE3E29)">Gate</text>
+<circle cx="867" cy="306" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="820.3" y="327" width="93.3" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="867" y="343" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Final pass</text>
+<rect x="944" y="274" width="224" height="64" rx="18" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="960" y="300" font-size="18" style="fill:var(--ink, #16191D)"><tspan x="960">Does the gate</tspan><tspan x="960" dy="22">stop weak drafts?</tspan></text>
+<path d="M32 362L1168 362" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1" stroke-linecap="round"/>
+<text x="32" y="396" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)">Sort and route</text>
+<text x="32" y="420" font-size="18" style="fill:var(--ink-2, #4A525C)">Gift finder</text>
+<path d="M317 400C377 400 467 378 537 378H867" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="537" cy="378" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<circle cx="647" cy="378" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<circle cx="867" cy="378" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<path d="M317 400C377 400 467 400 537 400H867" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="537" cy="400" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<circle cx="647" cy="400" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<circle cx="867" cy="400" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<path d="M317 400C377 400 467 422 537 422H867" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="537" cy="422" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<circle cx="647" cy="422" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<circle cx="867" cy="422" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="494.5" y="436" width="85" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="537" y="452" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Pick path</text>
+<rect x="613.3" y="436" width="67.3" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="647" y="452" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Handle</text>
+<rect x="839.1" y="436" width="55.8" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="867" y="452" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Reply</text>
+<circle cx="317" cy="400" r="16" style="fill:var(--bad-soft, #FBE7E2)"/>
+<circle cx="317" cy="400" r="9" style="fill:var(--bad, #BE3E29)"/>
+<rect x="294.3" y="421" width="45.4" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="317" y="437" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--bad, #BE3E29)">Sort</text>
+<rect x="944" y="368" width="224" height="64" rx="18" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="960" y="394" font-size="18" style="fill:var(--ink, #16191D)"><tspan x="960">Sorted into</tspan><tspan x="960" dy="22">the right path?</tspan></text>
+<path d="M32 458L1168 458" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1" stroke-linecap="round"/>
+<text x="32" y="492" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)">Planner and workers</text>
+<text x="32" y="516" font-size="18" style="fill:var(--ink-2, #4A525C)">Research brief</text>
+<path d="M537 496L867 496" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M537 496C587 496 597 474 647 474C737 474 777 496 867 496" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="647" cy="474" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<path d="M537 496C587 496 597 496 647 496C737 496 777 496 867 496" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="647" cy="496" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<path d="M537 496C587 496 597 518 647 518C737 518 777 496 867 496" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="647" cy="518" r="5.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="608.2" y="532" width="77.7" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="647" y="548" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Workers</text>
+<circle cx="537" cy="496" r="16" style="fill:var(--bad-soft, #FBE7E2)"/>
+<circle cx="537" cy="496" r="9" style="fill:var(--bad, #BE3E29)"/>
+<rect x="513.2" y="517" width="47.5" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="537" y="533" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--bad, #BE3E29)">Plan</text>
+<circle cx="867" cy="496" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="825.6" y="517" width="82.9" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="867" y="533" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Combine</text>
+<rect x="944" y="464" width="224" height="64" rx="18" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="960" y="490" font-size="18" style="fill:var(--ink, #16191D)"><tspan x="960">Did it split the</tspan><tspan x="960" dy="22">work well?</tspan></text>
+<path d="M32 554L1168 554" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1" stroke-linecap="round"/>
+<text x="32" y="588" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)">Draft and critique loop</text>
+<text x="32" y="612" font-size="18" style="fill:var(--ink-2, #4A525C)">Contract summary</text>
+<path d="M647 606L867 606" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M757 594C757 566 647 566 647 590" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M647 595L642.6 587L651.4 587Z" style="fill:var(--ink-3, #646B73)"/>
+<rect x="665" y="552" width="74" height="24" rx="12" style="fill:var(--surface, #FFFFFF)"/>
+<text x="702" y="570.5" font-size="18" font-weight="600" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Revise</text>
+<circle cx="647" cy="606" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="622.7" y="627" width="48.6" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="647" y="643" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Draft</text>
+<circle cx="757" cy="606" r="16" style="fill:var(--bad-soft, #FBE7E2)"/>
+<circle cx="757" cy="606" r="9" style="fill:var(--bad, #BE3E29)"/>
+<rect x="717.6" y="627" width="78.7" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="757" y="643" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--bad, #BE3E29)">Critique</text>
+<circle cx="867" cy="606" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="842.7" y="627" width="48.6" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="867" y="643" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Final</text>
+<rect x="944" y="574" width="224" height="64" rx="18" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="960" y="600" font-size="18" style="fill:var(--ink, #16191D)"><tspan x="960">Does the critique</tspan><tspan x="960" dy="22">catch real problems?</tspan></text>
+<path d="M32 650L1168 650" style="fill:none;stroke:var(--line, #E2DFD8)" stroke-width="1" stroke-linecap="round"/>
+<text x="32" y="684" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)">Agent</text>
+<text x="32" y="708" font-size="18" style="fill:var(--ink-2, #4A525C)">Code review agent</text>
+<path d="M317 702L867 702" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M757 690C757 662 537 662 537 686" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M537 691L532.6 683L541.4 683Z" style="fill:var(--ink-3, #646B73)"/>
+<circle cx="317" cy="702" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="286.5" y="723" width="61" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="317" y="739" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Clarify</text>
+<circle cx="427" cy="702" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="377.7" y="723" width="98.5" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="427" y="739" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Read code</text>
+<circle cx="537" cy="702" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="514.3" y="723" width="45.5" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="537" y="739" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Plan</text>
+<circle cx="647" cy="702" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="603.5" y="723" width="87.1" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="647" y="739" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Run tests</text>
+<circle cx="757" cy="702" r="16" style="fill:var(--bad-soft, #FBE7E2)"/>
+<circle cx="757" cy="702" r="9" style="fill:var(--bad, #BE3E29)"/>
+<rect x="727" y="723" width="60" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="757" y="739" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--bad, #BE3E29)">Verify</text>
+<circle cx="867" cy="702" r="7.5" style="fill:var(--surface, #FFFFFF);stroke:var(--ink-2, #4A525C)" stroke-width="2.2"/>
+<rect x="834.9" y="723" width="64.2" height="22" rx="4" style="fill:var(--surface, #FFFFFF)"/>
+<text x="867" y="739" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Report</text>
+<rect x="944" y="670" width="224" height="64" rx="18" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="960" y="696" font-size="18" style="fill:var(--ink, #16191D)"><tspan x="960">Did it verify</tspan><tspan x="960" dy="22">before reporting?</tspan></text>
+<text x="32" y="778" font-size="18" style="fill:var(--ink-2, #4A525C)">Pattern names follow Anthropic's Building effective agents.</text>
+</g>
+</svg>

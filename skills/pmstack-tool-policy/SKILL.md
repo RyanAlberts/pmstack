@@ -104,14 +104,16 @@ The top of the file sets `"onlyListedTools": true`, the words that count as yes 
 | Needs approval above a limit | `approval-above` | `tools`, `argPath`, `max`, `approvalTool` | `credit-approval`: credits over $50 need `request_supervisor_approval` |
 | Stay under a limit / Stay above a limit | `arg-max` / `arg-min` | `tools`, `argPath`, `max` or `min` | `credit-cap`: no credit above $200 |
 | Only these values | `arg-in` | `tools`, `argPath`, `values` | `plan-names`: basic, plus, or gig |
-| Never include this pattern | `arg-not-match` | `tools`, `pattern`, optional `argPath` | `no-card-numbers`: no card number in any call |
+| Never include this pattern | `arg-not-match` | `tools`, `pattern`, optional `argPath` and `luhn` | `no-card-numbers`: no card number in any call (`"luhn": true` skips timestamps and order numbers that fail the card number check digit test) |
 | Must include | `arg-required` | `tools`, `argPath` | `writes-name-account`: every change names the account |
 | Must match | `arg-equals` | `tools`, `argPath`, `source` | `same-account`: the account the customer verified |
 
 How the rules read a trace:
 - `"tools": "*"` means every tool. `"when": { "path": "metadata.channel", "equals": "sms" }` limits any rule to traces with that detail.
 - Ask before acting passes when the customer's most recent message before the call matches one of `confirmationPatterns` (any capitalization) and comes after the agent's message that proposed the action.
-- Do this first counts any earlier call that succeeded or is still waiting. Needs approval above a limit counts only an approval call that went through, so a pending approval still leaves the call in violation.
+- The confirmation patterns match anywhere in the message. A match does not count when a refusal comes right before it ("no", "not", "don't", "can't", "wait", "hold on", with at most one word between) or "not" right after it, so "no, don't do it" and "please don't" are not a yes, while "No worries, go ahead" is. A question that contains a pattern ("Before you do it, can you confirm his salary?") still reads as a yes. If your users answer that way, anchor the patterns to the start of the message: `"confirmationPatterns": ["^\\W*(yes|yep|yeah|sure|ok|okay|confirmed?)\\b", "^\\W*(please )?(go ahead|do it)\\b", "^\\W*(sounds good|that works)\\b"]`. A yes that starts another way ("hmm, yes") is then flagged, which Phase 4 shows you.
+- Do this first counts any earlier call that succeeded or is still waiting. Needs approval above a limit counts only an approval call that went through, so a pending, denied, or unanswered approval still leaves the call in violation. A result such as `{ "approved": false }` or `{ "verified": false }` counts as a failed call. A call sent in the same batch as the checked call never counts as earlier.
+- A limit rule (Needs approval above a limit, Stay under a limit, Stay above a limit) reads only the detail at its `argPath`. A value that is not a number ("eight", `[500]`) breaks the rule, but a call that leaves the detail out, or sends it under another name, passes. Pair each limit rule with a Must include rule on the same `argPath`.
 - Must match compares the value at `argPath` with the most recent earlier successful call to `source.tool` (at `source.path`), or with a trace detail (`"source": { "detail": "metadata.account_id" }`).
 - Never include this pattern reads every detail of the call when `argPath` is left out. Patterns are JavaScript regular expressions, written with doubled backslashes in JSON.
 
@@ -202,7 +204,8 @@ export function checkToolCall(conversation, call) {
   const messages = [...conversation.messages, { role: 'assistant', content: '', tool_calls: [call] }];
   const trace = normalizeTrace({ id: conversation.id, metadata: conversation.metadata, messages });
   const callStep = `m${messages.length - 1}.c0`; // the new call; earlier calls already ran
-  const { violations } = evaluatePolicy(policy, trace, { ruleIds: GUARD_RULES });
+  // userLabel is the word the reasons use for your users: replace 'customer' with the product's word.
+  const { violations } = evaluatePolicy(policy, trace, { ruleIds: GUARD_RULES, userLabel: 'customer' });
   const blocking = violations.filter((v) => v.stepId === callStep);
   return { allowed: blocking.length === 0, reasons: blocking.map((v) => v.message) };
 }
@@ -222,7 +225,7 @@ The agent then sees a failed call with the reason, so it can ask for a yes or re
 
 Every block stops a customer, so a guardrail needs a very low false alarm rate. `GUARD_RULES` lists only rules whose Phase 4 violations were all real problems; the derived rules are named `only-listed`, `confirm`, and `max-per-trace`. Log every block and read the log each week.
 
-Done when a test in the service shows a known bad call blocked and a known good call allowed. Northstar: `issue_credit` for $80 with no approval is blocked; `issue_credit` for $40 on the verified account after the customer's yes is allowed.
+Done when a test in the service shows a known bad call blocked and a known good call allowed. Northstar: `issue_credit` for $80 with no approval is blocked; `issue_credit` for $40 on the verified account after the customer's yes is allowed, and the same call after "no, don't do it" is blocked.
 
 ## Phase 8: Read traces for the rules nobody wrote down
 

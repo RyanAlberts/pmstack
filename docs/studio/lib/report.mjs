@@ -4,7 +4,7 @@
 
 import { computeFunnel } from './funnel.mjs';
 import { priorityTable, modeCounts, countedTotal, DECISIONS, SEVERITIES } from './modes.mjs';
-import { runChecks, checkAgreement, checkTestState, likelyFailureRate, isCodeCheck, checkTypeLabel } from './checks.mjs';
+import { runChecks, checkAgreement, checkTestState, likelyFailureRate, isCodeCheck, isDraftCheck, checkTypeLabel } from './checks.mjs';
 import { reviewStats, modeMap, orderedReviews, reviewKind } from './review.mjs';
 import { traceIndex, tracePositions, traceVersions, normalizeAll, getPath } from './traces.mjs';
 import { stageIndex, stageLabel, stageNumber, userWord } from './experience.mjs';
@@ -50,7 +50,7 @@ function versionTable(p, versions, runs) {
   const counts = modeCounts(p);
   const rows = (p.modes || EMPTY).filter((m) => m.kind === 'failure').map((m) => {
     const ids = counts.get(m.id)?.traceIds || EMPTY;
-    const codeChecks = (p.checks || EMPTY).filter((c) => c.modeId === m.id && isCodeCheck(c));
+    const codeChecks = (p.checks || EMPTY).filter((c) => c.modeId === m.id && isCodeCheck(c) && !isDraftCheck(c));
     const cells = versions.map((v) => {
       const traces = ids.filter((id) => versionOf(id) === v).length;
       const n = reviewed.get(v);
@@ -120,7 +120,7 @@ export function reportModel(p, { now } = {}) {
   }).sort((a, b) => stageIndex(exp, a.stage) - stageIndex(exp, b.stage) || b.traces - a.traces);
 
   const runs = runChecks(p);
-  const checks = (p.checks || EMPTY).map((c) => checkRow(p, c, runs, mm));
+  const checks = (p.checks || EMPTY).filter((c) => !isDraftCheck(c)).map((c) => checkRow(p, c, runs, mm));
   const ci = runChecks(p, { onlyCi: true });
   const passAll = ci.summary.length ? { pass: ci.passAll, total: ci.total, sentence: `${ci.passAll} of ${plural(ci.total, 'trace passes', 'traces pass')} every check that runs on every change.` } : null;
 
@@ -265,7 +265,7 @@ export function ciChecks(p) {
   return {
     format: 'pmstack.checks/1',
     product: p.experience?.product || p.name || '',
-    checks: (p.checks || EMPTY).filter((c) => isCodeCheck(c) && c.ci),
+    checks: (p.checks || EMPTY).filter((c) => isCodeCheck(c) && !isDraftCheck(c) && c.ci),
     experience: p.experience,
   };
 }

@@ -1,13 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" width="1200" height="620" role="img" aria-labelledby="pmv-tool-calls-title pmv-tool-calls-desc" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif">
-<title id="pmv-tool-calls-title">Three questions for every tool call</title>
-<desc id="pmv-tool-calls-desc">Three questions for every tool call, shown on one example. The customer asks: The outage took us down for two days. Can I get a credit? The agent calls the tool issue_credit with account_id A-1182 and amount 80. The tool returns status pending_approval. The agent replies: Done! $80 is off your next bill. Policy sits on the call: allowed, verified, confirmed, under the limit? Here it fails, because a credit over $50 needs a supervisor. It is checked with a code check of policy rules. Relevance spans the request and the call: right tool, right details for what they asked? It is checked with a code check that uses an intent map, or with an AI judge. Output grounding spans the tool result and the reply: does the reply match what the tool returned? Here it fails, because a pending credit is shown as done. It is checked with a code check of the values, then an AI judge. Policy rules come from your company. Relevance and grounding problems show up when you read traces.</desc>
-<rect x="0.5" y="0.5" width="1199" height="619" rx="20" style="fill:#171B21;stroke:#2A3038" stroke-width="1"/>
-<text x="32" y="68" font-size="40" font-weight="700" style="fill:#E9EBEE">Three questions for every tool call</text>
-<text x="32" y="102" font-size="22" style="fill:#A9B1BB">Policy, relevance, and output grounding checks for agents that use tools.</text>
-<rect x="1077" y="46" width="30" height="16" rx="8" style="fill:#1E232A;stroke:#8A929D" stroke-width="1.3"/>
-<text x="1117" y="60" font-size="18" style="fill:#A9B1BB">Check</text>
-<path d="M922 45h10v13a5 5 0 0 1 -10 0Z" style="fill:#FF7A63"/>
-<text x="942" y="60" font-size="18" style="fill:#A9B1BB">Failure mode</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 746" width="1200" height="746" role="img" aria-labelledby="pmv-tool-calls-narrow-title pmv-tool-calls-narrow-desc" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif">
+<title id="pmv-tool-calls-narrow-title">Three questions for every tool call</title>
+<desc id="pmv-tool-calls-narrow-desc">Three questions for every tool call, shown on one example. The customer asks: The outage took us down for two days. Can I get a credit? The agent calls the tool issue_credit with account_id A-1182 and amount 80. The tool returns status pending_approval. The agent replies: Done! $80 is off your next bill. Policy sits on the call: allowed, verified, confirmed, under the limit? Here it fails, because a credit over $50 needs a supervisor. It is checked with a code check of policy rules. Relevance spans the request and the call: right tool, right details for what they asked? It is checked with a code check that uses an intent map, or with an AI judge. Output grounding spans the tool result and the reply: does the reply match what the tool returned? Here it fails, because a pending credit is shown as done. It is checked with a code check of the values, then an AI judge. Policy rules come from your company. Relevance and grounding problems show up when you read traces.</desc>
+<rect x="0.5" y="0.5" width="1199" height="745" rx="20" style="fill:#171B21;stroke:#2A3038" stroke-width="1"/>
+<text x="32" y="68" font-size="40" font-weight="700" style="fill:#E9EBEE"><tspan x="32">Three questions</tspan><tspan x="32" dy="46">for every tool call</tspan></text>
+<text x="32" y="148" font-size="22" style="fill:#A9B1BB"><tspan x="32">Policy, relevance, and output grounding</tspan><tspan x="32" dy="28">checks for agents that use tools.</tspan></text>
+<path d="M32 201h10v13a5 5 0 0 1 -10 0Z" style="fill:#FF7A63"/>
+<text x="52" y="216" font-size="18" style="fill:#A9B1BB">Failure mode</text>
+<rect x="191.2" y="202" width="30" height="16" rx="8" style="fill:#1E232A;stroke:#8A929D" stroke-width="1.3"/>
+<text x="231.2" y="216" font-size="18" style="fill:#A9B1BB">Check</text>
+<g transform="translate(0 126)">
 <rect x="32" y="280" width="260" height="128" rx="12" style="fill:#1E232A;stroke:#2A3038" stroke-width="1.2"/>
 <text x="48" y="308" font-size="18" font-weight="600" style="fill:#A9B1BB">Customer asks</text>
 <path d="M48 320L276 320" style="fill:none;stroke:#2A3038" stroke-width="1.2" stroke-linecap="round"/>
@@ -57,4 +58,5 @@
 <path d="M779 549h10v13a5 5 0 0 1 -10 0Z" style="fill:#FF7A63"/>
 <text x="799" y="564" font-size="18" font-weight="600" style="fill:#FF7A63">Pending shown as done</text>
 <text x="32" y="600" font-size="18" style="fill:#A9B1BB">Policy rules come from your company. Relevance and grounding problems show up when you read traces.</text>
+</g>
 </svg>

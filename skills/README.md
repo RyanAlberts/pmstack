@@ -62,7 +62,7 @@ cd pmstack
 
 | Agent | For every project | For one project |
 |---|---|---|
-| Codex | `cp -R skills/pmstack-* ~/.codex/skills/` | `cp -R skills/pmstack-* /path/to/project/.agents/skills/` |
+| Codex | `cp -R skills/pmstack-* ~/.agents/skills/` | `cp -R skills/pmstack-* /path/to/project/.agents/skills/` |
 | Cursor | `cp -R skills/pmstack-* ~/.cursor/skills/` | `cp -R skills/pmstack-* /path/to/project/.cursor/skills/` |
 | Gemini CLI | `cp -R skills/pmstack-* ~/.gemini/skills/` | `cp -R skills/pmstack-* /path/to/project/.gemini/skills/` |
 

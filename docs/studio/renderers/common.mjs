@@ -592,7 +592,7 @@ export function LongText({ text, limit = 600, highlights, render, class: cls }) 
   });
   const [open, setOpen] = useState(false);
   const showAll = !long || open || hidden;
-  const shown = showAll ? full : full.slice(0, cut).trimEnd() + ' …';
+  const shown = showAll ? full : full.slice(0, cut).trimEnd() + '…';
   const draw = render || ((t) => html`<${Highlightable} text=${t} highlights=${highlights} />`);
   return html`<div class=${classes('rv-long', cls)}>
     ${draw(shown)}

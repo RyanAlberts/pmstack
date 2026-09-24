@@ -53,7 +53,7 @@ test('policy groups violations by rule and exits 1 when any call breaks it', asy
   assert.equal(r.code, 1, r.err);
   assert.match(r.out, /^Checked 4 traces against "Test support policy"\./);
   assert.match(r.out, /Do this first \(verify-first\): 1 trace, 1 call\n {2}Why: Verify identity before reading or changing an account\.\n {2}p-2 {2}step m1\.c0 {2}issue_credit/);
-  assert.match(r.out, /Ask before acting \(confirm\): 1 trace/);
+  assert.match(r.out, /Ask before acting \(confirm, issue_credit\): 1 trace/, 'rules from the tools list group by tool, so each why fits');
   assert.match(r.out, /Never use these tools \(never-delete\): 1 trace, 1 call/);
   assert.match(r.out, /Only listed tools \(only-listed\): 1 trace/);
   assert.match(r.out, /Breaks the policy in 2 of 4 traces\.\n$/);
@@ -61,6 +61,18 @@ test('policy groups violations by rule and exits 1 when any call breaks it', asy
   const clean = await run(['policy', 'clean.jsonl', '--policy', 'policy.json'], dir);
   assert.equal(clean.code, 0, clean.out + clean.err);
   assert.match(clean.out, /No call breaks the policy in 2 traces\./);
+});
+
+test('policy --user names the people the agent serves', async (t) => {
+  const dir = files(t);
+  const r = await run(['policy', 'traces.jsonl', '--policy', 'policy.json', '--user', 'employee'], dir);
+  assert.equal(r.code, 1);
+  assert.match(r.out, /Why: Actions that change something need a yes from the employee first\./);
+  assert.match(r.out, /issue_credit called without a yes from the employee/);
+  assert.doesNotMatch(r.out, /customer/);
+  const empty = await run(['policy', 'traces.jsonl', '--policy', 'policy.json', '--user', ' '], dir);
+  assert.equal(empty.code, 2);
+  assert.match(empty.err, /--user needs a word/);
 });
 
 test('policy --json prints results for scripts', async (t) => {

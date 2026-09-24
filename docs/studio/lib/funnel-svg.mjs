@@ -153,6 +153,12 @@ export function funnelLayout(funnel, {
   const failTop = bandTop + maxThick + 28;
   const nameSize = f - 1;
   const metaSize = f - 2;
+  // One layout for every card: when any card needs the severity on its own line, all of them use it.
+  const wordFits = (m) => {
+    const word = SEVERITY_WORD[m.severity];
+    return !word || (plural(m.firstHere, unit).length + 3 + word.length) * cw(metaSize, true) <= inner - 18;
+  };
+  const ownLine = stages.some((s) => (s.failureModes || []).slice(0, maxFailures).some((m) => !wordFits(m)));
   const cardsFor = (s) => {
     const list = s.failureModes || [];
     let cy = failTop;
@@ -160,7 +166,7 @@ export function funnelLayout(funnel, {
       const lines = wrapText(m.name, (inner - 16) / cw(nameSize, true), colW < 150 ? 3 : 2);
       const meta = plural(m.firstHere, unit);
       const word = SEVERITY_WORD[m.severity] || null;
-      const severityOwnLine = !!word && (meta.length + 3 + word.length) * cw(metaSize, true) > inner - 18;
+      const severityOwnLine = !!word && ownLine;
       const h = 10 + lines.length * lh(nameSize) + lh(metaSize) * (severityOwnLine ? 2 : 1) + 6;
       const card = { id: m.id, name: m.name, count: m.firstHere, alsoPresent: m.alsoPresent || 0, severity: m.severity ?? null, severityWord: word, severityOwnLine, lines, x: 0, y: cy, width: inner, height: h, meta, traceIds: m.traceIds || [] };
       cy += h + 8;
@@ -170,17 +176,35 @@ export function funnelLayout(funnel, {
   };
   const cardSets = stages.map(cardsFor);
   const bucketChars = (outcomeW - 20) / cw(metaSize);
-  const unknownH = 10 + lh(nameSize) + lh(metaSize) + 6;
+
+  // Unknown stage bucket: the count, then the failure modes of those traces (name and count).
+  const hasUnknown = funnel?.unknown?.count > 0;
+  const unknownAll = hasUnknown ? (funnel.unknown.modes || []).filter((m) => m && m.count > 0) : [];
+  let uy = 10 + lh(nameSize) + lh(metaSize) + (unknownAll.length ? 4 : 6);
+  const unknownModes = unknownAll.slice(0, maxFailures).map((m) => {
+    const countW = String(m.count).length * cw(metaSize, true) + 8;
+    const lines = wrapText(m.name, (outcomeW - 20 - countW) / cw(metaSize), 2);
+    const item = { id: m.id, name: m.name, count: m.count, lines, dy: uy };
+    uy += lines.length * lh(metaSize) + 4;
+    return item;
+  });
+  const unknownMore = Math.max(0, unknownAll.length - unknownModes.length);
+  const unknownH = uy + (unknownMore ? lh(metaSize) : 0) + (unknownModes.length ? 4 : 0);
+
+  // Not a product problem: in the failure modes row, under the unknown stage bucket.
   const ignoredLines = funnel?.ignored > 0
     ? [...wrapText('Not a product problem', bucketChars, 2), ...wrapText(`${plural(funnel.ignored, unit)}, not counted`, bucketChars, 2)]
     : null;
-  const failH = Math.max(f * 2.2, funnel?.unknown?.count > 0 ? unknownH : 0, ...cardSets.map((c) => c.bottom - failTop));
+  const ignoredH = ignoredLines ? 12 + ignoredLines.length * lh(metaSize) : 0;
+  const ignoredTop = failTop + (hasUnknown ? unknownH + 8 : 0);
+  const bucketsH = (hasUnknown ? unknownH : 0) + (ignoredLines ? (hasUnknown ? 8 : 0) + ignoredH : 0);
+  const failH = Math.max(f * 2.2, bucketsH, ...cardSets.map((c) => c.bottom - failTop));
 
   // Checks row.
   const checksTop = failTop + failH + 22;
   const pillH = Math.round(f * 1.85);
   const maxPills = Math.max(1, ...cardSets.map((c) => c.cards.length));
-  const checksH = Math.max(f * 2.6, maxPills * (pillH + 6) - 6, ignoredLines ? 12 + ignoredLines.length * lh(metaSize) : 0);
+  const checksH = Math.max(f * 2.6, maxPills * (pillH + 6) - 6);
   const footerY = checksTop + checksH + Math.round(f * 2.2);
   const H = Math.max(height, Math.round(footerY + (footer ? f : 0) + pad * 0.6));
 
@@ -235,11 +259,14 @@ export function funnelLayout(funnel, {
   const valueText = `${funnel?.passed || 0} of ${funnel?.counted || 0}`;
   const valueSize = Math.max(f, Math.min(f + 8, Math.floor((outcomeW - 28) / (valueText.length * 0.6))));
   const outcome = { x: r1(outX), y: bandTop, width: outcomeW, height: outcomeH, value: funnel?.passed || 0, total: funnel?.counted || 0, valueSize, bandThickness: r1(tEnd) };
-  const unknown = funnel?.unknown?.count > 0
-    ? { x: r1(outX), y: failTop, width: outcomeW, height: unknownH, count: funnel.unknown.count, label: 'Unknown stage', meta: plural(funnel.unknown.count, unit), traceIds: funnel.unknown.traceIds || [] }
+  const unknown = hasUnknown
+    ? {
+      x: r1(outX), y: failTop, width: outcomeW, height: unknownH, count: funnel.unknown.count, label: 'Unknown stage', meta: plural(funnel.unknown.count, unit), traceIds: funnel.unknown.traceIds || [],
+      modes: unknownModes.map((m) => ({ ...m, y: failTop + m.dy })), moreModes: unknownMore, moreModesY: failTop + uy + lh(metaSize) - 4,
+    }
     : null;
   const ignored = ignoredLines
-    ? { x: r1(outX), y: checksTop, width: outcomeW, height: 12 + ignoredLines.length * lh(metaSize), count: funnel.ignored, label: 'Not a product problem', lines: ignoredLines, traceIds: funnel.ignoredIds || [] }
+    ? { x: r1(outX), y: ignoredTop, width: outcomeW, height: ignoredH, count: funnel.ignored, label: 'Not a product problem', lines: ignoredLines, traceIds: funnel.ignoredIds || [] }
     : null;
 
   const rowLabel = (id, title2, sub, yy) => ({ id, title: title2, sub, x: pad, y: r1(yy) });
@@ -412,6 +439,11 @@ export function funnelSvg(funnel, { theme = 'light', width = 1200, title = 'The 
     const u = L.unknown;
     o.push(`<rect x="${u.x}" y="${u.y}" width="${u.width}" height="${u.height}" rx="8"${paint(null, 'bad')} stroke-width="1.2" stroke-dasharray="5 4"/>`);
     o.push(cardText(u.x, u.y, [u.label], u.meta, null, false));
+    for (const m of u.modes) {
+      o.push(multi(u.x + 10, r1(m.y + metaSize), m.lines, metaSize, 500, 'ink', lhOf(metaSize)));
+      o.push(text(r1(u.x + u.width - 10), r1(m.y + metaSize), String(m.count), { size: metaSize, weight: 700, color: 'bad', anchor: 'end' }));
+    }
+    if (u.moreModes) o.push(text(u.x + 10, r1(u.moreModesY), `+ ${u.moreModes} more`, { size: metaSize, color: 'ink3' }));
   }
   if (L.ignored) {
     const g = L.ignored;

@@ -7,8 +7,12 @@ import {
 } from 'pmstack/ui';
 import { navigate, projectFile, noteBackup } from '../store.mjs';
 import * as lib from '../lib/index.mjs';
+import { useMedia } from './shared.mjs';
+import { MobileFunnel } from './funnel.mjs';
 
 const EMPTY = Object.freeze([]);
+const NO_REACHED = new Set();
+const PHONE = '(max-width: 640px)';
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const TYPE_NAMES = { code: 'Code check', judge: 'AI judge', policy: 'Code check: policy rules', relevance: 'Code check: intent map' };
 const typeLabel = (type) => (typeof lib.checkTypeLabel === 'function' ? lib.checkTypeLabel({ type }) : TYPE_NAMES[type] || 'Check');
@@ -70,12 +74,12 @@ function FunnelRows({ model, exp }) {
       <tbody>
         ${model.funnelRows.map((r) => html`<tr key=${r.id}>
           <td><${StageChip} experience=${exp} stageId=${r.id} /></td>
-          <td class="num">${r.onTrack}</td>
-          <td class="num">${r.failedHere}${r.failedHere > 0 && html`<span class="report-of">${pct(r.share)}</span>`}</td>
-          <td>${r.failureModes.length
+          <td class="num" data-label="On track">${r.onTrack}</td>
+          <td class="num" data-label="Went wrong here">${r.failedHere}${r.failedHere > 0 && html`<span class="report-of">${pct(r.share)}</span>`}</td>
+          <td class="report-td-wide" data-label="Failure modes that start here">${r.failureModes.length
             ? html`<ul class="report-inline">${r.failureModes.map((f) => html`<li key=${f.id}><span class="report-drop" aria-hidden="true"></span>${f.name} <span class="num soft">(${f.count})</span></li>`)}</ul>`
             : html`<span class="muted">None</span>`}</td>
-          <td>${r.successModes.length
+          <td class="report-td-wide" data-label="Success modes">${r.successModes.length
             ? html`<div class="report-chips">${r.successModes.map((s) => html`<${Chip} key=${s.id} tone="good">${s.name} <span class="num">${s.count}</span><//>`)}</div>`
             : html`<span class="muted">None yet</span>`}</td>
         </tr>`)}
@@ -120,9 +124,9 @@ function SuccessModes({ model, exp }) {
       <tbody>
         ${model.successModes.map((s) => html`<tr key=${s.id}>
           <td><span class="report-good-dot" aria-hidden="true"></span>${s.name}${s.definition && html`<span class="report-sub">${s.definition}</span>`}</td>
-          <td>${s.stage ? html`<${StageChip} experience=${exp} stageId=${s.stage} />` : html`<span class="muted">Unknown stage</span>`}</td>
-          <td class="num">${s.traces}</td>
-          <td class="num">${pct(s.share)}</td>
+          <td class="report-td-wide" data-label="Stage">${s.stage ? html`<${StageChip} experience=${exp} stageId=${s.stage} />` : html`<span class="muted">Unknown stage</span>`}</td>
+          <td class="num" data-label="Traces">${s.traces}</td>
+          <td class="num" data-label="Share">${pct(s.share)}</td>
         </tr>`)}
       </tbody>
     </table>
@@ -154,11 +158,11 @@ function Checks({ model }) {
               <button type="button" class="report-link" onClick=${() => navigate('checks', c.id)}>${c.name}</button>
               <span class="report-sub">${typeLabel(c.type)} for ${c.modeName}${c.ci ? '. Runs on every change.' : ''}</span>
             </td>
-            <td class="num"><span class=${rateClass(c.catchesFailures)}>${pct(c.catchesFailures)}</span></td>
-            <td class="num"><span class=${rateClass(c.agreesOnGood)}>${pct(c.agreesOnGood)}</span></td>
-            <td class="num">${c.n ? html`${c.nFail} Problem<span class="report-sub">${c.nPass} Good</span>` : html`<span class="muted">None yet</span>`}</td>
-            <td><${Chip}>${c.split}<//></td>
-            <td>${c.likely
+            <td class="num" data-label="Catches real failures"><span class=${rateClass(c.catchesFailures)}>${pct(c.catchesFailures)}</span></td>
+            <td class="num" data-label="Agrees on good traces"><span class=${rateClass(c.agreesOnGood)}>${pct(c.agreesOnGood)}</span></td>
+            <td class="num" data-label="Labels">${c.n ? html`${c.nFail} Problem<span class="report-sub">${c.nPass} Good</span>` : html`<span class="muted">None yet</span>`}</td>
+            <td data-label="Measured on"><${Chip}>${c.split}<//></td>
+            <td class="report-td-wide" data-label="Likely true failure rate">${c.likely
               ? html`<strong class="num">${pct(c.likely.estimate)}</strong>${c.likely.low != null && html`<span class="report-sub num">95% range: ${pct(c.likely.low)} to ${pct(c.likely.high)}</span>`}`
               : html`<span class="muted">${c.type === 'judge' ? 'After the final test' : 'AI judges only'}</span>`}</td>
           </tr>`)}
@@ -177,7 +181,7 @@ function Versions({ model }) {
       <tbody>
         ${v.rows.map((r) => html`<tr key=${r.modeId}>
           <td>${r.name}</td>
-          ${r.cells.map((c) => html`<td key=${c.version} class="num report-version-cell">
+          ${r.cells.map((c) => html`<td key=${c.version} class="num report-version-cell" data-label=${c.version}>
             ${c.reviewed ? html`<span>${c.traces} of ${c.reviewed} reviewed <span class="soft">(${pct(c.share)})</span></span>` : html`<span class="muted">Not reviewed</span>`}
             ${c.checkTotal != null && html`<span class="report-sub">Check fails ${c.checkFails} of ${formatCount(c.checkTotal)}</span>`}
           </td>`)}
@@ -252,7 +256,9 @@ function Actions({ project, model }) {
 export default function ReportView() {
   const project = useStore((s) => s.project);
   const dark = useDark();
+  const phone = useMedia(PHONE);
   const model = useMemo(() => (project ? lib.reportModel(project) : null), [project]);
+  const phoneLayout = useMemo(() => (phone && model ? lib.funnelLayout(model.funnel, { width: 600, legend: false, footer: null }) : null), [phone, model]);
   const svg = useMemo(() => (model && model.stats.counted ? lib.funnelSvg(model.funnel, { theme: dark ? 'dark' : 'light', idPrefix: 'rpf' }) : ''), [model, dark]);
   const src = useMemo(() => (svg ? 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) : ''), [svg]);
   if (!project || !model) return null;
@@ -260,14 +266,19 @@ export default function ReportView() {
 
   if (!model.stats.counted) {
     return html`<section class="page report">
-      <h1 class="page-title">Report</h1>
-      <${EmptyState} icon="doc" title="Nothing to report yet" body="Your report fills in as you review."
-        action=${{ label: 'Next: Review traces', onClick: () => navigate('review') }} />
+      <header class="report-empty-head">
+        <h1 class="page-title">Report</h1>
+        <p class="page-lead">Share what you found and hand checks to your engineers.</p>
+      </header>
+      <div class="card report-empty-card">
+        <${EmptyState} icon="doc" title="Nothing to report yet" body="Your report fills in as you review."
+          action=${{ label: 'Next: Review traces', onClick: () => navigate('review') }} />
+      </div>
     </section>`;
   }
 
   const size = svgSize(svg);
-  const checksCount = (project.checks || EMPTY).length;
+  const checksCount = model.checks.length;
   return html`<section class="page report">
     <header class="report-head">
       <p class="report-eyebrow">Report<span aria-hidden="true"> / </span><span class="num">${longDate(model.date)}</span></p>
@@ -284,9 +295,12 @@ export default function ReportView() {
     </header>
 
     <figure class="report-funnel">
-      <div class="report-funnel-scroll">
-        <img class="report-funnel-img" src=${src} width=${size.w} height=${size.h} alt=${lib.funnelDescription(model.funnel)} />
-      </div>
+      ${phone
+        ? html`<div class="report-funnel-list card"><${MobileFunnel} layout=${phoneLayout} funnel=${model.funnel} showReached=${NO_REACHED}
+            open=${() => navigate('funnel')} emptyText="" /></div>`
+        : html`<div class="report-funnel-scroll">
+            <img class="report-funnel-img" src=${src} width=${size.w} height=${size.h} alt=${lib.funnelDescription(model.funnel)} />
+          </div>`}
       <figcaption class="report-note">Open the Funnel tab to see the traces behind each number.</figcaption>
     </figure>
 

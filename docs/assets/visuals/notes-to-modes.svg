@@ -4,10 +4,10 @@
 <rect x="0.5" y="0.5" width="1199" height="599" rx="20" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1"/>
 <text x="32" y="68" font-size="40" font-weight="700" style="fill:var(--ink, #16191D)">From notes to failure modes</text>
 <text x="32" y="102" font-size="22" style="fill:var(--ink-2, #4A525C)">Sort what you wrote. Then rank by how often and how badly it hurts.</text>
-<path d="M1035 45H1036A11.5 11.5 0 0 1 1047.5 56.5V61a2.8 2.8 0 0 1 -5.5 0V56.5A6 6 0 0 0 1036 50.5H1035Z" style="fill:var(--bad, #BE3E29)"/>
+<path d="M1043 45h10v13a5 5 0 0 1 -10 0Z" style="fill:var(--bad, #BE3E29)"/>
 <text x="1063" y="60" font-size="18" style="fill:var(--ink-2, #4A525C)">Failure mode</text>
-<rect x="848.9" y="46" width="28" height="16" rx="8" style="fill:var(--good-soft, #E3F2EA);stroke:var(--good, #1B7851)" stroke-width="1.5"/>
-<text x="886.9" y="60" font-size="18" style="fill:var(--ink-2, #4A525C)">Success mode</text>
+<rect x="856.9" y="46" width="28" height="16" rx="8" style="fill:var(--good-soft, #E3F2EA);stroke:var(--good, #1B7851)" stroke-width="1.5"/>
+<text x="894.9" y="60" font-size="18" style="fill:var(--ink-2, #4A525C)">Success mode</text>
 <text x="40" y="152" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)">1. Your notes</text>
 <text x="440" y="152" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)">2. Grouped and named</text>
 <text x="796" y="152" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)">3. What to fix first</text>
@@ -65,18 +65,18 @@
 <rect x="450" y="198" width="310" height="66" rx="10" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
 <rect x="445" y="193" width="310" height="66" rx="10" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
 <rect x="440" y="188" width="310" height="66" rx="10" style="fill:var(--bad-soft, #FBE7E2)"/>
-<path d="M454 213H455A11.5 11.5 0 0 1 466.5 224.5V229a2.8 2.8 0 0 1 -5.5 0V224.5A6 6 0 0 0 455 218.5H454Z" style="fill:var(--bad, #BE3E29)"/>
+<path d="M457 213h10v13a5 5 0 0 1 -10 0Z" style="fill:var(--bad, #BE3E29)"/>
 <text x="486" y="216.3" font-size="18" font-weight="600" style="fill:var(--ink, #16191D)"><tspan x="486">Ignores requests</tspan><tspan x="486" dy="22">for a person</tspan></text>
 <text x="736" y="227.3" font-size="18" font-weight="700" text-anchor="end" style="fill:var(--bad, #BE3E29)">3</text>
 <rect x="450" y="282.5" width="310" height="44" rx="10" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
 <rect x="445" y="277.5" width="310" height="44" rx="10" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
 <rect x="440" y="272.5" width="310" height="44" rx="10" style="fill:var(--bad-soft, #FBE7E2)"/>
-<path d="M454 286.5H455A11.5 11.5 0 0 1 466.5 298V302.5a2.8 2.8 0 0 1 -5.5 0V298A6 6 0 0 0 455 292H454Z" style="fill:var(--bad, #BE3E29)"/>
+<path d="M457 286.5h10v13a5 5 0 0 1 -10 0Z" style="fill:var(--bad, #BE3E29)"/>
 <text x="486" y="300.8" font-size="18" font-weight="600" style="fill:var(--ink, #16191D)">Stray ** symbols in texts</text>
 <text x="736" y="300.8" font-size="18" font-weight="700" text-anchor="end" style="fill:var(--bad, #BE3E29)">3</text>
 <rect x="445" y="340" width="310" height="66" rx="10" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1.2"/>
 <rect x="440" y="335" width="310" height="66" rx="10" style="fill:var(--bad-soft, #FBE7E2)"/>
-<path d="M454 360H455A11.5 11.5 0 0 1 466.5 371.5V376a2.8 2.8 0 0 1 -5.5 0V371.5A6 6 0 0 0 455 365.5H454Z" style="fill:var(--bad, #BE3E29)"/>
+<path d="M457 360h10v13a5 5 0 0 1 -10 0Z" style="fill:var(--bad, #BE3E29)"/>
 <text x="486" y="363.3" font-size="18" font-weight="600" style="fill:var(--ink, #16191D)"><tspan x="486">Books before the</tspan><tspan x="486" dy="22">patient confirms</tspan></text>
 <text x="736" y="374.3" font-size="18" font-weight="700" text-anchor="end" style="fill:var(--bad, #BE3E29)">2</text>
 <rect x="440" y="414.5" width="310" height="66" rx="33" style="fill:var(--good-soft, #E3F2EA);stroke:var(--good, #1B7851);stroke-opacity:0.6" stroke-width="1.4"/>

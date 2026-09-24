@@ -106,6 +106,22 @@ test('funnelLayout: pure geometry that follows the funnel', () => {
   assert.ok(L.height >= 560);
 });
 
+test('funnelLayout: one card layout for every failure mode, and both buckets in the failure modes row', () => {
+  const f = computeFunnel(p);
+  const cards = funnelLayout(f, { width: 1200 }).stages.flatMap((s) => s.failures).filter((c) => c.severityWord);
+  assert.ok(cards.length > 1);
+  assert.equal(new Set(cards.map((c) => c.severityOwnLine)).size, 1, 'severity sits the same way on every card');
+  // The unknown stage bucket lists its failure modes; Not a product problem sits under it, above the checks row.
+  const named = { ...f, unknown: { ...f.unknown, modes: [{ id: 'fm-z', name: 'Says it is booked when it is not', severity: null, count: 1 }] } };
+  const L = funnelLayout(named, { width: 1200 });
+  assert.deepEqual(L.unknown.modes.map((m) => [m.id, m.count]), [['fm-z', 1]]);
+  assert.ok(L.unknown.modes[0].y > L.unknown.y && L.unknown.modes[0].y < L.unknown.y + L.unknown.height);
+  assert.ok(L.ignored.y >= L.unknown.y + L.unknown.height, 'Not a product problem sits under Unknown stage');
+  const checksTop = L.rows.find((r) => r.id === 'checks').y;
+  assert.ok(L.ignored.y + L.ignored.height < checksTop, 'and above the checks row');
+  assert.match(funnelSvg(named, { theme: 'light' }), />Says it is/);
+});
+
 test('funnelSvg: escapes text, themes, alt text, no dashes', () => {
   const f = computeFunnel(p);
   const hostile = { ...f, stages: f.stages.map((s, i) => (i === 0 ? { ...s, label: '<script>alert("x")</script> & more', failureModes: s.failureModes.map((m) => ({ ...m, name: 'Says "hi" <b>' })) } : s)) };

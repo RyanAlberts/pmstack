@@ -168,6 +168,43 @@ test('import --append --version adds new traces, skips known ids, and tags versi
   assert.equal(noProject.code, 2);
 });
 
+test('adding traces never rewrites a trace file pmstack could not read in full', async (t) => {
+  const { dir, projectPath, tracesPath } = await folderProject(t, { traces: [chat('a', 'q', 'r'), chat('b', 'q', 'r')] });
+  fs.appendFileSync(tracesPath, '{"id": "half-writ\n');
+  const before = fs.readFileSync(tracesPath, 'utf8');
+  write(path.join(dir, 'new.jsonl'), jsonl([chat('n-1', 'q', 'r')]));
+  const tagged = await run(['import', 'new.jsonl', '--append', '--version', 'Version 2', '--out', projectPath], dir);
+  assert.equal(tagged.code, 2);
+  assert.match(tagged.err, /traces\.jsonl has lines pmstack could not read \(Line 3\), so the file was not changed\. Fix those lines, or add the traces without --version\./);
+  assert.equal(fs.readFileSync(tracesPath, 'utf8'), before);
+  assert.equal(readJson(projectPath).revision, 1);
+  const plain = await run(['import', 'new.jsonl', '--append', '--out', projectPath], dir);
+  assert.equal(plain.code, 0, plain.err);
+  assert.ok(fs.readFileSync(tracesPath, 'utf8').startsWith(before), 'a plain append keeps every line');
+
+  const json = path.join(dir, 'traces.json');
+  const jsonText = JSON.stringify([chat('c-1', 'q', 'r'), 42, chat('c-2', 'q', 'r')]);
+  write(json, jsonText);
+  write(projectPath, JSON.stringify({ ...readJson(projectPath), tracesFile: '../traces.json' }));
+  const entries = await run(['import', 'new.jsonl', '--append', '--out', projectPath], dir);
+  assert.equal(entries.code, 2);
+  assert.match(entries.err, /traces\.json has entries pmstack could not read \(Trace 2\), so the file was not changed\. Fix it and try again\./);
+  assert.equal(fs.readFileSync(json, 'utf8'), jsonText);
+});
+
+test('adding traces stops at 20,000 instead of dropping the ones past it', async (t) => {
+  const { dir, projectPath, tracesPath } = await folderProject(t, { traces: [chat('a', 'q', 'r')] });
+  const many = Array.from({ length: 20005 }, (_, i) => JSON.stringify({ id: `t${i}`, input: 'x' })).join('\n') + '\n';
+  write(tracesPath, many);
+  write(path.join(dir, 'new.jsonl'), jsonl([chat('n-1', 'q', 'r')]));
+  for (const extra of [['--version', 'Version 2'], []]) {
+    const r = await run(['import', 'new.jsonl', '--append', ...extra, '--out', projectPath], dir);
+    assert.equal(r.code, 2);
+    assert.match(r.err, /A project holds up to 20,000 traces, and traces\.jsonl already has that many\. Nothing was added\./);
+    assert.equal(fs.readFileSync(tracesPath, 'utf8'), many);
+  }
+});
+
 // ---------------------------------------------------------------------------
 // validate
 

@@ -497,7 +497,7 @@
   font: 600 var(--text-xs)/1 var(--font-sans);
 }
 .setup-row-meta { margin: 0; color: var(--ink-3); font-size: var(--text-xs); }
-.setup-row-actions { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+.setup-row-actions { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end; min-width: 180px; }
 
 .setup-row.is-skeleton .setup-row-main { gap: 8px; }
 .setup-skel {
@@ -654,7 +654,7 @@
   .setup-head-actions .setup-filebtn, .setup-head-actions .btn { width: 100%; }
   .setup-projects { padding: var(--space-4); }
   .setup-row { grid-template-columns: auto minmax(0, 1fr); align-items: start; padding: 10px 4px; }
-  .setup-row-actions { grid-column: 2; justify-content: flex-start; }
+  .setup-row-actions { grid-column: 2; justify-content: flex-start; min-width: 0; }
   .setup-folder-head { grid-template-columns: auto minmax(0, 1fr); }
   .setup-folder-head .setup-row-actions { grid-column: 1 / -1; }
 

@@ -28,6 +28,9 @@
 .report-funnel-scroll { overflow-x: auto; border-radius: 12px; box-shadow: var(--shadow); }
 .report-funnel-img { display: block; width: 100%; height: auto; min-width: 720px; }
 .report-funnel figcaption { padding: 0 var(--space-1); }
+.report-funnel-list { padding: 4px var(--space-4) var(--space-2); }
+.report-empty-head { margin-bottom: var(--space-5); }
+.report-empty-card { padding: 0; }
 
 .report-layout {
   display: grid;
@@ -188,6 +191,30 @@
   .report-rank { width: 28px; height: 28px; }
   .report-next li { flex-direction: column; gap: var(--space-2); }
   .report-funnel-img { min-width: 640px; }
+
+  /* Tables become one card per row: the first cell on top, then each value under its own label. */
+  .report-table, .report-table tbody { display: block; }
+  .report-table thead { display: none; }
+  .report-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .report-table tbody tr:last-child { border-bottom: 0; }
+  .report-table td { display: block; padding: 0; border: 0; min-width: 0; }
+  .report-table tbody tr:hover td { background: none; }
+  .report-table td.num { text-align: left; white-space: normal; }
+  .report-table td:first-child, .report-table td.report-td-wide { grid-column: 1 / -1; }
+  .report-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 2px;
+    font: 600 var(--text-xs)/1.3 var(--font-sans);
+    color: var(--ink-3);
+  }
+  .report-table .report-check-name { min-width: 0; }
 }
 .report-check-name { min-width: 190px; }
 .report-checks-table th { white-space: normal; min-width: 76px; }

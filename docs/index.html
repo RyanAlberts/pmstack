@@ -338,9 +338,11 @@ h3 { font-size: 16px; line-height: 1.35; font-weight: 600; letter-spacing: -0.00
       <div class="scroll">
         <div class="visual-frame">
           <picture>
+            <source srcset="assets/visuals/funnel-narrow-dark.svg" media="(max-width: 720px) and (prefers-color-scheme: dark)" width="1200" height="846">
+            <source srcset="assets/visuals/funnel-narrow-light.svg" media="(max-width: 720px)" width="1200" height="846">
             <source srcset="assets/visuals/funnel-dark.svg" media="(prefers-color-scheme: dark)">
             <img src="assets/visuals/funnel-light.svg" width="1200" height="720" fetchpriority="high" decoding="async"
-              alt="The funnel of an AI experience for a dental booking assistant. 100 reviewed conversations move left to right through five stages: understand the request, hand off when needed, check the calendar, book or change, reply to the patient. At each stage, failing conversations drop out under a named failure mode, such as 7 that ignored requests for a person, and green chips show success modes, such as repeating the booking back. A bottom row shows the check that catches each failure mode. 64 of 100 reach a good outcome.">
+              alt="The funnel of an AI experience for a dental booking assistant. 100 reviewed conversations move left to right through five stages: understand the request, hand off when needed, check the calendar, book or change, reply to the patient. At each stage, failing conversations drop out under a named failure mode, such as 7 that ignored requests for a person, and green chips show success modes, such as repeating the booking back. A bottom row shows the check for each failure mode, where one exists. 64 of 100 reach a good outcome.">
           </picture>
         </div>
       </div>
@@ -348,7 +350,7 @@ h3 { font-size: 16px; line-height: 1.35; font-weight: 600; letter-spacing: -0.00
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
         Scroll sideways to see the whole funnel.
       </p>
-      <figcaption><b>How to read it.</b> Each trace is one full conversation or task, with every step the AI took. Green chips are success modes to keep working. Red ribbons are failure modes leaving the funnel, each counted once at the first stage that went wrong. The bottom row is the check that now catches each one: a code check (a rule a computer can test) or an AI judge (a prompt that asks a model for pass or fail).</figcaption>
+      <figcaption><b>How to read it.</b> Each trace is one full conversation or task, with every step the AI took. Green chips are success modes to keep working. Red ribbons are failure modes leaving the funnel, each counted once at the first stage that went wrong. The bottom row shows the check for each failure mode, when it has one: a code check (a rule a computer can test) or an AI judge (a prompt that asks a model for pass or fail).</figcaption>
     </figure>
   </section>
 
@@ -409,6 +411,8 @@ h3 { font-size: 16px; line-height: 1.35; font-weight: 600; letter-spacing: -0.00
         <div class="scroll">
           <div class="visual-frame">
             <picture>
+              <source srcset="assets/visuals/loop-narrow-dark.svg" media="(max-width: 720px) and (prefers-color-scheme: dark)" width="1200" height="726">
+              <source srcset="assets/visuals/loop-narrow-light.svg" media="(max-width: 720px)" width="1200" height="726">
               <source srcset="assets/visuals/loop-dark.svg" media="(prefers-color-scheme: dark)">
               <img src="assets/visuals/loop-light.svg" width="1200" height="600" loading="lazy" decoding="async"
                 alt="Error discovery in six steps: read traces, write notes, group into failure modes, count by stage, build checks, then test the checks and keep them running. Steps one to three repeat until new failure modes stop appearing. A problem caused by a missing instruction is fixed right away instead of getting a check.">
@@ -441,6 +445,8 @@ h3 { font-size: 16px; line-height: 1.35; font-weight: 600; letter-spacing: -0.00
         <div class="scroll">
           <div class="visual-frame">
             <picture>
+              <source srcset="assets/visuals/patterns-narrow-dark.svg" media="(max-width: 720px) and (prefers-color-scheme: dark)" width="1200" height="926">
+              <source srcset="assets/visuals/patterns-narrow-light.svg" media="(max-width: 720px)" width="1200" height="926">
               <source srcset="assets/visuals/patterns-dark.svg" media="(prefers-color-scheme: dark)">
               <img src="assets/visuals/patterns-light.svg" width="1200" height="800" loading="lazy" decoding="async"
                 alt="Six ways AI products are built, drawn on the same stages from understand to answer, with a red mark where failures usually start in each.">
@@ -465,6 +471,8 @@ h3 { font-size: 16px; line-height: 1.35; font-weight: 600; letter-spacing: -0.00
         <div class="scroll">
           <div class="visual-frame">
             <picture>
+              <source srcset="assets/visuals/tool-calls-narrow-dark.svg" media="(max-width: 720px) and (prefers-color-scheme: dark)" width="1200" height="746">
+              <source srcset="assets/visuals/tool-calls-narrow-light.svg" media="(max-width: 720px)" width="1200" height="746">
               <source srcset="assets/visuals/tool-calls-dark.svg" media="(prefers-color-scheme: dark)">
               <img src="assets/visuals/tool-calls-light.svg" width="1200" height="620" loading="lazy" decoding="async"
                 alt="Three questions for every tool call, shown on one example. The customer asks: The outage took us down for two days. Can I get a credit? The agent calls the tool issue_credit with account_id A-1182 and amount 80. The tool returns status pending_approval. The agent replies: Done! $80 is off your next bill. Policy sits on the call: allowed, verified, confirmed, under the limit? Here it fails, because a credit over $50 needs a supervisor. It is checked with a code check of policy rules. Relevance spans the request and the call: right tool, right details for what they asked? It is checked with a code check that uses an intent map, or with an AI judge. Output grounding spans the tool result and the reply: does the reply match what the tool returned? Here it fails, because a pending credit is shown as done. It is checked with a code check of the values, then an AI judge. Policy rules come from your company. Relevance and grounding problems show up when you read traces.">

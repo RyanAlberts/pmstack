@@ -83,7 +83,8 @@ The contract:
 
 - Export the component as the module's default export.
 - Import only from `pmstack/ui` (`html`, hooks, small components), `pmstack/renderers/common`, and `preact/hooks`. No other imports, no network requests, no remote images.
-- Props: `{ trace, experience, showHidden, pickedStepId, onPickStep, highlights, retrieval, onRetrieval, compact }`. Every callback may be missing; with no `onPickStep`, draw no pick button.
+- Props: `{ trace, experience, showHidden, pickedStepId, onPickStep, highlights, stepBadges, retrieval, onRetrieval, compact }`. Every callback may be missing; with no `onPickStep`, draw no pick button.
+- `stepBadges` is `{ [stepId]: [{ tone, text }] }`, such as a policy check's "Breaks policy: Ask before acting". Draw each step's badges next to it with `StepBadges` and `badgesFor` from `pmstack/renderers/common`: `<${StepBadges} badges=${badgesFor(stepBadges, step.id)} />`.
 - `trace` is the normalized trace: `id`, `title`, `metadata` (flat keys like `channel`), `context` (`[{ label, value }]`), `input`, `steps` (`id`, `kind`, `role`, `name`, `text`, `data`, `status`, `stage`, `callId`, `customerVisible`, `isOutput`), and `output`. The studio draws `trace.result` itself; leave it out.
 - Every element that shows a step carries `data-step-id` with that step's `id`, and shows its stage tag when `step.stage` is set.
 - A step the reviewer can blame offers the shared pick button, which calls `onPickStep(step.id, step.stage)`; the picked step (`pickedStepId`) shows as picked.

@@ -33,7 +33,8 @@ export const EXAMPLE_POLICY = {
     "access: read tools only look things up. write tools change something for the customer, such as a credit, a plan, or a visit.",
     "confirm: true means the agent must propose the action, and the customer's next message must say yes (one of confirmationPatterns, any capitalization) before the call runs (rule: Ask before acting).",
     "maxPerTrace limits how many times the agent may call a tool in one conversation (rule: At most N times per conversation).",
-    "A rule with when applies only to traces where that detail has that value. tools set to \"*\" means every tool."
+    "A rule with when applies only to traces where that detail has that value. tools set to \"*\" means every tool.",
+    "luhn: true on a pattern rule counts a match only when its digits pass the check digit test every card number passes (the Luhn checksum), so timestamps and order numbers of the same length are not flagged."
   ],
   "onlyListedTools": true,
   "confirmationPatterns": [
@@ -220,6 +221,7 @@ export const EXAMPLE_POLICY = {
       "type": "arg-not-match",
       "tools": "*",
       "pattern": "\\b(?:\\d[ -]?){13,16}\\b",
+      "luhn": true,
       "why": "Never pass card numbers to tools. Tool logs are not secure enough for payment details."
     },
     {
@@ -357,15 +359,62 @@ function regexError(pattern, flags = '') {
 const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
 const isNames = (v) => Array.isArray(v) && v.every((x) => typeof x === 'string' && x.trim());
 
+// Settings each part of a policy file may have. A key close to one of these is almost always a
+// typo, and a typo silently turns a setting off, so validatePolicy reports it.
+const KNOWN_KEYS = {
+  policy: ['format', 'name', 'note', 'description', 'onlyListedTools', 'confirmationPatterns', 'tools', 'rules'],
+  tool: ['access', 'confirm', 'maxPerTrace', 'why', 'note', 'description'],
+  rule: ['id', 'type', 'tools', 'why', 'when', 'access', 'max', 'min', 'before', 'argPath', 'approvalTool', 'values', 'pattern', 'flags', 'luhn', 'source', 'note', 'description'],
+  when: ['path', 'equals'],
+  source: ['tool', 'path', 'detail'],
+};
+
+// Edit distance where swapping two neighboring letters counts as one edit.
+function editDistance(a, b) {
+  const d = [];
+  for (let i = 0; i <= a.length; i++) d.push([i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+    }
+  }
+  return d[a.length][b.length];
+}
+
+// The known key an unknown key was probably meant to be, or null.
+function nearKey(key, known) {
+  if (known.includes(key)) return null;
+  const low = key.toLowerCase();
+  let best = null;
+  let bestDist = Infinity;
+  for (const k of known) {
+    if (k.toLowerCase() === low) return k;
+    const dist = editDistance(low, k.toLowerCase());
+    if (dist <= (k.length <= 4 ? 1 : 2) && dist < bestDist) { best = k; bestDist = dist; }
+  }
+  return best;
+}
+
+function typoErrors(obj, known, prefix, errors) {
+  for (const key of Object.keys(obj)) {
+    const near = nearKey(key, known);
+    if (near) errors.push(`${prefix}"${key}" is not a setting pmstack knows. Did you mean "${near}"?`);
+  }
+}
+
 /** Check a pmstack.policy/1 object; errors are plain sentences. */
 export function validatePolicy(obj) {
   const errors = [];
   if (!isObj(obj)) return { ok: false, errors: ['This is not a policy file.'] };
   if (obj.format !== POLICY_FORMAT) errors.push(`This is not a pmstack policy (format "${obj.format ?? 'missing'}"; expected "${POLICY_FORMAT}").`);
+  typoErrors(obj, KNOWN_KEYS.policy, '', errors);
   if (obj.onlyListedTools != null && typeof obj.onlyListedTools !== 'boolean') errors.push('onlyListedTools must be true or false.');
   if (obj.tools != null && !isObj(obj.tools)) errors.push('tools must list each tool by name, like { "get_bill": { "access": "read" } }.');
   for (const [name, def] of Object.entries(isObj(obj.tools) ? obj.tools : {})) {
     if (!isObj(def)) { errors.push(`Tool "${name}" needs settings, like { "access": "read" }.`); continue; }
+    typoErrors(def, KNOWN_KEYS.tool, `Tool "${name}": `, errors);
     if (def.access != null && def.access !== 'read' && def.access !== 'write') errors.push(`Tool "${name}": access must be "read" or "write".`);
     if (def.confirm != null && typeof def.confirm !== 'boolean') errors.push(`Tool "${name}": confirm must be true or false.`);
     if (def.maxPerTrace != null && !(Number.isInteger(def.maxPerTrace) && def.maxPerTrace >= 0)) errors.push(`Tool "${name}": maxPerTrace must be a whole number.`);
@@ -389,6 +438,9 @@ export function validatePolicy(obj) {
     else if (ids.has(r.id)) errors.push(`${where}: the id is used twice.`);
     else ids.add(r.id);
     if (!RULE_TYPES.has(r.type)) { errors.push(`${where} has an unknown type "${r.type}".`); return; }
+    typoErrors(r, KNOWN_KEYS.rule, `${where}: `, errors);
+    if (isObj(r.when)) typoErrors(r.when, KNOWN_KEYS.when, `${where}: in when, `, errors);
+    if (isObj(r.source)) typoErrors(r.source, KNOWN_KEYS.source, `${where}: in source, `, errors);
     if (r.tools != null && r.tools !== '*' && !isNames(r.tools)) errors.push(`${where}: tools must be a list of tool names, or "*" for every tool.`);
     else if (r.tools == null && TOOLS_REQUIRED.has(r.type)) errors.push(`${where} needs tools: a list of tool names, or "*" for every tool.`);
     const needText = (key, what) => { if (typeof r[key] !== 'string' || !r[key].trim()) errors.push(`${where} needs ${key}: ${what}.`); };
@@ -427,6 +479,7 @@ export function validatePolicy(obj) {
           const e = regexError(r.pattern, cleanFlags(r.flags));
           if (e) errors.push(`${where}: the pattern is not valid: ${e}`);
         }
+        if (r.luhn != null && typeof r.luhn !== 'boolean') errors.push(`${where}: luhn must be true or false.`);
         break;
       }
       case 'arg-required':
@@ -444,8 +497,18 @@ export function validatePolicy(obj) {
     }
     if (r.when != null && !(isObj(r.when) && typeof r.when.path === 'string' && r.when.path.trim())) {
       errors.push(`${where}: when needs a path, like { "path": "metadata.channel", "equals": "sms" }.`);
+    } else if (r.when != null && r.when.equals === undefined) {
+      errors.push(`${where}: when needs equals, the value that turns the rule on, like { "path": "metadata.channel", "equals": "sms" }.`);
     }
     if (r.why != null && typeof r.why !== 'string') errors.push(`${where}: why must be text.`);
+    // With onlyListedTools, a tool a rule names but the tools list leaves out is usually a
+    // misspelling. Never use these tools lists unlisted tools on purpose.
+    if (obj.onlyListedTools === true && isObj(obj.tools) && r.type !== 'deny-tools') {
+      const named = [...(isNames(r.tools) ? r.tools : EMPTY), r.before, r.approvalTool, isObj(r.source) ? r.source.tool : null];
+      for (const t of unique(named.filter((x) => typeof x === 'string' && x.trim()))) {
+        if (!Object.prototype.hasOwnProperty.call(obj.tools, t)) errors.push(`${where} names the tool "${t}", which is not in tools. Check the spelling, or add the tool to tools.`);
+      }
+    }
   });
   return { ok: errors.length === 0, errors };
 }
@@ -491,7 +554,9 @@ function parseMaybe(v) {
 
 const ERROR_WORDS = /error|fail|denied|declined|reject|invalid|forbidden|unauthori|unverified|mismatch|timed?[_ -]?out|not[_ -]?found|unavailable|refused|^not[_ -]/i;
 const PENDING_WORDS = /pending|queued|awaiting|waiting|in[_ -]?review|in[_ -]?progress|processing/i;
-const STATUS_KEYS = ['status', 'state', 'result', 'outcome'];
+const STATUS_KEYS = ['status', 'state', 'result', 'outcome', 'decision', 'approval_status'];
+// A result that says one of these is false means the call did not do its job ({ approved: false }).
+const FLAG_KEYS = ['approved', 'verified', 'allowed', 'authorized', 'granted'];
 const TEXT_STATUS = /\b(pending_approval|pending|error|failed|failure|denied)\b/i;
 
 function stateOf(status) {
@@ -524,6 +589,8 @@ function resultState(stepStatus, data, text, hasResult) {
       return { state: 'error', status: status || 'error' };
     }
     if (data.ok === false || data.success === false) return { state: 'error', status: status || 'error' };
+    const flag = FLAG_KEYS.find((k) => data[k] === false || Object.values(data).some((v) => isObj(v) && v[k] === false));
+    if (flag) return { state: 'error', status: `not ${flag}` };
     if (status) return { state: stateOf(status), status };
     return { state: 'ok', status: null };
   }
@@ -677,9 +744,18 @@ function regex(pattern, flags) {
   return re;
 }
 
+// The tool a rule waits for or compares against. With "every tool", that tool is not checked
+// against itself ("verify_identity called before verify_identity").
+function dependsOn(rule) {
+  if (rule.type === 'requires-before') return rule.before;
+  if (rule.type === 'approval-above') return rule.approvalTool;
+  if (rule.type === 'arg-equals') return isObj(rule.source) ? rule.source.tool : null;
+  return null;
+}
+
 function covers(rule, name) {
   if (rule.type === 'only-listed') return true;
-  if (rule.tools === '*') return true;
+  if (rule.tools === '*') return !(dependsOn(rule) && dependsOn(rule) === name);
   if (Array.isArray(rule.tools)) return rule.tools.includes(name);
   return !TOOLS_REQUIRED.has(rule.type);
 }
@@ -691,26 +767,49 @@ function applies(when, n) {
 
 const argAt = (call, path) => (isObj(call.args) || Array.isArray(call.args) ? getPath(call.args, path) : undefined);
 const missing = (v) => v === undefined || v === null || v === '' || (Array.isArray(v) && !v.length);
+// A number from an argument: 80, "80", "$80", "1,000.50", "8%", "40 percent", "500 USD".
+// Anything else is NaN; a limit rule reports such a value instead of letting it pass.
+const CURRENCY = '(?:usd|eur|gbp|cad|aud|nzd|inr|jpy|chf|dollars?)';
+const SIGNS = `$${String.fromCharCode(0x20ac, 0xa3)}`; // dollar, euro, pound
+const NUMBER_TEXT = new RegExp(`^(?:${CURRENCY}\\s*)?([-+]?[${SIGNS}]?[-+]?[\\d,]*\\.?\\d+(?:e[-+]?\\d+)?)\\s*(?:%|percent|${CURRENCY})?$`, 'i');
+const NUMBER_JUNK = new RegExp(`[${SIGNS},]`, 'g');
 function toNumber(v) {
   if (typeof v === 'number') return v;
   if (typeof v !== 'string') return NaN;
-  const t = v.replace(/[$,\s]/g, '');
-  return t === '' ? NaN : Number(t);
+  const m = NUMBER_TEXT.exec(v.trim());
+  return m ? Number(m[1].replace(NUMBER_JUNK, '')) : NaN;
 }
-const shown = (v) => (typeof v === 'string' ? v : str(v));
-const okish = (c) => c.state === 'ok' || c.state === 'none';
+const shown = (v) => (typeof v === 'string' ? v : typeof v === 'number' ? String(v) : str(v));
+const quoted = (v) => (typeof v === 'string' ? JSON.stringify(v) : shown(v));
 const lastOf = (list) => list[list.length - 1];
+// A call counts as done before `call` only when its result came back before `call` was made,
+// so the calls of one parallel batch never count for each other.
+const doneBefore = (c, call) => (c.result ? c.result.index < call.index : c.index < call.index);
 
-// The first leaf value (as a path) whose text matches re.
-function findLeaf(value, re, path = '') {
+// The first leaf value (as a path) where find(text) returns a match.
+function findLeaf(value, find, path = '') {
   if (value == null) return null;
-  if (typeof value !== 'object') { re.lastIndex = 0; return re.test(String(value)) ? path : null; }
+  if (typeof value !== 'object') return find(String(value)) != null ? path : null;
   for (const [k, v] of Object.entries(value)) {
     const p = Array.isArray(value) ? `${path}[${k}]` : path ? `${path}.${k}` : k;
-    const hit = findLeaf(v, re, p);
+    const hit = findLeaf(v, find, p);
     if (hit != null) return hit;
   }
   return null;
+}
+
+// The card number checksum (Luhn). Card numbers pass it; most timestamps and order numbers
+// of the same length do not.
+function luhnValid(text) {
+  const digits = String(text).replace(/\D/g, '');
+  if (!digits) return false;
+  let sum = 0;
+  for (let i = 0; i < digits.length; i++) {
+    let d = Number(digits[digits.length - 1 - i]);
+    if (i % 2) { d *= 2; if (d > 9) d -= 9; }
+    sum += d;
+  }
+  return sum % 10 === 0;
 }
 
 function confirmationRegexes(policy) {
@@ -728,6 +827,30 @@ function actsNow(n, steps, i) {
   return next.id.startsWith(`${s.id}.`) || n.shape === 'openai-responses';
 }
 
+// A refusal word right before the matched words, with at most one word between and no
+// punctuation ("No, do not go ahead", "please don't do it", "I'm not sure that works").
+// "No worries, go ahead" is still a yes: the comma ends the refusal.
+const NEGATED_BEFORE = /(?:^|[^\w'])(?:no|nope|not|never|cannot|[a-z]+n't|dont|cant|wont|wait|hold on|hold off)\s+(?:[\w']+\s+)?$/i;
+// A refusal right after the matched words: "please do not", "please don't".
+const NEGATED_AFTER = /^(?:n't|\s+not\b)/i;
+
+// True when at least one pattern match in the message is not negated.
+function saysYes(text, patterns) {
+  const src = String(text).replace(CURLY, "'");
+  for (const re of patterns) {
+    const all = regex(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g');
+    if (!all) continue;
+    all.lastIndex = 0;
+    let m;
+    while ((m = all.exec(src)) !== null) {
+      if (m[0] === '') { all.lastIndex++; continue; }
+      const end = m.index + m[0].length;
+      if (!NEGATED_BEFORE.test(src.slice(0, m.index)) && !NEGATED_AFTER.test(src.slice(end))) return true;
+    }
+  }
+  return false;
+}
+
 function confirmFact(n, call, patterns, who) {
   const steps = n.steps;
   let user = null, proposal = null;
@@ -740,7 +863,7 @@ function confirmFact(n, call, patterns, who) {
   if (!user && n.input && String(n.input).trim()) user = { i: -1, text: String(n.input) };
   if (!user) return `${call.name} called without a yes from the ${who}.`;
   if (proposal && proposal.i > user.i) return `${call.name} called before the ${who} answered the agent's last message.`;
-  if (!patterns.some((re) => re.test(user.text))) return `${call.name} called without a yes from the ${who}: their last message does not agree to it.`;
+  if (!saysYes(user.text, patterns)) return `${call.name} called without a yes from the ${who}: their last message does not agree to it.`;
   return null;
 }
 
@@ -768,26 +891,33 @@ function ruleFact(rule, call, ctx) {
       return count > limit ? `${tool} called ${plural(count, 'time', 'times')}; the limit is ${limit} per conversation.` : null;
     }
     case 'requires-before': {
-      const prior = earlier.filter((c) => c.name === rule.before);
+      const prior = earlier.filter((c) => c.name === rule.before && doneBefore(c, call));
       if (prior.some((c) => c.state !== 'error')) return null;
       return prior.length ? `${tool} called after ${rule.before} failed.` : `${tool} called before ${rule.before}.`;
     }
     case 'approval-above': {
       const raw = argAt(call, rule.argPath);
+      if (missing(raw)) return null;
+      // A value that is not a number cannot be shown to be under the limit, so it needs approval too.
       const v = toNumber(raw);
-      if (!(Number.isFinite(v) && v > Number(rule.max))) return null;
-      const prior = earlier.filter((c) => c.name === rule.approvalTool);
-      if (prior.some(okish)) return null;
-      const head = `${tool} called with ${rule.argPath} ${shown(raw)}`;
+      const notNumber = Number.isNaN(v);
+      if (!notNumber && !(v > Number(rule.max))) return null;
+      const prior = earlier.filter((c) => c.name === rule.approvalTool && doneBefore(c, call));
+      if (prior.some((c) => c.state === 'ok')) return null;
+      const head = notNumber
+        ? `${tool} called with ${rule.argPath} ${quoted(raw)}, which is not a number the policy can check,`
+        : `${tool} called with ${rule.argPath} ${shown(raw)}`;
       if (!prior.length) return `${head} without an earlier ${rule.approvalTool}.`;
       const last = lastOf(prior);
       if (last.state === 'pending') return `${head} while ${rule.approvalTool} was still pending.`;
+      if (last.state === 'none') return `${head} before ${rule.approvalTool} returned an answer.`;
       return `${head} after ${rule.approvalTool} returned ${last.status ? `status "${last.status}"` : 'an error'}.`;
     }
     case 'arg-max': case 'arg-min': {
       const raw = argAt(call, rule.argPath);
+      if (missing(raw)) return null;
       const v = toNumber(raw);
-      if (!Number.isFinite(v)) return null;
+      if (Number.isNaN(v)) return `${tool} called with ${rule.argPath} ${quoted(raw)}, which is not a number the policy can check.`;
       if (rule.type === 'arg-max') return v > Number(rule.max) ? `${tool} called with ${rule.argPath} ${shown(raw)}, above the limit of ${rule.max}.` : null;
       return v < Number(rule.min) ? `${tool} called with ${rule.argPath} ${shown(raw)}, below the minimum of ${rule.min}.` : null;
     }
@@ -799,8 +929,13 @@ function ruleFact(rule, call, ctx) {
       return bad.length ? `${tool} called with ${rule.argPath} "${bad[0]}", which is not one of: ${allowed.join(', ')}.` : null;
     }
     case 'arg-not-match': {
-      const re = regex(rule.pattern, cleanFlags(rule.flags));
+      const re = regex(rule.pattern, `${cleanFlags(rule.flags)}g`);
       if (!re) return null;
+      // With luhn: true, a match counts only when its digits pass the card number checksum.
+      const find = (s) => {
+        for (const m of s.matchAll(re)) if (!rule.luhn || luhnValid(m[0])) return m[0];
+        return null;
+      };
       let text, where;
       if (rule.argPath) {
         const raw = argAt(call, rule.argPath);
@@ -809,11 +944,11 @@ function ruleFact(rule, call, ctx) {
         where = rule.argPath;
       } else {
         text = call.argsText;
-        where = findLeaf(call.args, re);
+        where = findLeaf(call.args, find);
       }
-      const m = re.exec(text);
-      if (!m) return null;
-      const end = m[0].trim();
+      const found = find(text);
+      if (found == null) return null;
+      const end = found.trim();
       const tail = end.length > 4 ? end.slice(-4) : end;
       return `${tool} called with a value that matches a forbidden pattern${where ? ` in ${where}` : ''} (ending "${tail}").`;
     }
@@ -829,7 +964,7 @@ function ruleFact(rule, call, ctx) {
         if (shown(raw).trim() === shown(want).trim()) return null;
         return `${tool} called with ${rule.argPath} ${shown(raw)}, but this trace's ${String(src.detail).replace(/^metadata\./, '')} is ${shown(want)}.`;
       }
-      const from = lastOf(earlier.filter((c) => c.name === src.tool && okish(c) && c.result && !missing(getPath(c.result.data, src.path))));
+      const from = lastOf(earlier.filter((c) => c.name === src.tool && c.state === 'ok' && c.result && doneBefore(c, call) && !missing(getPath(c.result.data, src.path))));
       if (!from) return `${tool} called with ${rule.argPath} ${shown(raw)}, but no earlier ${src.tool} returned ${src.path} to match.`;
       const want = getPath(from.result.data, src.path);
       if (shown(raw).trim() === shown(want).trim()) return null;
@@ -965,7 +1100,7 @@ const PATTERNS = [
   { kind: 'date', re: /(?<![\d/.])(\d{1,2})\/(\d{1,2})(?:\/(?:\d{4}|\d{2}))?(?![\d/])/g, norm: (m) => dateNorm(m[1], m[2]) },
   {
     kind: 'time',
-    re: new RegExp(`(?<![\\d:.])(\\d{1,2})(?::(\\d{2}))?\\s*${MER}?\\s*${DASH}\\s*(\\d{1,2})(?::(\\d{2}))?\\s*${MER}?(?![\\w:])`, 'gi'),
+    re: new RegExp(`(?<![\\d:.])(\\d{1,2})(?::(\\d{2}))?(?:\\s*${MER})?\\s*${DASH}\\s*(\\d{1,2})(?::(\\d{2}))?\\s*${MER}?(?![\\w:])`, 'gi'),
     norm: (m) => {
       const [, h1, m1, mer1, h2, m2, mer2] = m;
       if (!(m1 != null || m2 != null || mer1 || mer2)) return null;
@@ -984,7 +1119,8 @@ const PATTERNS = [
   { kind: 'time', re: new RegExp(`(?<![\\d:.])(\\d{1,2})\\s*${MER}(?![a-z])`, 'gi'), norm: (m) => to24(m[1], null, m[2]) },
   {
     kind: 'id',
-    re: /\b(?:confirmation|reference|ref|ticket|order|case|booking|tracking|visit|request)\s*(?:number|no\.?|code|id)?\s*(?:is\s*)?[:#]?\s*([A-Z0-9][A-Z0-9-]{3,})\b/gi,
+    // Each optional part owns the spaces before it, so long runs of spaces stay fast.
+    re: /\b(?:confirmation|reference|ref|ticket|order|case|booking|tracking|visit|request)(?:\s*(?:number|no\.?|code|id))?(?:\s*is)?(?:\s*[:#])?\s*([A-Z0-9][A-Z0-9-]{3,})\b/gi,
     norm: (m) => (/\d/.test(m[1]) ? m[1].toUpperCase().replace(/-/g, '') : null),
     raw: (m) => m[1],
   },
@@ -1111,7 +1247,10 @@ export function groundedValues(normalizedTrace, { text } = {}) {
 
 const SUCCESS = /\b(done|booked|confirmed|applied|refunded|cancell?ed|scheduled|updated|all set|taken care of)\b/gi;
 const NOT_A_CLAIM = /(?:\bnot|\bno|\bnever|n't|\bunable to|\bcannot|\bfailed to|\byet to|\bonce|\bwhen|\bif|\buntil|\bafter|\bbefore)[\s,]+(?:[\w']+[\s,]+){0,4}$/i;
-const SAYS_PENDING = /\b(pending|waiting|awaiting|not yet|queued|in review|needs? (?:a )?supervisor|supervisor(?:'s)? approval|once (?:it'?s |it is )?approved)\b/i;
+// Future tense right before a success word ("will be applied", "it gets applied"): a correct
+// reply about a pending call, not a claim that it is done.
+const WILL_HAPPEN = /(?:\bwill|'ll)(?:\s+(?:be|get))?\s+$|\b(?:gets?|is being|are being|to be)\s+$/i;
+const SAYS_PENDING = /\b(pending|waiting|awaiting|not yet|queued|in review|being processed|signs? off|needs? (?:a )?supervisor|supervisor(?:'s)? approval|once (?:it'?s |it is )?approved)\b/i;
 const SAYS_FAILED = /\b(couldn't|could not|can't|cannot|unable|failed|error|didn't go through|did not go through|wasn't able|was not able|did not work|didn't work|on hold|denied|declined|went wrong)\b/i;
 
 /**
@@ -1138,7 +1277,10 @@ export function successAfterError(normalizedTrace, policy = null, { text } = {})
   SUCCESS.lastIndex = 0;
   let m;
   while ((m = SUCCESS.exec(reply)) !== null) {
-    if (!NOT_A_CLAIM.test(reply.slice(Math.max(0, m.index - 60), m.index))) { claim = m[0]; break; }
+    const before = reply.slice(Math.max(0, m.index - 60), m.index);
+    if (NOT_A_CLAIM.test(before) || (last.state === 'pending' && WILL_HAPPEN.test(before))) continue;
+    claim = m[0];
+    break;
   }
   const admits = SAYS_PENDING.test(reply) || SAYS_FAILED.test(reply);
   if (!claim || admits) return { verdict: 'pass', ...info, detail: `${last.name} returned ${statusText}, and the reply does not claim success` };

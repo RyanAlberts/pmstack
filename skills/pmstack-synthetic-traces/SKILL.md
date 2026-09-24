@@ -124,7 +124,7 @@ Done when about 100 traces exist, each with its dimension values in `metadata`.
 1. New project: `node "$PMSTACK" import "$FOLDER/traces.jsonl" --out "$FOLDER/pmstack/project.json" --name "Maple Dental booking assistant"`. Existing project: add `--append` (traces already there are skipped).
 2. Add the dimension names to `experience.filters` (edit `project.json` while no studio is running, or use Set up in Eval Studio), so the reviewer can check whether a failure clusters in one kind of scenario.
 3. Run `node "$PMSTACK" validate "$FOLDER/pmstack/project.json"` until it exits 0.
-4. Load `pmstack-error-discovery` and continue from its Phase 2.
+4. Load `pmstack-error-discovery` and continue from its Phase 2, skipping step 2 (the project already exists): read the traces in step 1, then correct `experience` from step 3 on.
 
 ## Never
 

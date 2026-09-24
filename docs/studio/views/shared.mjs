@@ -779,6 +779,12 @@ export function JudgmentPanel({ project, traceId, trace, showHidden, onShowHidde
       return q;
     }, 'verdict');
     if (accepting.length) setRechecking(new Set());
+    // A Problem with no note yet: go straight to the note box, so what the reader types next is the note.
+    const r = store.get().project?.reviews?.[traceId];
+    if (v === 'fail' && r?.verdict === 'fail' && !String(r.note || '').trim() && noteRef.current) {
+      noteRef.current.focus();
+      return;
+    }
     release(e);
   };
 
@@ -957,7 +963,7 @@ export function JudgmentPanel({ project, traceId, trace, showHidden, onShowHidde
         onYes=${(m) => answerYes({ type: 'mode', mode: m })} onNo=${(m) => answerNo({ type: 'mode', mode: m })} />`}
 
       ${verdict === 'fail' && !showHidden && hiddenSteps > 0 && html`<p class="review-hidden-hint">
-        <span>Press <${Kbd}>H<//> to see the steps behind this reply.</span>
+        <span>Press <${Kbd}>Esc<//>, then <${Kbd}>H<//> to see the steps behind this reply.</span>
         <button type="button" class="review-link" onClick=${onShowHidden}>Show ${plural(hiddenSteps, 'step')}</button>
       </p>`}
 

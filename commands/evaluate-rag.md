@@ -1,5 +1,5 @@
 ---
-description: Evaluate an answer bot that searches documents: the look-up first, then the answers
+description: "Evaluate an answer bot that searches documents: the look-up first, then the answers"
 argument-hint: "[folder or project.json]"
 ---
 

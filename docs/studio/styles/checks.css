@@ -200,15 +200,16 @@
 
 .checks-editor { padding: 0; }
 .checks-check-head {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas: "title act del";
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-4) 20px;
   border-bottom: 1px solid var(--line);
 }
-.checks-check-title { display: grid; gap: 2px; flex: 1 1 280px; min-width: 0; }
+.checks-check-title { grid-area: title; display: grid; gap: 2px; min-width: 0; }
+.checks-check-delete { grid-area: del; }
 .checks-name-input {
   width: 100%;
   min-height: 0;
@@ -222,7 +223,9 @@
 }
 .checks-name-input:hover { border-color: var(--line); }
 .checks-name-input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); background: var(--surface); }
-.checks-check-actions { flex-wrap: nowrap; gap: var(--space-3); }
+.checks-check-actions { grid-area: act; flex-wrap: nowrap; gap: var(--space-3); min-width: 0; }
+.checks-empty-card { padding: 0; }
+.checks-link-inline { font-weight: 500; color: var(--accent); text-decoration-color: currentColor; }
 .checks-body { display: grid; gap: var(--space-5); padding: 20px; min-width: 0; }
 .checks-section { display: grid; gap: var(--space-3); min-width: 0; }
 
@@ -824,7 +827,12 @@
   .checks-disagree-cols { grid-template-columns: minmax(0, 1fr); }
   .checks-disagree-col + .checks-disagree-col { border-left: 0; border-top: 1px solid var(--line); }
   .checks-body { padding: var(--space-4); }
-  .checks-check-head { padding: var(--space-3) var(--space-4); }
+  .checks-check-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "title del" "act act";
+    align-items: start;
+    padding: var(--space-3) var(--space-4);
+  }
   .checks-check-actions { flex-wrap: wrap; }
   .checks-rule { flex-direction: column; }
   .checks-intent-row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
@@ -835,6 +843,8 @@
   .checks-label-why-hint, .checks-label-ask { display: none; }
   .checks-label-buttons .btn-lg { min-width: 0; flex: 1 1 0; }
   .checks-label-current { display: none; }
+  .checks-gate > .stack { min-width: 0; }
+  .checks-gate .btn, .checks-step-head .btn { white-space: normal; height: auto; min-height: 28px; padding-top: 5px; padding-bottom: 5px; text-align: left; line-height: 1.3; }
 }
 @media (max-width: 420px) {
   .checks-rate-big { font-size: var(--text-xl); }

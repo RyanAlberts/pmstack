@@ -10,7 +10,9 @@ const TAGLINE = "Find how your AI product fails. Then prove it's fixed.";
 const SUBHEAD = 'Read real conversations and tasks from your product (we call each one a trace), name the failure modes, and turn the ones that matter into checks you can trust.';
 const FILE_LINE = 'You need a file of real traces; a spreadsheet export works. Most people review 20 to 50 traces in about 30 minutes.';
 const FUNNEL_URL = '../assets/visuals/funnel.svg';
-const FUNNEL_CAPTION = 'Green chips are success modes to keep working. Red drops are failure modes, each counted once at the first stage that went wrong. The bottom row is the check that now catches each one: a code check (a rule a computer can test) or an AI judge (a prompt that asks a model for pass or fail).';
+// On phones the funnel scrolls sideways (styles/welcome.css), so it uses the version whose title fits the first view.
+const FUNNEL_NARROW_URL = '../assets/visuals/funnel-narrow.svg';
+const FUNNEL_CAPTION = 'Green chips are success modes to keep working. Red drops are failure modes, each counted once at the first stage that went wrong. The bottom row shows the check for each failure mode, when it has one: a code check (a rule a computer can test) or an AI judge (a prompt that asks a model for pass or fail).';
 const GUIDE_URL = 'https://github.com/RyanAlberts/pmstack/blob/main/guides/trace-format.md';
 const WEB_STUDIO_URL = 'https://ryanalberts.github.io/pmstack/studio/';
 
@@ -65,7 +67,8 @@ function FunnelFigure() {
   const [state, setState] = useState('loading');
   useEffect(() => {
     let live = true;
-    fetch(FUNNEL_URL)
+    const narrow = typeof matchMedia === 'function' && matchMedia('(max-width: 760px)').matches;
+    fetch(narrow ? FUNNEL_NARROW_URL : FUNNEL_URL)
       .then((res) => (res.ok ? res.text() : Promise.reject(new Error('missing'))))
       .then((text) => {
         const svg = safeSvg(text);
@@ -116,9 +119,24 @@ function Resume() {
   </aside>`;
 }
 
+function showSamples() {
+  const title = document.getElementById('welcome-samples-title');
+  if (!title) return;
+  title.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  title.focus({ preventScroll: true });
+}
+
 function NoTraces({ open }) {
   if (!open) return null;
   return html`<div class="welcome-notraces" id="welcome-notraces">
+    <div class="welcome-notraces-item">
+      <span class="welcome-notraces-icon" aria-hidden="true"><${Icon} name="arrow-right" /></span>
+      <div>
+        <h3>Try a sample product</h3>
+        <p>Sample products come with real-looking traces, and some are already partly reviewed, so every tab has something to show.${' '}
+          <button type="button" class="welcome-link" onClick=${showSamples}>See the samples</button></p>
+      </div>
+    </div>
     <div class="welcome-notraces-item">
       <span class="welcome-notraces-icon" aria-hidden="true"><${Icon} name="download" /></span>
       <div>
@@ -130,7 +148,7 @@ function NoTraces({ open }) {
       <span class="welcome-notraces-icon" aria-hidden="true"><${Icon} name="code" /></span>
       <div>
         <h3>Generate test conversations</h3>
-        <p>In Claude Code, run <code>/pmstack:synthetic-traces</code>. It helps you write realistic requests, run them through your product, and save the traces to a file you can open here.</p>
+        <p>In Claude Code, run <code>/pmstack:synthetic-traces</code> (or <code>/pmstack-synthetic-traces</code> if you installed with setup). It helps you write realistic requests, run them through your product, and save the traces to a file you can open here.</p>
       </div>
     </div>
     <p class="hint"><a href=${GUIDE_URL} target="_blank" rel="noopener noreferrer">What should a trace file look like?</a></p>
@@ -172,7 +190,7 @@ function Samples() {
   const projects = useStore((s) => s.projects);
   return html`<section class="welcome-section" aria-labelledby="welcome-samples-title">
     <div class="welcome-section-head">
-      <h2 id="welcome-samples-title">Try a sample product</h2>
+      <h2 id="welcome-samples-title" tabindex="-1">Try a sample product</h2>
       <p class="soft">Each one opens as your own copy in this browser, so you can try every tab.</p>
     </div>
     ${samples === null && html`<${SampleSkeleton} />`}
@@ -222,8 +240,9 @@ export default function WelcomeView() {
           </div>
           <p class="welcome-fileline">Your traces come from the folder this studio is working on.</p>`
         : html`<div class="welcome-actions">
-            <${Button} kind="primary" size="lg" icon="arrow-right" onClick=${() => navigate('setup', 'new')}>Review your own traces<//>
-            <${ImportProjectButton} label="Open a project file" size="lg" onImported=${() => navigate('review')} />
+            <${Button} kind="primary" size="lg" icon="arrow-right" onClick=${() => navigate('open', 'clinic-booking')}>Try the dental booking sample<//>
+            <${Button} kind="secondary" size="lg" onClick=${() => navigate('setup', 'new')}>Review your own traces<//>
+            <${ImportProjectButton} label="Open a project file" kind="ghost" size="lg" onImported=${() => navigate('review')} />
           </div>
           <p class="welcome-fileline">
             ${FILE_LINE}${' '}

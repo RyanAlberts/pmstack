@@ -29,6 +29,13 @@ const OUTPUT_TYPES = new Set(['text', 'email', 'answer', 'code-review', 'fields'
 const ANTHROPIC_BLOCKS = new Set(['tool_use', 'tool_result', 'thinking', 'redacted_thinking']);
 const RESPONSES_TYPES = new Set(['message', 'function_call', 'function_call_output', 'reasoning']);
 const ID_KEYS = ['id', 'trace_id', 'traceId', 'session_id', 'conversation_id'];
+// Header or key names compared the way spreadsheets write them: "Conversation ID" is conversation_id.
+const idKey = (name) => String(name).trim().toLowerCase().replace(/[\s-]+/g, '_');
+const ID_NAMES = ID_KEYS.map(idKey);
+// Parts of a trace pmstack reads by name. In a CSV file every other column becomes a detail.
+const TRACE_FIELDS = new Set(['id', 'title', 'input', 'question', 'prompt', 'output', 'answer', 'completion', 'text', 'content', 'transcript', 'messages', 'steps', 'context', 'result', 'metadata', 'system', 'items']);
+// Names that would reach Object.prototype when used as a path part.
+const UNSAFE_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
 
 // ---------------------------------------------------------------- helpers
 
@@ -46,6 +53,7 @@ export function getPath(obj, path) {
 
 function setPath(obj, path, value) {
   const parts = String(path).split('.').filter(Boolean);
+  if (!parts.length || parts.some((p) => UNSAFE_KEYS.has(p))) return;
   let cur = obj;
   for (let i = 0; i < parts.length - 1; i++) {
     if (cur[parts[i]] == null || typeof cur[parts[i]] !== 'object') cur[parts[i]] = {};
@@ -143,25 +151,54 @@ function rowsFromJsonl(src, errors) {
   return rows;
 }
 
+// A spreadsheet export keeps each field in its own column. Columns pmstack reads by name
+// (input, output, messages, an id) stay where they are; every other column (Channel, CSAT, Plan)
+// becomes a detail, so it can be a filter, a coverage bar, and a check condition.
 function rowsFromCsv(src, errors) {
   const table = parseCsv(src);
   if (!table.length) return [];
   const header = table[0].cells.map((h) => h.trim());
+  header.forEach((h, i) => {
+    if (h.split('.').some((p) => UNSAFE_KEYS.has(p))) {
+      errors.push(`Header "${h}" was skipped: that name is not allowed.`);
+      header[i] = '';
+    }
+  });
   const rows = [];
   for (const { cells, line } of table.slice(1)) {
     if (cells.length > header.length) errors.push(`Line ${line}: has ${cells.length} cells but the header has ${header.length}`);
     const raw = {};
+    const details = {};
+    let hasDetails = false;
     header.forEach((h, i) => {
       if (!h) return;
       const cell = cells[i];
       if (cell == null || cell.trim() === '') return;
       const value = parseMaybeJson(cell);
       if (h.includes('.')) setPath(raw, h, value);
-      else raw[h] = value;
+      else if (TRACE_FIELDS.has(h) || ID_NAMES.includes(idKey(h))) raw[h] = value;
+      else { details[/^channel$/i.test(h) ? 'channel' : h] = value; hasDetails = true; }
     });
+    if (hasDetails) {
+      const m = raw.metadata;
+      raw.metadata = isObj(m) ? { ...details, ...m } : m == null ? details : { ...details, metadata: m };
+    }
     rows.push({ raw, where: `Line ${line}` });
   }
   return rows;
+}
+
+// The trace id from the first id-like key: id, trace_id, traceId, session_id, conversation_id,
+// in any capitalization and with spaces or hyphens for underscores ("Conversation ID").
+function rawId(raw) {
+  const keys = Object.keys(raw);
+  for (const want of ID_NAMES) {
+    for (const k of keys) {
+      const v = raw[k];
+      if (idKey(k) === want && v != null && v !== '' && typeof v !== 'object') return v;
+    }
+  }
+  return undefined;
 }
 
 /** Parse a trace file: JSONL, JSON array, { traces: [...] }, or CSV. Assigns ids and detects the shape. */
@@ -192,7 +229,7 @@ export function parseTraceFile(text, filename = '', { fieldMap = null } = {}) {
   const traces = [];
   for (const { raw, where } of rows) {
     let id = fieldMap?.id ? getPath(raw, fieldMap.id) : undefined;
-    if (id == null || id === '') id = ID_KEYS.map((k) => raw[k]).find((v) => v != null && v !== '' && typeof v !== 'object');
+    if (id == null || id === '') id = rawId(raw);
     if (id == null || id === '') id = 't-' + hashString(JSON.stringify(raw)).slice(0, 8);
     id = String(id);
     if (seen.has(id)) {
@@ -572,10 +609,16 @@ function buildNormalized(rawIn, experience) {
   const title = (typeof raw.title === 'string' && raw.title.trim()) ? raw.title.trim()
     : firstUser ? clip(firstUser.text) : input != null && String(input).trim() ? clip(input) : id;
 
+  const metadata = isObj(raw.metadata) ? flatten(raw.metadata, '', {}, 0) : {};
+  // A detail mapped as the conversation's text (a spreadsheet's "Customer Message") is shown
+  // as the text, so it is not repeated as a detail.
+  const fm = experience?.fieldMap;
+  if (isObj(fm)) for (const k of ['title', 'input', 'output', 'messages']) if (typeof fm[k] === 'string' && fm[k].startsWith('metadata.')) delete metadata[fm[k].slice(9)];
+
   return {
     id,
     title,
-    metadata: isObj(raw.metadata) ? flatten(raw.metadata, '', {}, 0) : {},
+    metadata,
     context: contextOf(raw),
     input: input == null ? null : String(input),
     steps,

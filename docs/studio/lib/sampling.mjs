@@ -5,7 +5,7 @@
 import { rng } from './metrics.mjs';
 import { normalizeAll } from './traces.mjs';
 import { runChecks } from './checks.mjs';
-import { humanLabel } from './labels.mjs';
+import { humanLabel, splitOf } from './labels.mjs';
 
 const EMPTY = Object.freeze([]);
 const stamp = (opts) => opts?.now || new Date().toISOString();
@@ -149,10 +149,12 @@ function candidateLists(p, strategy, pool, norm, next, signal) {
     return [{ items: shuffle(pool.filter((id) => flagged.has(id)), next), reason: () => 'Flagged by a check' }];
   }
   if (strategy === 'disagree') {
+    // Tuning set only: showing where the judge is wrong on a final test trace, before the
+    // reveal, would let you relabel it. Unassigned labels can still land in the final test.
     const items = [];
     for (const id of pool) {
       for (const c of p.checks || EMPTY) {
-        if (c.type !== 'judge') continue;
+        if (c.type !== 'judge' || splitOf(p, c.modeId, id) !== 'tuning') continue;
         const v = c.results?.[id]?.verdict;
         const h = humanLabel(p, id, c.modeId);
         if (v && h && v !== h) { items.push(id); break; }

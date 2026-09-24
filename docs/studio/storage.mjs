@@ -2,7 +2,7 @@
 // Browser mode keeps projects in IndexedDB. Folder mode talks to the local
 // server started by `pmstack studio`, which reads and writes pmstack/project.json.
 // Every adapter has the same shape:
-//   { kind, listProjects(), loadProject(id), saveProject(project, { ifMatch }),
+//   { kind, listProjects(), loadProject(id), saveProject(project, { ifMatch, create }),
 //     deleteProject(id), saveTraces(projectId, traces), pollSuggestions(sinceMtimeMs),
 //     revision(), kvGet(key), kvSet(key, value) }
 // saveTraces may resolve to { revision } when the write moved the project's revision (folder mode).
@@ -133,13 +133,36 @@ export async function browserAdapter() {
       const rec = await get('traces', id);
       return { ...project, traces: rec ? rec.traces : [] };
     },
-    async saveProject(project) {
+    async saveProject(project, { create = false } = {}) {
       // The project store never holds traces; they are written separately and rarely.
+      // Only a new or replacing copy (create) may write a project that is not stored yet, so a tab
+      // that missed a delete in another tab cannot bring the project back.
       const summary = { traceCount: (project.traces || []).length };
-      await transact(db, ['projects', 'kv'], 'readwrite', (tx) => {
-        tx.objectStore('projects').put(withoutTraces(project));
-        tx.objectStore('kv').put({ key: 'summary:' + project.id, value: summary });
-      });
+      let gone = false;
+      try {
+        await transact(db, ['projects', 'kv'], 'readwrite', (tx) => {
+          const projects = tx.objectStore('projects');
+          const write = () => {
+            projects.put(withoutTraces(project));
+            tx.objectStore('kv').put({ key: 'summary:' + project.id, value: summary });
+          };
+          if (create) {
+            write();
+            return;
+          }
+          const req = projects.count(project.id);
+          req.onsuccess = () => {
+            if (req.result) write();
+            else {
+              gone = true;
+              tx.abort();
+            }
+          };
+        });
+      } catch (err) {
+        if (gone) throw Object.assign(new Error('This project was deleted in another tab.'), { deleted: true });
+        throw err;
+      }
       return { ok: true, revision: null };
     },
     async deleteProject(id) {

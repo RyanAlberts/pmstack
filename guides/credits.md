@@ -6,7 +6,7 @@ pmstack puts other people's teaching into a tool. This page says whose, and what
 
 Error discovery is Hamel Husain and Shreya Shankar's method: read real traces, write notes on the first thing that went wrong, group them into failure modes, build checks for the ones that matter, and measure every AI judge against a person's labels before trusting it. The six steps, the funnel, and the checks in pmstack follow their teaching, in pmstack's own words and pictures.
 
-- [Building eval systems that improve your AI product](https://www.lennysnewsletter.com/p/building-eval-systems-that-improve-your-ai-product), in Lenny's Newsletter
+- [Building eval systems that improve your AI product](https://www.lennysnewsletter.com/p/building-eval-systems-that-improve), in Lenny's Newsletter
 - [Advanced evals: How to find (and fix) hidden AI failures in your product](https://www.lennysnewsletter.com/p/advanced-evals-how-to-find-and-fix), in Lenny's Newsletter, where the method is called error discovery
 - [AI Evals For Engineers & PMs](https://maven.com/parlance-labs/evals), their course
 - [Evals FAQ](https://hamel.dev/blog/posts/evals-faq/)

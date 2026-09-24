@@ -6,7 +6,7 @@
     "tools: list every tool the agent may use. Mark it read if it only looks things up, or write if it changes something for the user. With onlyListedTools set to true, any tool you leave out breaks the policy.",
     "confirm: true makes the agent ask first: the user's next message must say yes (one of confirmationPatterns) before a write runs. Keep it on every write tool that changes something for the user.",
     "verify-first: set before to the tool that checks who the user is, and list every tool that must wait for it.",
-    "no-card-numbers: stops card numbers from reaching any tool. Keep it.",
+    "no-card-numbers: stops card numbers from reaching any tool. luhn: true skips digit runs that cannot be card numbers, such as timestamps. Keep it.",
     "Add a why to every rule you write, in plain words. It is shown next to each violation.",
     "For more rule types (limits, approvals, allowed values, one account only, channel rules), copy from policy.json. For the questions to ask your policy owner, see policy-requirements-checklist.md. Keep or delete this note."
   ],
@@ -30,6 +30,7 @@
       "type": "arg-not-match",
       "tools": "*",
       "pattern": "\\b(?:\\d[ -]?){13,16}\\b",
+      "luhn": true,
       "why": "Never pass card numbers to tools. Tool logs are not secure enough for payment details."
     }
   ]

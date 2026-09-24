@@ -34,7 +34,7 @@ Below, `pmstack/project.json` is the project file and `evals/` is a folder in th
 
 ## Phase 1: Build the regression set
 
-1. When a failure mode has been fixed, the reviewer marks it with "Mark fixed" in the Funnel tab. A bug reported outside the project (a support ticket, an incident) first becomes a trace in it: `node "$PMSTACK" import ticket-trace.jsonl --out pmstack/project.json --append`, then the reviewer marks it Problem with its failure mode. Every fixed bug gets at least one regression trace this way.
+1. When a failure mode has been fixed, the reviewer marks it with "Mark fixed" in the Funnel tab. A bug reported outside the project (a support ticket, an incident) first becomes a trace in it: `node "$PMSTACK" import ticket-trace.jsonl --out pmstack/project.json --append` (this adds it to the end of the project's own trace file), then the reviewer marks it Problem with its failure mode. Every fixed bug gets at least one regression trace this way.
 2. Export the set:
 
 ```sh
@@ -52,13 +52,7 @@ Phase 1 is done when `evals/regression.jsonl` exists, has a line for every fixed
 Download "Checks for your build (.json)" from the Report tab, or write it from the project:
 
 ```sh
-node --input-type=module -e '
-import { readFileSync, writeFileSync } from "node:fs";
-import { pathToFileURL } from "node:url";
-const [cli, projectPath, out] = process.argv.slice(1);
-const { ciChecks } = await import(new URL("../docs/studio/lib/index.mjs", pathToFileURL(cli)).href);
-writeFileSync(out, JSON.stringify(ciChecks(JSON.parse(readFileSync(projectPath, "utf8"))), null, 2) + "\n");
-' "$PMSTACK" pmstack/project.json evals/checks.json
+node "$PMSTACK" checks pmstack/project.json --out evals/checks.json
 ```
 
 It contains the code checks marked "Run on every change". Commit `evals/checks.json` and `evals/regression.jsonl`; keep `project.json` (notes, full traces) out of the product repository.

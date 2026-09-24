@@ -253,7 +253,10 @@
   font-size: var(--text-xs);
 }
 .funnel-m-bucket.is-unknown { border-color: var(--bad); }
-.funnel-m-bucket.is-unknown strong { color: var(--bad); }
+.funnel-m-bucket.is-unknown strong, .funnel-m-unknown-mode strong { color: var(--bad); }
+.funnel-m-unknown-mode { margin-left: var(--space-4); border-style: solid; border-color: var(--line); color: var(--ink); text-align: left; }
+.funnel-unknown-line { display: flex; align-items: flex-start; gap: 6px; margin: var(--space-2) 0 0; color: var(--ink-2); font-size: var(--text-xs); }
+.funnel-unknown-line .icon { flex: none; margin-top: 1px; color: var(--bad); }
 .funnel-m-head:hover, .funnel-m-chip:hover, .funnel-m-fail:hover, .funnel-m-pill:hover { filter: brightness(0.97); }
 .funnel-m-count:hover, .funnel-m-reached:hover, .funnel-m-more:hover { text-decoration: underline; }
 
@@ -479,14 +482,14 @@
     border-radius: var(--radius);
   }
   .funnel-table tbody tr:hover td, .funnel-table tbody tr:hover th { background: none; }
-  .funnel-table tbody th {
+  .funnel-table tbody th, .funnel-table tbody th:first-child {
     grid-column: 1 / -1;
     max-width: none;
     padding: 0;
     border: 0;
     font-size: var(--text-md);
   }
-  .funnel-table td {
+  .funnel-table td, .funnel-table td:last-child {
     min-width: 0;
     padding: 0;
     border: 0;
