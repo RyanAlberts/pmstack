@@ -1,0 +1,836 @@
+{
+ "format": "pmstack.project/1",
+ "revision": 1,
+ "id": "funnel-fixture",
+ "name": "Funnel fixture",
+ "sample": false,
+ "createdAt": "2026-09-15T09:00:00Z",
+ "updatedAt": "2026-09-15T11:00:00Z",
+ "experience": {
+  "product": "Fixture booking bot",
+  "userLabel": "patient",
+  "customerGoal": "Book a visit.",
+  "renderer": "chat",
+  "rendererBy": null,
+  "pattern": "augmented",
+  "stages": [
+   {
+    "id": "understand",
+    "label": "Understand the request",
+    "column": "understand",
+    "match": {}
+   },
+   {
+    "id": "lookup",
+    "label": "Check the calendar",
+    "column": "gather",
+    "match": {
+     "tools": [
+      "find_slots"
+     ]
+    }
+   },
+   {
+    "id": "act",
+    "label": "Book it",
+    "column": "act",
+    "match": {
+     "tools": [
+      "book"
+     ]
+    }
+   },
+   {
+    "id": "reply",
+    "label": "Reply",
+    "column": "answer",
+    "match": {
+     "last": "assistant"
+    }
+   }
+  ],
+  "fieldMap": null,
+  "layout": null,
+  "filters": [
+   "channel"
+  ],
+  "reviewer": "Fixture",
+  "gate": 10,
+  "groupGate": 30
+ },
+ "tracesFile": null,
+ "traces": [
+  {
+   "id": "t1",
+   "metadata": {
+    "channel": "sms",
+    "version": "v1"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t1"
+    },
+    {
+     "role": "assistant",
+     "content": "",
+     "tool_calls": [
+      {
+       "id": "t1-c1",
+       "type": "function",
+       "function": {
+        "name": "find_slots",
+        "arguments": "{\"date\":\"2026-09-25\"}"
+       }
+      },
+      {
+       "id": "t1-c2",
+       "type": "function",
+       "function": {
+        "name": "book",
+        "arguments": "{\"slot\":\"09:30\"}"
+       }
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "t1-c1",
+     "content": "{\"ok\":true}"
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "t1-c2",
+     "content": "{\"ok\":true}"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t1"
+    }
+   ]
+  },
+  {
+   "id": "t2",
+   "metadata": {
+    "channel": "web",
+    "version": "v1"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t2"
+    },
+    {
+     "role": "assistant",
+     "content": "",
+     "tool_calls": [
+      {
+       "id": "t2-c1",
+       "type": "function",
+       "function": {
+        "name": "find_slots",
+        "arguments": "{\"date\":\"2026-09-25\"}"
+       }
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "t2-c1",
+     "content": "{\"ok\":true}"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t2"
+    }
+   ]
+  },
+  {
+   "id": "t3",
+   "metadata": {
+    "channel": "sms",
+    "version": "v1"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t3"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t3"
+    }
+   ]
+  },
+  {
+   "id": "t4",
+   "metadata": {
+    "channel": "web",
+    "version": "v1"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t4"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t4"
+    }
+   ]
+  },
+  {
+   "id": "t5",
+   "metadata": {
+    "channel": "sms",
+    "version": "v1"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t5"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t5"
+    }
+   ]
+  },
+  {
+   "id": "t6",
+   "metadata": {
+    "channel": "web",
+    "version": "v1"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t6"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t6"
+    }
+   ]
+  },
+  {
+   "id": "t7",
+   "metadata": {
+    "channel": "sms",
+    "version": "v1"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t7"
+    },
+    {
+     "role": "assistant",
+     "content": "",
+     "tool_calls": [
+      {
+       "id": "t7-c1",
+       "type": "function",
+       "function": {
+        "name": "find_slots",
+        "arguments": "{\"date\":\"2026-09-25\"}"
+       }
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "t7-c1",
+     "content": "{\"ok\":true}"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t7"
+    }
+   ]
+  },
+  {
+   "id": "t8",
+   "metadata": {
+    "channel": "web",
+    "version": "v1"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t8"
+    },
+    {
+     "role": "assistant",
+     "content": "",
+     "tool_calls": [
+      {
+       "id": "t8-c1",
+       "type": "function",
+       "function": {
+        "name": "find_slots",
+        "arguments": "{\"date\":\"2026-09-25\"}"
+       }
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "t8-c1",
+     "content": "{\"ok\":true}"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t8"
+    }
+   ]
+  },
+  {
+   "id": "t9",
+   "metadata": {
+    "channel": "sms",
+    "version": "v1"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t9"
+    },
+    {
+     "role": "assistant",
+     "content": "",
+     "tool_calls": [
+      {
+       "id": "t9-c1",
+       "type": "function",
+       "function": {
+        "name": "find_slots",
+        "arguments": "{\"date\":\"2026-09-25\"}"
+       }
+      },
+      {
+       "id": "t9-c2",
+       "type": "function",
+       "function": {
+        "name": "book",
+        "arguments": "{\"slot\":\"09:30\"}"
+       }
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "t9-c1",
+     "content": "{\"ok\":true}"
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "t9-c2",
+     "content": "{\"ok\":true}"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t9"
+    }
+   ]
+  },
+  {
+   "id": "t10",
+   "metadata": {
+    "channel": "web",
+    "version": "v1"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t10"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t10"
+    }
+   ]
+  },
+  {
+   "id": "t11",
+   "metadata": {
+    "channel": "sms",
+    "version": "v2"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t11"
+    }
+   ]
+  },
+  {
+   "id": "t12",
+   "metadata": {
+    "channel": "web",
+    "version": "v2"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t12"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t12"
+    }
+   ]
+  },
+  {
+   "id": "t13",
+   "metadata": {
+    "channel": "sms",
+    "version": "v2"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t13"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t13"
+    }
+   ]
+  },
+  {
+   "id": "t14",
+   "metadata": {
+    "channel": "web",
+    "version": "v2"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t14"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t14"
+    }
+   ]
+  },
+  {
+   "id": "t15",
+   "metadata": {
+    "channel": "sms",
+    "version": "v2"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t15"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t15"
+    }
+   ]
+  },
+  {
+   "id": "t16",
+   "metadata": {
+    "channel": "web",
+    "version": "v2"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t16"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t16"
+    }
+   ]
+  },
+  {
+   "id": "t17",
+   "metadata": {
+    "channel": "sms",
+    "version": "v2"
+   },
+   "messages": [
+    {
+     "role": "user",
+     "content": "Request for t17"
+    },
+    {
+     "role": "assistant",
+     "content": "",
+     "tool_calls": [
+      {
+       "id": "t17-c1",
+       "type": "function",
+       "function": {
+        "name": "find_slots",
+        "arguments": "{\"date\":\"2026-09-25\"}"
+       }
+      },
+      {
+       "id": "t17-c2",
+       "type": "function",
+       "function": {
+        "name": "book",
+        "arguments": "{\"slot\":\"09:30\"}"
+       }
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "t17-c1",
+     "content": "{\"ok\":true}"
+    },
+    {
+     "role": "tool",
+     "tool_call_id": "t17-c2",
+     "content": "{\"ok\":true}"
+    },
+    {
+     "role": "assistant",
+     "content": "Reply for t17"
+    }
+   ]
+  }
+ ],
+ "reviews": {
+  "t1": {
+   "verdict": "pass",
+   "note": "",
+   "stage": null,
+   "step": null,
+   "good": "Read the booking back",
+   "modes": [],
+   "successModes": [
+    "sm-x"
+   ],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:00:00Z",
+   "at": "2026-09-15T10:00:00Z"
+  },
+  "t2": {
+   "verdict": "pass",
+   "note": "",
+   "stage": null,
+   "step": null,
+   "good": "",
+   "modes": [],
+   "successModes": [
+    "sm-x",
+    "sm-y"
+   ],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:01:00Z",
+   "at": "2026-09-15T10:01:00Z"
+  },
+  "t3": {
+   "verdict": "pass",
+   "note": "",
+   "stage": null,
+   "step": null,
+   "good": "",
+   "modes": [],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:02:00Z",
+   "at": "2026-09-15T10:02:00Z"
+  },
+  "t4": {
+   "verdict": "pass",
+   "note": "",
+   "stage": null,
+   "step": null,
+   "good": "",
+   "modes": [],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:03:00Z",
+   "at": "2026-09-15T10:03:00Z"
+  },
+  "t5": {
+   "verdict": "pass",
+   "note": "",
+   "stage": null,
+   "step": null,
+   "good": "",
+   "modes": [],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:04:00Z",
+   "at": "2026-09-15T10:04:00Z"
+  },
+  "t6": {
+   "verdict": "fail",
+   "note": "Asked again for the date",
+   "stage": null,
+   "step": null,
+   "good": "",
+   "modes": [
+    "fm-a"
+   ],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:05:00Z",
+   "at": "2026-09-15T10:05:00Z"
+  },
+  "t7": {
+   "verdict": "fail",
+   "note": "Offered a taken slot",
+   "stage": "lookup",
+   "step": null,
+   "good": "",
+   "modes": [
+    "fm-b"
+   ],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:06:00Z",
+   "at": "2026-09-15T10:06:00Z"
+  },
+  "t8": {
+   "verdict": "fail",
+   "note": "Taken slot, then booked it anyway",
+   "stage": null,
+   "step": null,
+   "good": "",
+   "modes": [
+    "fm-b",
+    "fm-c"
+   ],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:07:00Z",
+   "at": "2026-09-15T10:07:00Z"
+  },
+  "t9": {
+   "verdict": "fail",
+   "note": "Booked before confirming",
+   "stage": "act",
+   "step": null,
+   "good": "",
+   "modes": [
+    "fm-c"
+   ],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:08:00Z",
+   "at": "2026-09-15T10:08:00Z"
+  },
+  "t10": {
+   "verdict": "fail",
+   "note": "Stars in the text",
+   "stage": "reply",
+   "step": null,
+   "good": "",
+   "modes": [
+    "fm-d"
+   ],
+   "successModes": [
+    "sm-y"
+   ],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:09:00Z",
+   "at": "2026-09-15T10:09:00Z"
+  },
+  "t11": {
+   "verdict": "fail",
+   "note": "No reply at all",
+   "stage": null,
+   "step": null,
+   "good": "",
+   "modes": [],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:10:00Z",
+   "at": "2026-09-15T10:10:00Z"
+  },
+  "t12": {
+   "verdict": "fail",
+   "note": "Test session",
+   "stage": null,
+   "step": null,
+   "good": "",
+   "modes": [
+    "nm-z"
+   ],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:11:00Z",
+   "at": "2026-09-15T10:11:00Z"
+  },
+  "t13": {
+   "verdict": "skip",
+   "note": "",
+   "stage": null,
+   "step": null,
+   "good": "",
+   "modes": [],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:12:00Z",
+   "at": "2026-09-15T10:12:00Z"
+  },
+  "t15": {
+   "verdict": null,
+   "note": "",
+   "stage": null,
+   "step": null,
+   "good": "",
+   "modes": [],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": null,
+   "at": "2026-09-15T10:13:00Z"
+  },
+  "t16": {
+   "verdict": "fail",
+   "note": "Hash signs in the text",
+   "stage": "unknown",
+   "step": null,
+   "good": "",
+   "modes": [
+    "fm-d"
+   ],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:14:00Z",
+   "at": "2026-09-15T10:14:00Z"
+  },
+  "t17": {
+   "verdict": "fail",
+   "note": "Asked again, then a taken slot",
+   "stage": "act",
+   "step": null,
+   "good": "",
+   "modes": [
+    "fm-a",
+    "fm-b"
+   ],
+   "successModes": [],
+   "retrieval": null,
+   "reviewedAt": "2026-09-15T10:15:00Z",
+   "at": "2026-09-15T10:15:00Z"
+  }
+ },
+ "labels": {},
+ "critiques": {},
+ "closeCalls": {},
+ "modes": [
+  {
+   "id": "fm-a",
+   "kind": "failure",
+   "name": "A asks again",
+   "definition": "Fails when a asks again.",
+   "stage": "understand",
+   "createdAt": "2026-09-15T09:00:00Z",
+   "source": "human",
+   "severity": "annoys",
+   "instructed": "yes",
+   "decision": "watch",
+   "impact": "",
+   "definitionUpdatedAt": null,
+   "fixedAt": null
+  },
+  {
+   "id": "fm-b",
+   "kind": "failure",
+   "name": "B offers a taken slot",
+   "definition": "Fails when b offers a taken slot.",
+   "stage": "lookup",
+   "createdAt": "2026-09-15T09:00:00Z",
+   "source": "human",
+   "severity": "blocks",
+   "instructed": "yes",
+   "decision": "check",
+   "impact": "",
+   "definitionUpdatedAt": null,
+   "fixedAt": null
+  },
+  {
+   "id": "fm-c",
+   "kind": "failure",
+   "name": "C books too early",
+   "definition": "Fails when c books too early.",
+   "stage": "act",
+   "createdAt": "2026-09-15T09:00:00Z",
+   "source": "human",
+   "severity": "hurts",
+   "instructed": "no",
+   "decision": "fix",
+   "impact": "",
+   "definitionUpdatedAt": null,
+   "fixedAt": null
+  },
+  {
+   "id": "fm-d",
+   "kind": "failure",
+   "name": "D stray symbols",
+   "definition": "Fails when d stray symbols.",
+   "stage": "reply",
+   "createdAt": "2026-09-15T09:00:00Z",
+   "source": "human",
+   "severity": "annoys",
+   "instructed": "no",
+   "decision": "check",
+   "impact": "",
+   "definitionUpdatedAt": null,
+   "fixedAt": null
+  },
+  {
+   "id": "sm-x",
+   "kind": "success",
+   "name": "X reads it back",
+   "definition": "Fails when x reads it back.",
+   "stage": "reply",
+   "createdAt": "2026-09-15T09:00:00Z",
+   "source": "human"
+  },
+  {
+   "id": "sm-y",
+   "kind": "success",
+   "name": "Y asks for the day",
+   "definition": "Fails when y asks for the day.",
+   "stage": "understand",
+   "createdAt": "2026-09-15T09:00:00Z",
+   "source": "human"
+  },
+  {
+   "id": "nm-z",
+   "kind": "ignore",
+   "name": "Not a product problem",
+   "definition": "Fails when not a product problem.",
+   "stage": null,
+   "createdAt": "2026-09-15T09:00:00Z",
+   "source": "human"
+  }
+ ],
+ "checks": [
+  {
+   "id": "ck-d",
+   "modeId": "fm-d",
+   "type": "code",
+   "name": "No stray symbols",
+   "rule": {
+    "op": "regex",
+    "target": "assistant",
+    "value": "\\*\\*|#",
+    "flags": ""
+   },
+   "when": null,
+   "failWhen": "match",
+   "ci": true
+  }
+ ],
+ "splits": {},
+ "suggestions": [],
+ "batch": null,
+ "settings": {
+  "seed": 7
+ }
+}

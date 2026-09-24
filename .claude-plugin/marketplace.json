@@ -3,12 +3,12 @@
   "owner": {
     "name": "Ryan Alberts"
   },
-  "description": "pmstack \u2014 the PM toolkit for the AI era. One plugin: the eval lifecycle plus the PM workflow around it.",
+  "description": "pmstack: error discovery for AI products. Review real traces, name failure modes, and turn them into checks you can trust.",
   "plugins": [
     {
       "name": "pmstack",
       "source": "./",
-      "description": "PM toolkit for the AI era \u2014 the eval lifecycle (design, run, diagnose, drift-watch) plus PRDs, VoC synthesis, launch gates, and weekly routines, as Claude Code commands and skills."
+      "description": "Error discovery for AI products: read real traces, name failure modes and success modes by stage, and turn the ones that matter into code checks and AI judges you can trust. Includes Eval Studio and a zero-dependency command-line tool."
     }
   ]
 }

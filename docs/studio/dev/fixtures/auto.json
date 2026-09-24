@@ -1,0 +1,26 @@
+{
+  "id": "evt-58123",
+  "title": "Sick days per year",
+  "metadata": {
+    "channel": "slack",
+    "department": "Support",
+    "location": "UK"
+  },
+  "request": {
+    "question": "How many paid sick days do we get a year?",
+    "asked_at": "2026-09-01T16:47:05Z",
+    "user": {
+      "department": "Support",
+      "location": "UK"
+    }
+  },
+  "response": {
+    "answer_text": "You get 64 hours (8 days) of paid sick time each calendar year, credited on January 1 [1]. Unused sick time does not carry over to the next year [2].",
+    "source_ids": [
+      "hr-09",
+      "hr-09"
+    ],
+    "latency_ms": 1840,
+    "model_version": "answers-2026-08"
+  }
+}

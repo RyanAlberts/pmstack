@@ -1,0 +1,62 @@
+[
+  {
+    "id": "clinic-booking",
+    "name": "Maple Dental booking assistant",
+    "view": "chat",
+    "pattern": "augmented",
+    "userLabel": "patient",
+    "traceCount": 170,
+    "reviewed": 102,
+    "description": "Books, moves, and cancels dental appointments by text message, web chat, and phone."
+  },
+  {
+    "id": "sales-email",
+    "name": "Tidewater Scheduling outreach email writer",
+    "view": "email",
+    "pattern": "chain",
+    "userLabel": "prospect",
+    "traceCount": 40,
+    "reviewed": 0,
+    "description": "Writes a first outreach email to each sales prospect from a brief and account notes."
+  },
+  {
+    "id": "policy-answers",
+    "name": "Larkspur Labs policy answer bot",
+    "view": "answer",
+    "pattern": "augmented",
+    "userLabel": "employee",
+    "traceCount": 40,
+    "reviewed": 0,
+    "description": "Answers employee questions about benefits and workplace policy, citing its sources."
+  },
+  {
+    "id": "gift-finder",
+    "name": "Copper & Clay Kitchen gift finder",
+    "view": "list",
+    "pattern": "routing",
+    "userLabel": "shopper",
+    "traceCount": 40,
+    "reviewed": 0,
+    "description": "Suggests kitchen gifts from an online store, sorted by fit and within the budget."
+  },
+  {
+    "id": "code-review",
+    "name": "Northwind Freight pull request reviewer",
+    "view": "code-review",
+    "pattern": "agent",
+    "userLabel": "developer",
+    "traceCount": 30,
+    "reviewed": 0,
+    "description": "Reviews pull requests for a small platform team: reads the change, runs tests, comments."
+  },
+  {
+    "id": "support-agent",
+    "name": "Northstar Internet support agent",
+    "view": "chat",
+    "pattern": "agent",
+    "userLabel": "customer",
+    "traceCount": 45,
+    "reviewed": 23,
+    "description": "Explains bills, gives credits, changes plans, and books technicians with account tools."
+  }
+]

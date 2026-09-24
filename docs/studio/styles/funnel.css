@@ -1,0 +1,517 @@
+/* Funnel tab (views/funnel.mjs). Tokens only. The band is the one gradient in the studio.
+   Stages are neutral and numbered; green is success, red is failure, checks are neutral pills. */
+
+/* ------------------------------------------------------------------ header */
+.funnel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-5);
+  margin-bottom: var(--space-5);
+}
+.funnel-head-text { flex: 1 1 360px; min-width: 0; }
+.funnel-head .page-lead { margin: 0; }
+.funnel-head-tools { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-3) var(--space-4); min-width: 0; }
+.funnel-version { display: grid; gap: 6px; min-width: 0; max-width: 100%; }
+.funnel-version .select { min-height: 34px; }
+
+.funnel-h2 { font-size: var(--text-lg); line-height: 1.3; }
+
+.funnel-link { color: var(--accent); font-size: var(--text-xs); }
+
+/* Notes that are not grouped yet */
+.funnel-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-4);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+.funnel-note > .icon { color: var(--ink-3); }
+.funnel-note p { flex: 1 1 280px; margin: 0; min-width: 0; }
+
+/* ------------------------------------------------------------------ the funnel */
+.funnel-figure { margin: 0 0 var(--space-5); padding: 20px 20px 14px; }
+.funnel-figure-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  margin-bottom: var(--space-2);
+}
+.funnel-figure-head > div { min-width: 0; }
+.funnel-figure-sub { margin: 2px 0 0; color: var(--ink-2); }
+
+.funnel-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px var(--space-4);
+  margin: 0;
+  padding: 6px 0 0;
+  list-style: none;
+  color: var(--ink-2);
+  font-size: var(--text-xs);
+}
+.funnel-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.funnel-glyph { display: inline-block; flex: none; }
+.funnel-glyph.is-success { width: 22px; height: 12px; border: 1.2px solid var(--good); border-radius: 6px; background: var(--good-soft); }
+.funnel-glyph.is-failure { width: 9px; height: 14px; border-radius: 0 0 5px 5px; background: var(--bad); }
+.funnel-glyph.is-check { width: 24px; height: 12px; border: 1px solid var(--ink-3); border-radius: 6px; background: var(--surface-2); }
+
+.funnel-scroll-hint { display: flex; align-items: center; gap: 6px; margin: var(--space-2) 0 0; }
+.funnel-scroll { overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; }
+.funnel-scroll.is-scrolling { scrollbar-width: thin; }
+.funnel-scroll:focus-visible { outline-offset: -2px; border-radius: 8px; }
+
+.funnel-svg {
+  display: block;
+  max-width: none;
+  font-family: var(--font-sans);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Text colors inside the SVG */
+.funnel-t-ink { fill: var(--ink); }
+.funnel-t-ink2 { fill: var(--ink-2); }
+.funnel-t-ink3 { fill: var(--ink-3); }
+.funnel-t-good { fill: var(--good); }
+.funnel-t-bad { fill: var(--bad); }
+/* Hurts sits on the pale red card and counts sit on the band: both are deepened a little for AA contrast. */
+.funnel-t-warn { fill: color-mix(in srgb, var(--warn) 85%, var(--ink)); }
+.funnel-t-accent { fill: color-mix(in srgb, var(--accent) 80%, var(--ink)); }
+.funnel-t-surface { fill: var(--surface); }
+
+/* Shapes */
+.funnel-stage-bg { fill: var(--surface-2); transition: fill var(--dur-fast) var(--ease); }
+.funnel-stage-badge { fill: var(--ink); }
+.funnel-chip {
+  fill: var(--good-soft);
+  stroke: color-mix(in srgb, var(--good) 50%, transparent);
+  stroke-width: 1;
+  transition: stroke var(--dur-fast) var(--ease);
+}
+.funnel-band { fill: url(#funnel-view-band); }
+.funnel-band-stop-a { stop-color: var(--accent); stop-opacity: 0.26; }
+.funnel-band-stop-b { stop-color: var(--accent); stop-opacity: 0.12; }
+.funnel-band-top { stroke: var(--accent); stroke-width: 1.5; stroke-linecap: round; }
+.funnel-drop { fill: var(--bad); fill-opacity: 0.92; transition: fill-opacity var(--dur-fast) var(--ease); }
+.funnel-card { fill: var(--bad-soft); transition: fill var(--dur-fast) var(--ease); }
+.funnel-card-rule { fill: var(--bad); }
+.funnel-pill { fill: var(--surface-2); stroke: var(--line); stroke-width: 1; transition: stroke var(--dur-fast) var(--ease); }
+.funnel-pill.is-dashed { fill: transparent; stroke: var(--ink-3); stroke-dasharray: 4 3; }
+.funnel-outcome { fill: var(--good-soft); stroke: var(--good); stroke-width: 1.5; }
+.funnel-unknown { fill: transparent; stroke: var(--bad); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.funnel-ignored { fill: transparent; stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 4 3; }
+.funnel-empty-band { fill: var(--surface-2); stroke: var(--line); stroke-dasharray: 5 4; }
+
+/* Every label is a button */
+.funnel-hit { cursor: pointer; outline: none; }
+.funnel-ring {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 2;
+  transition: stroke var(--dur-fast) var(--ease);
+}
+.funnel-hit:hover .funnel-ring { stroke: color-mix(in srgb, var(--ink-3) 50%, transparent); }
+.funnel-hit:focus-visible .funnel-ring { stroke: var(--accent); stroke-width: 2.5; }
+.funnel-hit:hover .funnel-card { fill: color-mix(in srgb, var(--bad) 16%, var(--bad-soft)); }
+.funnel-hit:hover .funnel-chip { stroke: var(--good); }
+.funnel-hit:hover .funnel-pill { stroke: var(--ink-3); }
+.funnel-hit:hover .funnel-drop { fill-opacity: 1; }
+.funnel-hit-stage:hover .funnel-stage-bg { fill: color-mix(in srgb, var(--ink) 7%, var(--surface-2)); }
+
+.funnel-caption { margin: var(--space-2) 0 0; color: var(--ink-3); font-size: var(--text-xs); }
+
+/* ------------------------------------------------------------------ the funnel as a list (narrow screens) */
+.funnel-m { display: grid; gap: var(--space-3); margin-top: var(--space-3); }
+.funnel-m-empty { margin: var(--space-3) 0; padding: var(--space-4); border: 1.5px dashed var(--line); border-radius: var(--radius); color: var(--ink-2); text-align: center; }
+.funnel-m-list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.funnel-m-stage {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: var(--space-3);
+}
+.funnel-m-rail {
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  border-left: 1.5px solid var(--accent);
+}
+.funnel-m-band {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 26%, transparent), color-mix(in srgb, var(--accent) 12%, transparent));
+}
+.funnel-m-body { display: grid; gap: var(--space-2); min-width: 0; padding: 0 0 var(--space-4); }
+.funnel-m-stage + .funnel-m-stage .funnel-m-body { padding-top: var(--space-4); border-top: 1px solid var(--line); }
+.funnel-m-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.funnel-m-head, .funnel-m-count, .funnel-m-reached, .funnel-m-chip, .funnel-m-fail, .funnel-m-pill, .funnel-m-more, .funnel-m-outcome, .funnel-m-bucket {
+  border: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.funnel-m-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 10px 6px 6px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-weight: 700;
+}
+.funnel-m-num {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: var(--text-xs);
+}
+.funnel-m-label { min-width: 0; }
+.funnel-m-count { flex: none; padding: 4px 6px; border-radius: 6px; background: none; color: var(--accent); font-size: var(--text-xs); white-space: nowrap; }
+.funnel-m-count strong { font-size: var(--text-md); }
+.funnel-m-reached { justify-self: start; padding: 0 2px; border-radius: 4px; background: none; color: var(--ink-3); font-size: var(--text-xs); }
+.funnel-m-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.funnel-m-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, var(--good) 50%, transparent);
+  border-radius: 12px;
+  background: var(--good-soft);
+  color: var(--ink);
+  font-size: var(--text-xs);
+}
+.funnel-m-chip strong { color: var(--good); }
+.funnel-m-fail-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--space-2); }
+.funnel-m-fail {
+  display: grid;
+  gap: 1px;
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 7px 10px 7px 12px;
+  border-left: 3px solid var(--bad);
+  border-radius: 0 8px 8px 0;
+  background: var(--bad-soft);
+}
+.funnel-m-fail-name { font-weight: 600; }
+.funnel-m-fail-meta { font-size: var(--text-xs); color: var(--ink-3); }
+.funnel-m-fail-meta strong { color: var(--bad); }
+.funnel-m-fail-meta .is-blocks { color: var(--bad); font-weight: 600; }
+.funnel-m-fail-meta .is-hurts { color: color-mix(in srgb, var(--warn) 85%, var(--ink)); font-weight: 600; }
+.funnel-m-fail-meta .is-annoys { color: var(--ink-2); font-weight: 600; }
+.funnel-m-pill {
+  flex: none;
+  padding: 3px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+.funnel-m-pill.is-dashed { border: 1px dashed var(--ink-3); background: transparent; color: var(--ink-2); font-weight: 500; }
+.funnel-m-more { justify-self: start; padding: 0 2px; background: none; color: var(--ink-3); font-size: var(--text-xs); }
+.funnel-m-end { display: grid; gap: var(--space-2); }
+.funnel-m-outcome {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 12px 14px;
+  border: 1.5px solid var(--good);
+  border-radius: 12px;
+  background: var(--good-soft);
+}
+.funnel-m-outcome span { color: var(--good); font-weight: 700; }
+.funnel-m-outcome strong { font-size: var(--text-lg); }
+.funnel-m-bucket {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px var(--space-3);
+  padding: 9px 12px;
+  border: 1px dashed var(--ink-3);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: var(--text-xs);
+}
+.funnel-m-bucket.is-unknown { border-color: var(--bad); }
+.funnel-m-bucket.is-unknown strong { color: var(--bad); }
+.funnel-m-head:hover, .funnel-m-chip:hover, .funnel-m-fail:hover, .funnel-m-pill:hover { filter: brightness(0.97); }
+.funnel-m-count:hover, .funnel-m-reached:hover, .funnel-m-more:hover { text-decoration: underline; }
+
+/* ------------------------------------------------------------------ sections */
+.funnel-section { margin-bottom: var(--space-5); padding: 20px; }
+.funnel-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-3);
+}
+.funnel-section-head > div { min-width: 0; }
+.funnel-section-lead { margin: 4px 0 0; color: var(--ink-2); max-width: 72ch; }
+.funnel-all-versions { max-width: 32ch; }
+
+.funnel-inline-empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-2);
+}
+.funnel-inline-empty p { flex: 1 1 280px; margin: 0; max-width: 62ch; }
+
+.funnel-empty-card { padding: 0; }
+
+/* ------------------------------------------------------------------ what to fix first */
+.funnel-table-wrap { position: relative; margin: 0 -8px; width: calc(100% + 16px); }
+.funnel-table { min-width: 0; }
+.funnel-table th, .funnel-table td { padding-left: 8px; padding-right: 8px; vertical-align: middle; }
+.funnel-table .segment { height: 26px; padding: 0 7px; }
+.funnel-stage { display: inline-flex; align-items: flex-start; gap: 6px; min-width: 116px; max-width: 150px; color: var(--ink); font-size: var(--text-xs); line-height: 1.4; }
+.funnel-stage .stage-num { flex: none; background: var(--surface-2); }
+.funnel-table thead th { vertical-align: bottom; }
+.funnel-table th:first-child, .funnel-table td:first-child { padding-left: 8px; }
+.funnel-table th:last-child, .funnel-table td:last-child { padding-right: 8px; }
+.funnel-table .th-button { font-weight: 600; }
+/* The Priority note rides on the empty line above the headers instead of widening its column. */
+.funnel-table thead th { padding-top: 28px; }
+.funnel-th-priority { position: relative; text-align: right; }
+.funnel-th-note {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  color: var(--ink-3);
+  font-weight: 400;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+.funnel-key-priority { display: none; }
+/* The sort arrow sits beside the label without widening the column. */
+.funnel-table .th-button { position: relative; }
+.funnel-sort {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  display: inline-flex;
+  margin-left: 2px;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.funnel-table .num .funnel-sort { left: auto; right: 100%; margin: 0 2px 0 0; }
+.th-button:hover .funnel-sort, .th-button:focus-visible .funnel-sort { opacity: 0.55; }
+.funnel-sort.is-on { opacity: 1; color: var(--ink); }
+.funnel-sort.is-asc { transform: translateY(-50%) rotate(180deg); }
+
+.funnel-table tbody th {
+  min-width: 132px;
+  max-width: 200px;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font: 600 var(--text-sm)/1.35 var(--font-sans);
+  white-space: normal;
+  vertical-align: middle;
+}
+.funnel-table tbody tr:last-child th { border-bottom: 0; }
+.funnel-table tbody tr:hover th { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+.funnel-priority-num { font-size: var(--text-md); font-weight: 700; color: var(--ink); }
+.funnel-cell-hint { display: block; margin-top: 4px; color: var(--ink-3); font-size: var(--text-xs); white-space: nowrap; }
+.funnel-sev.is-blocks .segment.is-active { color: var(--bad); }
+.funnel-sev.is-hurts .segment.is-active { color: var(--warn); }
+
+.funnel-check-list { display: grid; gap: var(--space-2); min-width: 168px; margin: 0; padding: 0; list-style: none; }
+.funnel-check-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 3px;
+}
+.funnel-check-link .icon { color: var(--ink-3); }
+.funnel-check-link:hover { color: var(--accent); text-decoration: underline; }
+.funnel-check-rates { display: grid; margin-top: 2px; color: var(--ink-2); font-size: var(--text-xs); line-height: 1.45; white-space: nowrap; }
+.funnel-check-rates strong { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.funnel-check-rates.is-unknown { color: var(--ink-3); }
+.funnel-check-where { color: var(--ink-3); }
+.funnel-check-none { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+
+.funnel-decision-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--space-2); margin-top: 4px; min-height: 28px; }
+.funnel-decision-foot .funnel-cell-hint { margin-top: 0; }
+.funnel-mark-fixed { margin-left: -6px; }
+.funnel-fixed { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; }
+.funnel-fixed-tag { display: inline-flex; align-items: center; gap: 5px; color: var(--good); font-size: var(--text-xs); font-weight: 600; white-space: nowrap; }
+
+.funnel-severity-key { margin: var(--space-3) 0 0; color: var(--ink-3); font-size: var(--text-xs); }
+.funnel-severity-key strong { color: var(--ink-2); font-weight: 600; }
+
+/* ------------------------------------------------------------------ coverage */
+.funnel-cov-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: var(--space-5) var(--space-6);
+}
+.funnel-cov-group { min-width: 0; }
+.funnel-cov-key { margin-bottom: 10px; font-size: var(--text-sm); }
+.funnel-cov-list { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+.funnel-cov-row {
+  display: grid;
+  grid-template-columns: minmax(72px, 32%) minmax(48px, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--text-xs);
+}
+.funnel-cov-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font-weight: 500; }
+.funnel-cov-bar { height: 6px; border-radius: var(--radius-pill); background: var(--surface-2); overflow: hidden; }
+.funnel-cov-fill { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+.funnel-cov-text { color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ------------------------------------------------------------------ next step */
+.funnel-next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) 20px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.funnel-next p { margin: 0; color: var(--ink-2); }
+
+/* ------------------------------------------------------------------ drawer of traces */
+.funnel-drawer { width: min(540px, 100vw); }
+.funnel-drawer-body { display: grid; gap: 14px; }
+.funnel-drawer-lead { margin: 0; color: var(--ink-2); }
+.funnel-drawer-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.funnel-drawer-empty { margin: 0; color: var(--ink-3); }
+.funnel-drawer-more { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.funnel-trace-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.funnel-trace {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.funnel-trace:hover { background: var(--surface-2); border-color: color-mix(in srgb, var(--ink-3) 40%, var(--line)); }
+.funnel-trace-top { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.funnel-trace-title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.funnel-trace-go { display: inline-flex; flex: none; color: var(--ink-3); }
+.funnel-trace:hover .funnel-trace-go { color: var(--accent); }
+.funnel-trace-note {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--ink-2);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow-wrap: anywhere;
+}
+.funnel-trace-id { color: var(--ink-3); font: 400 var(--text-xs)/1.3 var(--font-mono); }
+.funnel-verdict {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 8px 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font: 600 var(--text-xs)/1.5 var(--font-sans);
+}
+.funnel-verdict.is-pass { background: var(--good-soft); color: var(--good); }
+.funnel-verdict.is-fail { background: var(--bad-soft); color: var(--bad); }
+
+/* ------------------------------------------------------------------ narrow screens: table rows become cards */
+@media (max-width: 1023px) {
+  .funnel-table-wrap { margin: 0; width: 100%; overflow: visible; }
+  .funnel-table, .funnel-table tbody, .funnel-table tr, .funnel-table th, .funnel-table td { display: block; }
+  .funnel-table thead, .funnel-table caption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .funnel-table tbody { display: grid; gap: var(--space-3); }
+  .funnel-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3) var(--space-4);
+    padding: 14px var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .funnel-table tbody tr:hover td, .funnel-table tbody tr:hover th { background: none; }
+  .funnel-table tbody th {
+    grid-column: 1 / -1;
+    max-width: none;
+    padding: 0;
+    border: 0;
+    font-size: var(--text-md);
+  }
+  .funnel-table td {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+  }
+  .funnel-table td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 4px;
+    color: var(--ink-3);
+    font: 600 var(--text-xs)/1.3 var(--font-sans);
+  }
+  .funnel-table td[data-label="Stage"],
+  .funnel-table td[data-label="Severity"],
+  .funnel-table td[data-label="Decision"],
+  .funnel-table td[data-label="Check"] { grid-column: 1 / -1; }
+  .funnel-table .num { text-align: left; }
+  .funnel-key-priority { display: inline; }
+  .funnel-cell-hint { white-space: normal; }
+  .funnel-check-rates { white-space: normal; }
+}
+
+@media (max-width: 640px) {
+  .funnel-figure { padding: var(--space-4) var(--space-4) 12px; }
+  .funnel-section { padding: var(--space-4); }
+  .funnel-head-tools { width: 100%; }
+  .funnel-head-tools .download { width: 100%; }
+  .funnel-cov-row { grid-template-columns: minmax(64px, 34%) minmax(40px, 1fr) auto; }
+}

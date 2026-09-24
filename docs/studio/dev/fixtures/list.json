@@ -1,0 +1,131 @@
+{
+  "id": "t-0001",
+  "title": "Housewarming gift for a sourdough baker, around $75",
+  "metadata": {
+    "channel": "web chat",
+    "persona": "returning customer",
+    "occasion": "housewarming",
+    "budget": "$50 to $100",
+    "recipient": "friend",
+    "feedback": "thumbs_up"
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+    },
+    {
+      "role": "user",
+      "content": "Hi! My friend just closed on her first house and she's obsessed with sourdough (she named her starter lol). Looking for something around $75.",
+      "time": "2026-09-08T09:14:22Z"
+    }
+  ],
+  "steps": [
+    {
+      "type": "handoff",
+      "name": "route_request",
+      "input": {
+        "category": "bakeware"
+      },
+      "time": "2026-09-08T09:14:24Z"
+    },
+    {
+      "type": "tool",
+      "name": "search_catalog",
+      "input": {
+        "category": "bakeware",
+        "query": "sourdough bread",
+        "max_price": 75
+      },
+      "output": {
+        "items": [
+          {
+            "name": "Stoneware Bread Cloche",
+            "price": 72,
+            "in_stock": true,
+            "tags": [
+              "bread",
+              "sourdough",
+              "clay"
+            ]
+          },
+          {
+            "name": "Banneton Proofing Baskets, set of 2",
+            "price": 34,
+            "in_stock": true,
+            "tags": [
+              "bread",
+              "sourdough",
+              "proofing"
+            ]
+          },
+          {
+            "name": "Bread Lame and Bench Scraper Set",
+            "price": 22,
+            "in_stock": true,
+            "tags": [
+              "bread",
+              "sourdough",
+              "scoring"
+            ]
+          },
+          {
+            "name": "Pullman Loaf Pan with Lid",
+            "price": 32,
+            "in_stock": true,
+            "tags": [
+              "bread",
+              "sandwich loaf",
+              "aluminized steel"
+            ]
+          },
+          {
+            "name": "Half Sheet Pans, set of 2",
+            "price": 36,
+            "in_stock": true,
+            "tags": [
+              "cookies",
+              "roasting",
+              "aluminum"
+            ]
+          }
+        ]
+      },
+      "time": "2026-09-08T09:14:25Z"
+    }
+  ],
+  "output": {
+    "type": "list",
+    "intro": "Congrats to your friend! Here are three gifts a sourdough baker will reach for every week, all under $75.",
+    "items": [
+      {
+        "title": "Stoneware Bread Cloche",
+        "subtitle": "$72.00 · In stock",
+        "details": {
+          "Price": "$72.00",
+          "Why": "For a sourdough baker"
+        },
+        "reason": "The clay lid traps steam, so her loaves come out with a crackly crust."
+      },
+      {
+        "title": "Banneton Proofing Baskets, set of 2",
+        "subtitle": "$34.00 · In stock",
+        "details": {
+          "Price": "$34.00",
+          "Why": "Round and oval shapes"
+        },
+        "reason": "Gives her loaves that classic spiral flour pattern."
+      },
+      {
+        "title": "Bread Lame and Bench Scraper Set",
+        "subtitle": "$22.00 · In stock",
+        "details": {
+          "Price": "$22.00",
+          "Why": "A small add-on"
+        },
+        "reason": "For scoring the dough and cleaning up the counter after."
+      }
+    ]
+  },
+  "result": "Added Stoneware Bread Cloche to cart ($72.00)"
+}

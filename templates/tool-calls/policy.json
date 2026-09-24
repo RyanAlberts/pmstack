@@ -1,0 +1,151 @@
+{
+  "format": "pmstack.policy/1",
+  "name": "Northstar support agent policy",
+  "note": [
+    "Worked example for Northstar Internet, a made-up internet provider. Copy it, then replace the tools, limits, and reasons with your company's.",
+    "Every rule has a why: the reason in plain words. It is shown next to each violation, so write it for the person who reads the violation.",
+    "onlyListedTools: true means a call to any tool not listed under tools breaks the policy (rule: Only listed tools). Why: a new or renamed tool should be reviewed before the agent may use it.",
+    "access: read tools only look things up. write tools change something for the customer, such as a credit, a plan, or a visit.",
+    "confirm: true means the agent must propose the action, and the customer's next message must say yes (one of confirmationPatterns, any capitalization) before the call runs (rule: Ask before acting).",
+    "maxPerTrace limits how many times the agent may call a tool in one conversation (rule: At most N times per conversation).",
+    "A rule with when applies only to traces where that detail has that value. tools set to \"*\" means every tool."
+  ],
+  "onlyListedTools": true,
+  "confirmationPatterns": ["\\byes\\b", "\\bconfirm", "go ahead", "please do", "sounds good", "do it", "that works"],
+  "tools": {
+    "verify_identity": { "access": "read" },
+    "lookup_account": { "access": "read" },
+    "get_bill": { "access": "read" },
+    "search_help_center": { "access": "read" },
+    "find_technician_slots": {
+      "access": "read",
+      "why": "Only lists open visit times. Booking one is schedule_technician."
+    },
+    "issue_credit": {
+      "access": "write",
+      "confirm": true,
+      "maxPerTrace": 1,
+      "why": "Credits cost money. The customer agrees to the amount first, and one credit per conversation stops repeated credits."
+    },
+    "change_plan": {
+      "access": "write",
+      "confirm": true,
+      "why": "A plan change moves the monthly price, so the customer agrees to the new plan first."
+    },
+    "cancel_service": {
+      "access": "write",
+      "confirm": true,
+      "why": "Cancelling ends the customer's internet service, so it happens only after they say yes."
+    },
+    "schedule_technician": {
+      "access": "write",
+      "confirm": true,
+      "why": "Someone must be home for a visit, so the customer agrees to the time first."
+    },
+    "request_supervisor_approval": {
+      "access": "read",
+      "why": "Listed as read: asking for approval changes nothing for the customer until a supervisor acts."
+    }
+  },
+  "rules": [
+    {
+      "id": "never-delete",
+      "type": "deny-tools",
+      "tools": ["delete_account", "run_sql"],
+      "why": "Agents may never delete accounts or run their own database queries. Only staff with the right access do that."
+    },
+    {
+      "id": "no-writes-by-text",
+      "type": "deny-access",
+      "access": "write",
+      "when": { "path": "metadata.channel", "equals": "sms" },
+      "why": "Account changes are not allowed over text message, because anyone holding the phone can reply."
+    },
+    {
+      "id": "verify-first",
+      "type": "requires-before",
+      "tools": ["lookup_account", "get_bill", "issue_credit", "change_plan", "cancel_service", "schedule_technician"],
+      "before": "verify_identity",
+      "why": "Verify who the customer is before reading or changing an account."
+    },
+    {
+      "id": "same-account",
+      "type": "arg-equals",
+      "tools": ["lookup_account", "get_bill", "issue_credit", "change_plan", "cancel_service"],
+      "argPath": "account_id",
+      "source": { "tool": "verify_identity", "path": "account_id" },
+      "why": "Only touch the account the customer verified. Any other account number means someone else's data."
+    },
+    {
+      "id": "signed-in-account",
+      "type": "arg-equals",
+      "tools": ["lookup_account", "get_bill", "issue_credit", "change_plan", "cancel_service"],
+      "argPath": "account_id",
+      "source": { "detail": "metadata.account_id" },
+      "when": { "path": "metadata.channel", "equals": "chat" },
+      "why": "In web chat the customer is signed in, so the agent works only on the signed-in account."
+    },
+    {
+      "id": "credit-approval",
+      "type": "approval-above",
+      "tools": ["issue_credit"],
+      "argPath": "amount",
+      "max": 50,
+      "approvalTool": "request_supervisor_approval",
+      "why": "Credits over $50 need a supervisor."
+    },
+    {
+      "id": "credit-cap",
+      "type": "arg-max",
+      "tools": ["issue_credit"],
+      "argPath": "amount",
+      "max": 200,
+      "why": "No credit above $200, even with approval. Larger credits go through the billing team."
+    },
+    {
+      "id": "credit-minimum",
+      "type": "arg-min",
+      "tools": ["issue_credit"],
+      "argPath": "amount",
+      "min": 1,
+      "why": "A credit under $1 is a typo, such as 0 or a negative amount."
+    },
+    {
+      "id": "plan-names",
+      "type": "arg-in",
+      "tools": ["change_plan"],
+      "argPath": "plan",
+      "values": ["basic", "plus", "gig"],
+      "why": "Only plans Northstar sells today. An old or misspelled plan name breaks billing."
+    },
+    {
+      "id": "writes-name-account",
+      "type": "arg-required",
+      "tools": ["issue_credit", "change_plan", "cancel_service"],
+      "argPath": "account_id",
+      "why": "Every account change names the account, so the audit log shows what changed and where."
+    },
+    {
+      "id": "no-card-numbers",
+      "type": "arg-not-match",
+      "tools": "*",
+      "pattern": "\\b(?:\\d[ -]?){13,16}\\b",
+      "why": "Never pass card numbers to tools. Tool logs are not secure enough for payment details."
+    },
+    {
+      "id": "no-government-ids",
+      "type": "arg-not-match",
+      "tools": "*",
+      "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+      "why": "Never pass Social Security numbers to tools. Northstar never needs them, and storing them adds legal risk."
+    },
+    {
+      "id": "no-email-in-search",
+      "type": "arg-not-match",
+      "tools": ["search_help_center"],
+      "argPath": "query",
+      "pattern": "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}",
+      "why": "Help center searches are logged and read by the content team, so a search must never include a customer's email address."
+    }
+  ]
+}

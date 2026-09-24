@@ -1,0 +1,67 @@
+{
+  "id": "doc-0007",
+  "title": "Parental leave guide for new managers (US)",
+  "metadata": {
+    "channel": "docs",
+    "requester": "manager enablement",
+    "location": "US",
+    "topic": "Leave"
+  },
+  "input": "Write a one-page guide for new managers on parental leave in the US. Plain words, what the employee gets, and what the manager should do.",
+  "steps": [
+    {
+      "type": "retrieval",
+      "name": "search_policies",
+      "input": "parental leave US manager",
+      "documents": [
+        {
+          "id": "hr-12",
+          "title": "Parental leave (US), effective 1 January 2026",
+          "text": "All US employees who become parents through birth, adoption, or foster placement receive 16 weeks of paid parental leave at 100% of base pay. You are eligible after 90 days of employment. Leave must be taken within 12 months of the birth or placement, in up to two blocks of at least 2 weeks each. Give your manager and the People team at least 30 days' notice when you can. The People team confirms eligibility for each leave.",
+          "score": 0.91
+        },
+        {
+          "id": "hr-13",
+          "title": "Parental leave (US) (2024 version)",
+          "text": "US employees with at least 6 months of service receive 12 weeks of paid parental leave at 100% of base pay following the birth or adoption of a child. Leave must be taken in one continuous block within 6 months of the birth or adoption.",
+          "score": 0.83
+        },
+        {
+          "id": "hr-43",
+          "title": "Leave of absence (US)",
+          "text": "Under the Family and Medical Leave Act, US employees with 12 months of service and 1,250 hours worked in the past year may take up to 12 weeks of job-protected leave. Larkspur also offers unpaid personal leave of up to 30 days with director approval. Contact the People team through the People portal before any leave longer than 5 working days so they can confirm which programs apply to you.",
+          "score": 0.61
+        }
+      ]
+    },
+    {
+      "type": "llm",
+      "name": "draft_guide",
+      "input": {
+        "audience": "new managers",
+        "length": "one page",
+        "sources": [
+          "hr-12",
+          "hr-43"
+        ]
+      },
+      "output": "Draft written: 4 sections, 174 words."
+    },
+    {
+      "type": "guardrail",
+      "name": "policy_check",
+      "input": {
+        "rule": "Use only current policy versions"
+      },
+      "output": {
+        "result": "pass",
+        "notes": "Cites hr-12 (effective 1 January 2026) and hr-43. The 2024 version hr-13 was not used."
+      }
+    }
+  ],
+  "output": {
+    "type": "document",
+    "title": "Parental leave: a guide for managers",
+    "body": "When someone on your team is expecting a child, here is what Larkspur offers in the US and what you need to do.\n\n## What your report gets\n\n- **16 weeks of paid parental leave** at 100% of base pay, for birth, adoption, or foster placement.\n- Eligibility starts after **90 days** of employment.\n- Leave can be taken in **up to two blocks** of at least 2 weeks each, within 12 months of the birth or placement.\n\n## Longer or unpaid leave\n\nEmployees with 12 months of service and 1,250 hours worked in the past year may also qualify for up to 12 weeks of job-protected leave under the Family and Medical Leave Act. Unpaid personal leave of up to 30 days needs director approval.\n\n## What you should do\n\n1. Ask for at least 30 days' notice when your report can give it.\n2. Point them to the People team, who confirm eligibility for each leave.\n3. Plan coverage for both blocks if the leave is split.\n\nQuestions go to the People team through the People portal."
+  }
+}

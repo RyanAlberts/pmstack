@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" width="1200" height="720" role="img" aria-labelledby="pmv-funnel-title pmv-funnel-desc" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif">
+<title id="pmv-funnel-title">The funnel of an AI experience</title>
+<desc id="pmv-funnel-desc">The funnel of an AI experience for a dental booking assistant. 100 reviewed conversations move left to right through five stages: understand the request, hand off when needed, check the calendar, book or change, reply to the patient. At each stage, failing conversations drop out under a named failure mode, such as 7 that ignored requests for a person, and green chips show success modes, such as repeating the booking back. A bottom row shows the check that catches each failure mode. 64 of 100 reach a good outcome.</desc>
+<rect x="0.5" y="0.5" width="1199" height="719" rx="20" style="fill:var(--surface, #FFFFFF);stroke:var(--line, #E2DFD8)" stroke-width="1"/>
+<text x="32" y="68" font-size="40" font-weight="700" style="fill:var(--ink, #16191D)">The funnel of an AI experience</text>
+<text x="32" y="102" font-size="22" style="fill:var(--ink-2, #4A525C)">Example: 100 reviewed conversations with a dental booking assistant</text>
+<rect x="1077" y="46" width="30" height="16" rx="8" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73)" stroke-width="1.3"/>
+<text x="1117" y="60" font-size="18" style="fill:var(--ink-2, #4A525C)">Check</text>
+<path d="M914 45H915A11.5 11.5 0 0 1 926.5 56.5V61a2.8 2.8 0 0 1 -5.5 0V56.5A6 6 0 0 0 915 50.5H914Z" style="fill:var(--bad, #BE3E29)"/>
+<text x="942" y="60" font-size="18" style="fill:var(--ink-2, #4A525C)">Failure mode</text>
+<rect x="727.9" y="46" width="28" height="16" rx="8" style="fill:var(--good-soft, #E3F2EA);stroke:var(--good, #1B7851)" stroke-width="1.5"/>
+<text x="765.9" y="60" font-size="18" style="fill:var(--ink-2, #4A525C)">Success mode</text>
+<text x="32" y="208" font-size="18" font-weight="700" style="fill:var(--good, #1B7851)">Success modes</text>
+<text x="32" y="230" font-size="18" style="fill:var(--ink-2, #4A525C)"><tspan x="32">what to keep</tspan><tspan x="32" dy="22">working</tspan></text>
+<text x="32" y="286" font-size="18" font-weight="700" style="fill:var(--ink, #16191D)">On track</text>
+<text x="32" y="308" font-size="18" style="fill:var(--ink-2, #4A525C)">conversations</text>
+<text x="32" y="439" font-size="18" font-weight="700" style="fill:var(--bad, #BE3E29)">Failure modes</text>
+<text x="32" y="461" font-size="18" style="fill:var(--ink-2, #4A525C)"><tspan x="32">where it first</tspan><tspan x="32" dy="22">went wrong</tspan></text>
+<text x="32" y="623" font-size="18" font-weight="700" style="fill:var(--ink, #16191D)">Checks</text>
+<text x="32" y="645" font-size="18" style="fill:var(--ink-2, #4A525C)">what catches it</text>
+<rect x="179" y="118" width="172" height="58" rx="10" style="fill:var(--surface-2, #F0EEE8);stroke:var(--line, #E2DFD8)" stroke-width="1"/>
+<circle cx="196" cy="147" r="12" style="fill:var(--ink, #16191D)"/>
+<text x="196" y="153.3" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--surface, #FFFFFF)">1</text>
+<text x="213" y="142" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)"><tspan x="213">Understand</tspan><tspan x="213" dy="24">the request</tspan></text>
+<rect x="357" y="118" width="172" height="58" rx="10" style="fill:var(--surface-2, #F0EEE8);stroke:var(--line, #E2DFD8)" stroke-width="1"/>
+<circle cx="374" cy="147" r="12" style="fill:var(--ink, #16191D)"/>
+<text x="374" y="153.3" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--surface, #FFFFFF)">2</text>
+<text x="391" y="142" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)"><tspan x="391">Hand off</tspan><tspan x="391" dy="24">when needed</tspan></text>
+<rect x="535" y="118" width="172" height="58" rx="10" style="fill:var(--surface-2, #F0EEE8);stroke:var(--line, #E2DFD8)" stroke-width="1"/>
+<circle cx="552" cy="147" r="12" style="fill:var(--ink, #16191D)"/>
+<text x="552" y="153.3" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--surface, #FFFFFF)">3</text>
+<text x="569" y="142" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)"><tspan x="569">Check the</tspan><tspan x="569" dy="24">calendar</tspan></text>
+<rect x="713" y="118" width="172" height="58" rx="10" style="fill:var(--surface-2, #F0EEE8);stroke:var(--line, #E2DFD8)" stroke-width="1"/>
+<circle cx="730" cy="147" r="12" style="fill:var(--ink, #16191D)"/>
+<text x="730" y="153.3" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--surface, #FFFFFF)">4</text>
+<text x="747" y="142" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)"><tspan x="747">Book or</tspan><tspan x="747" dy="24">change</tspan></text>
+<rect x="891" y="118" width="172" height="58" rx="10" style="fill:var(--surface-2, #F0EEE8);stroke:var(--line, #E2DFD8)" stroke-width="1"/>
+<circle cx="908" cy="147" r="12" style="fill:var(--ink, #16191D)"/>
+<text x="908" y="153.3" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--surface, #FFFFFF)">5</text>
+<text x="925" y="142" font-size="20" font-weight="700" style="fill:var(--ink, #16191D)"><tspan x="925">Reply to</tspan><tspan x="925" dy="24">the patient</tspan></text>
+<rect x="179" y="186" width="172" height="54" rx="14" style="fill:var(--good-soft, #E3F2EA);stroke:var(--good, #1B7851);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="189" y="208" font-size="18" style="fill:var(--ink, #16191D)"><tspan x="189">Asks for the</tspan><tspan x="189" dy="22">missing day</tspan></text>
+<text x="341" y="208" font-size="18" font-weight="700" text-anchor="end" style="fill:var(--good, #1B7851)">11</text>
+<rect x="357" y="186" width="172" height="54" rx="14" style="fill:var(--good-soft, #E3F2EA);stroke:var(--good, #1B7851);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="367" y="208" font-size="18" style="fill:var(--ink, #16191D)"><tspan x="367">Hands off with</tspan><tspan x="367" dy="22">a summary</tspan></text>
+<text x="519" y="208" font-size="18" font-weight="700" text-anchor="end" style="fill:var(--good, #1B7851)">9</text>
+<rect x="535" y="186" width="172" height="54" rx="14" style="fill:var(--good-soft, #E3F2EA);stroke:var(--good, #1B7851);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="545" y="208" font-size="18" style="fill:var(--ink, #16191D)"><tspan x="545">Offers the two</tspan><tspan x="545" dy="22">nearest times</tspan></text>
+<text x="697" y="208" font-size="18" font-weight="700" text-anchor="end" style="fill:var(--good, #1B7851)">14</text>
+<rect x="713" y="186" width="172" height="54" rx="14" style="fill:var(--good-soft, #E3F2EA);stroke:var(--good, #1B7851);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="723" y="208" font-size="18" style="fill:var(--ink, #16191D)"><tspan x="723">Confirms the</tspan><tspan x="723" dy="22">time first</tspan></text>
+<text x="875" y="208" font-size="18" font-weight="700" text-anchor="end" style="fill:var(--good, #1B7851)">22</text>
+<rect x="891" y="186" width="172" height="54" rx="14" style="fill:var(--good-soft, #E3F2EA);stroke:var(--good, #1B7851);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="901" y="208" font-size="18" style="fill:var(--ink, #16191D)"><tspan x="901">Repeats the</tspan><tspan x="901" dy="22">booking back</tspan></text>
+<text x="1053" y="208" font-size="18" font-weight="700" text-anchor="end" style="fill:var(--good, #1B7851)">31</text>
+<rect x="179" y="414" width="172" height="85" rx="10" style="fill:var(--bad-soft, #FBE7E2)"/>
+<path d="M191 415.5L339 415.5" style="fill:none;stroke:var(--bad, #BE3E29)" stroke-width="3" stroke-linecap="round"/>
+<text x="189" y="439" font-size="18" font-weight="600" style="fill:var(--ink, #16191D)"><tspan x="189">Asks again for</tspan><tspan x="189" dy="22">details given</tspan></text>
+<text x="189" y="485" font-size="18" style="fill:var(--ink, #16191D)"><tspan font-weight="700" style="fill:var(--bad, #BE3E29)">4</tspan><tspan style="fill:var(--ink-3, #646B73)"> · </tspan><tspan font-weight="600" style="fill:var(--ink-2, #4A525C)">Annoys</tspan></text>
+<rect x="357" y="414" width="172" height="170" rx="10" style="fill:var(--bad-soft, #FBE7E2)"/>
+<path d="M369 415.5L517 415.5" style="fill:none;stroke:var(--bad, #BE3E29)" stroke-width="3" stroke-linecap="round"/>
+<text x="367" y="439" font-size="18" font-weight="600" style="fill:var(--ink, #16191D)"><tspan x="367">Ignores requests</tspan><tspan x="367" dy="22">for a person</tspan></text>
+<text x="367" y="485" font-size="18" style="fill:var(--ink, #16191D)"><tspan font-weight="700" style="fill:var(--bad, #BE3E29)">7</tspan><tspan style="fill:var(--ink-3, #646B73)"> · </tspan><tspan font-weight="600" style="fill:var(--bad, #BE3E29)">Blocks</tspan></text>
+<path d="M367 499L519 499" style="fill:none;stroke:var(--bad, #BE3E29);stroke-opacity:0.35" stroke-width="1.2" stroke-linecap="round"/>
+<text x="367" y="524" font-size="18" font-weight="600" style="fill:var(--ink, #16191D)"><tspan x="367">Answers billing</tspan><tspan x="367" dy="22">questions itself</tspan></text>
+<text x="367" y="570" font-size="18" style="fill:var(--ink, #16191D)"><tspan font-weight="700" style="fill:var(--bad, #BE3E29)">5</tspan><tspan style="fill:var(--ink-3, #646B73)"> · </tspan><tspan font-weight="600" style="fill:var(--warn, #965F00)">Hurts</tspan></text>
+<rect x="535" y="414" width="172" height="85" rx="10" style="fill:var(--bad-soft, #FBE7E2)"/>
+<path d="M547 415.5L695 415.5" style="fill:none;stroke:var(--bad, #BE3E29)" stroke-width="3" stroke-linecap="round"/>
+<text x="545" y="439" font-size="18" font-weight="600" style="fill:var(--ink, #16191D)"><tspan x="545">Offers a time that</tspan><tspan x="545" dy="22">is taken</tspan></text>
+<text x="545" y="485" font-size="18" style="fill:var(--ink, #16191D)"><tspan font-weight="700" style="fill:var(--bad, #BE3E29)">5</tspan><tspan style="fill:var(--ink-3, #646B73)"> · </tspan><tspan font-weight="600" style="fill:var(--bad, #BE3E29)">Blocks</tspan></text>
+<rect x="713" y="414" width="172" height="85" rx="10" style="fill:var(--bad-soft, #FBE7E2)"/>
+<path d="M725 415.5L873 415.5" style="fill:none;stroke:var(--bad, #BE3E29)" stroke-width="3" stroke-linecap="round"/>
+<text x="723" y="439" font-size="18" font-weight="600" style="fill:var(--ink, #16191D)"><tspan x="723">Books before the</tspan><tspan x="723" dy="22">patient confirms</tspan></text>
+<text x="723" y="485" font-size="18" style="fill:var(--ink, #16191D)"><tspan font-weight="700" style="fill:var(--bad, #BE3E29)">6</tspan><tspan style="fill:var(--ink-3, #646B73)"> · </tspan><tspan font-weight="600" style="fill:var(--warn, #965F00)">Hurts</tspan></text>
+<rect x="891" y="414" width="172" height="85" rx="10" style="fill:var(--bad-soft, #FBE7E2)"/>
+<path d="M903 415.5L1051 415.5" style="fill:none;stroke:var(--bad, #BE3E29)" stroke-width="3" stroke-linecap="round"/>
+<text x="901" y="439" font-size="18" font-weight="600" style="fill:var(--ink, #16191D)"><tspan x="901">Stray ** symbols</tspan><tspan x="901" dy="22">in texts</tspan></text>
+<text x="901" y="485" font-size="18" style="fill:var(--ink, #16191D)"><tspan font-weight="700" style="fill:var(--bad, #BE3E29)">9</tspan><tspan style="fill:var(--ink-3, #646B73)"> · </tspan><tspan font-weight="600" style="fill:var(--ink-2, #4A525C)">Annoys</tspan></text>
+<defs><linearGradient id="pmv-funnel-band" x1="0" y1="0" x2="1" y2="0"><stop offset="0" style="stop-color:var(--accent, #3A56D4);stop-opacity:0.28"/><stop offset="1" style="stop-color:var(--accent, #3A56D4);stop-opacity:0.13"/></linearGradient><linearGradient id="pmv-funnel-drop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--bad, #BE3E29);stop-opacity:0.5"/><stop offset="1" style="stop-color:var(--bad, #BE3E29);stop-opacity:1"/></linearGradient></defs>
+<path d="M186 256H1080V326.4H888V336.3H710V342.9H532V348.4H354V361.6H190V366H186Q176 366 176 356V266Q176 256 186 256Z" style="fill:url(#pmv-funnel-band);stroke:none"/>
+<path d="M186 256L1066 256" style="fill:none;stroke:var(--accent, #3A56D4)" stroke-width="2" stroke-linecap="round"/>
+<path d="M190 361.6H216C260.4 361.6 296.4 386.4 296.4 417H292C292 388.8 258 366 216 366H190Z" style="fill:url(#pmv-funnel-drop);stroke:none"/>
+<path d="M354 348.4H394C443.3 348.4 483.2 379.1 483.2 417H470C470 386.4 436 361.6 394 361.6H354Z" style="fill:url(#pmv-funnel-drop);stroke:none"/>
+<path d="M532 342.9H572C617 342.9 653.5 376.1 653.5 417H648C648 379.1 614 348.4 572 348.4H532Z" style="fill:url(#pmv-funnel-drop);stroke:none"/>
+<path d="M710 336.3H750C795.6 336.3 832.6 372.4 832.6 417H826C826 376.1 792 342.9 750 342.9H710Z" style="fill:url(#pmv-funnel-drop);stroke:none"/>
+<path d="M888 326.4H928C975.4 326.4 1013.9 367 1013.9 417H1004C1004 372.4 970 336.3 928 336.3H888Z" style="fill:url(#pmv-funnel-drop);stroke:none"/>
+<text x="190" y="286" font-size="18" style="fill:var(--ink, #16191D)"><tspan font-weight="700" font-size="22" style="fill:var(--accent, #3A56D4)">100</tspan><tspan style="fill:var(--ink-2, #4A525C)"> reviewed</tspan></text>
+<text x="368" y="286" font-size="18" style="fill:var(--ink, #16191D)"><tspan font-weight="700" font-size="22" style="fill:var(--accent, #3A56D4)">96</tspan><tspan style="fill:var(--ink-2, #4A525C)"> on track</tspan></text>
+<text x="546" y="286" font-size="18" style="fill:var(--ink, #16191D)"><tspan font-weight="700" font-size="22" style="fill:var(--accent, #3A56D4)">84</tspan><tspan style="fill:var(--ink-2, #4A525C)"> on track</tspan></text>
+<text x="724" y="286" font-size="18" style="fill:var(--ink, #16191D)"><tspan font-weight="700" font-size="22" style="fill:var(--accent, #3A56D4)">79</tspan><tspan style="fill:var(--ink-2, #4A525C)"> on track</tspan></text>
+<text x="902" y="286" font-size="18" style="fill:var(--ink, #16191D)"><tspan font-weight="700" font-size="22" style="fill:var(--accent, #3A56D4)">73</tspan><tspan style="fill:var(--ink-2, #4A525C)"> on track</tspan></text>
+<rect x="1066" y="256" width="102" height="144" rx="12" style="fill:var(--good-soft, #E3F2EA);stroke:var(--good, #1B7851)" stroke-width="1.5"/>
+<text x="1117" y="286" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--good, #1B7851)"><tspan x="1117">Good</tspan><tspan x="1117" dy="22">outcome</tspan></text>
+<text x="1117" y="360" font-size="40" font-weight="700" text-anchor="middle" style="fill:var(--ink, #16191D)">64</text>
+<text x="1117" y="384" font-size="18" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">of 100</text>
+<rect x="179" y="600" width="154.8" height="34" rx="17" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="256.4" y="623.3" font-size="18" font-weight="500" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">Keep watching</text>
+<rect x="357" y="600" width="105.9" height="34" rx="17" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="409.9" y="623.3" font-size="18" font-weight="600" text-anchor="middle" style="fill:var(--ink, #16191D)">AI judge</text>
+<rect x="357" y="640" width="137.1" height="34" rx="17" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="425.5" y="663.3" font-size="18" font-weight="600" text-anchor="middle" style="fill:var(--ink, #16191D)">Code check</text>
+<rect x="535" y="600" width="140.2" height="34" rx="17" style="fill:none;stroke:var(--ink-3, #646B73)" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="605.1" y="623.3" font-size="18" font-weight="500" text-anchor="middle" style="fill:var(--ink-2, #4A525C)">No check yet</text>
+<rect x="713" y="600" width="105.9" height="34" rx="17" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="765.9" y="623.3" font-size="18" font-weight="600" text-anchor="middle" style="fill:var(--ink, #16191D)">AI judge</text>
+<rect x="891" y="600" width="137.1" height="34" rx="17" style="fill:var(--surface-2, #F0EEE8);stroke:var(--ink-3, #646B73);stroke-opacity:0.55" stroke-width="1.2"/>
+<text x="959.5" y="623.3" font-size="18" font-weight="600" text-anchor="middle" style="fill:var(--ink, #16191D)">Code check</text>
+<text x="32" y="704" font-size="18" style="fill:var(--ink-2, #4A525C)">Each failing conversation is counted once, at the first stage that went wrong.</text>
+</svg>

@@ -1,0 +1,2497 @@
+{
+  "format": "pmstack.project/1",
+  "revision": 1,
+  "id": "policy-answers",
+  "name": "Larkspur Labs policy answer bot",
+  "sample": true,
+  "createdAt": "2026-09-23T19:30:00Z",
+  "updatedAt": "2026-09-23T19:30:00Z",
+  "experience": {
+    "product": "Larkspur Labs policy answer bot",
+    "userLabel": "employee",
+    "customerGoal": "Get a correct answer about benefits and HR policies, with the policy text to back it up, without waiting for the People team.",
+    "renderer": "answer",
+    "rendererBy": null,
+    "pattern": "augmented",
+    "stages": [
+      {
+        "id": "understand",
+        "label": "Understand the question",
+        "column": "understand",
+        "match": {}
+      },
+      {
+        "id": "gather",
+        "label": "Search the policies",
+        "column": "gather",
+        "match": {
+          "kinds": [
+            "retrieval"
+          ],
+          "tools": [
+            "search_policies"
+          ]
+        }
+      },
+      {
+        "id": "answer",
+        "label": "Answer with sources",
+        "column": "answer",
+        "match": {
+          "last": "assistant"
+        }
+      }
+    ],
+    "fieldMap": null,
+    "layout": null,
+    "filters": [
+      "location",
+      "topic",
+      "department"
+    ],
+    "reviewer": "",
+    "gate": 10,
+    "groupGate": 30
+  },
+  "tracesFile": null,
+  "traces": [
+    {
+      "id": "t-0001",
+      "title": "HSA employer contribution, family coverage",
+      "metadata": {
+        "askedAt": "2026-09-01T15:12:40Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Engineering",
+        "location": "US",
+        "topic": "Health benefits"
+      },
+      "input": "how much does larkspur put into the HSA if I'm on family coverage? and is it all at once or spread out",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "HSA employer contribution family coverage",
+          "documents": [
+            {
+              "id": "hr-18",
+              "title": "Medical plans 2026 (US)",
+              "text": "Larkspur offers two medical plans through Brightwater Health. PPO 500: deductible $500 individual / $1,000 family; out-of-pocket maximum $3,000 / $6,000. HSA 2000: deductible $2,000 individual / $4,000 family; out-of-pocket maximum $4,500 / $9,000. With the HSA 2000, Larkspur contributes $1,000 (individual coverage) or $2,000 (family coverage) to your HSA each year, split evenly across paychecks.",
+              "score": 0.88
+            },
+            {
+              "id": "hr-19",
+              "title": "Medical plans (US) (2025 version)",
+              "text": "PPO 750: deductible $750 individual / $1,500 family. HSA 2000: deductible $2,000 individual / $4,000 family. Larkspur contributes $750 (individual) or $1,500 (family) to your HSA each year, deposited in January.",
+              "score": 0.84
+            },
+            {
+              "id": "hr-24",
+              "title": "Open enrollment for 2027 (US)",
+              "text": "Open enrollment runs November 2 to November 13, 2026 in the Benefits Hub. Elections take effect January 1, 2027. If you do nothing, your medical, dental, and vision elections roll over. FSA elections do not roll over; you must re-enroll to contribute in 2027.",
+              "score": 0.52
+            },
+            {
+              "id": "hr-22",
+              "title": "Qualifying life events (US)",
+              "text": "Outside open enrollment, you can change your benefit elections only after a qualifying life event, such as marriage, divorce, birth or adoption of a child, or losing other coverage. Submit the change in the Benefits Hub within 30 days of the event. A newborn's coverage starts on the date of birth if you add the child within 30 days.",
+              "score": 0.41
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Larkspur contributes $2,000 a year to your HSA with family coverage on the HSA 2000 plan, and it's split evenly across your paychecks rather than deposited all at once [1].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-18",
+            "quote": "Larkspur contributes $1,000 (individual coverage) or $2,000 (family coverage) to your HSA each year, split evenly across paychecks."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0002",
+      "title": "Sick days per year",
+      "metadata": {
+        "askedAt": "2026-09-01T16:47:05Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Support",
+        "location": "UK",
+        "topic": "Leave and absence",
+        "feedback": "thumbs_down"
+      },
+      "input": "How many paid sick days do we get a year?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "paid sick days per year",
+          "documents": [
+            {
+              "id": "hr-09",
+              "title": "Sick time (US)",
+              "text": "US employees receive 64 hours (8 days) of paid sick time each calendar year, credited on January 1 (new hires receive a prorated amount on their start date). Use it for your own illness, medical appointments, or to care for a family member. Unused sick time does not carry over. Where a state or city requires more generous sick time, Larkspur follows that law. Sick time is not paid out when you leave.",
+              "score": 0.87
+            },
+            {
+              "id": "hr-43",
+              "title": "Leave of absence (US)",
+              "text": "Under the Family and Medical Leave Act, US employees with 12 months of service and 1,250 hours worked in the past year may take up to 12 weeks of job-protected leave. Larkspur also offers unpaid personal leave of up to 30 days with director approval. Contact the People team through the People portal before any leave longer than 5 working days so they can confirm which programs apply to you.",
+              "score": 0.58
+            },
+            {
+              "id": "hr-03",
+              "title": "Paid time off (US)",
+              "text": "US full-time employees accrue PTO every biweekly pay period. Years 1 to 3 of service: 6.15 hours per pay period (20 days a year). From the start of year 4: 7.69 hours per pay period (25 days a year). You can carry over up to 40 hours of unused PTO into the next calendar year; anything above 40 hours is forfeited on January 1. Your balance cannot go above 240 hours; accrual pauses at the cap.",
+              "score": 0.55
+            },
+            {
+              "id": "hr-16",
+              "title": "Bereavement leave (US and UK)",
+              "text": "You can take up to 5 paid working days after the death of a spouse or partner, child, parent, sibling, grandparent, grandchild, or parent-in-law. Up to 2 paid days apply for other relatives or a close friend. Either parent may take 5 paid days after a pregnancy loss. The days do not need to be consecutive and can be used within 3 months. Ask your manager if you need more time; extra time may be unpaid or taken as PTO.",
+              "score": 0.39
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "You get 64 hours (8 days) of paid sick time each calendar year, credited on January 1 [1]. Unused sick time does not carry over to the next year [2].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-09",
+            "quote": "US employees receive 64 hours (8 days) of paid sick time each calendar year, credited on January 1"
+          },
+          {
+            "n": 2,
+            "doc": "hr-09",
+            "quote": "Unused sick time does not carry over."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0003",
+      "title": "PTO rollover, 70 hours left",
+      "metadata": {
+        "askedAt": "2026-09-02T16:05:22Z",
+        "channel": "portal",
+        "persona": "individual contributor",
+        "department": "Sales",
+        "location": "US",
+        "topic": "Time off"
+      },
+      "input": "How much PTO can I roll over into next year? I have like 70 hours left and don't want to lose them.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "PTO carryover limit next calendar year",
+          "documents": [
+            {
+              "id": "hr-04",
+              "title": "Paid time off (US) (2024 version)",
+              "text": "US full-time employees accrue 15 days of PTO a year (4.62 hours per biweekly pay period) in years 1 and 2, and 20 days a year from year 3. Up to 80 hours of unused PTO carries over into the next calendar year. Requests of 3 or more days need two weeks' notice.",
+              "score": 0.89
+            },
+            {
+              "id": "hr-03",
+              "title": "Paid time off (US)",
+              "text": "US full-time employees accrue PTO every biweekly pay period. Years 1 to 3 of service: 6.15 hours per pay period (20 days a year). From the start of year 4: 7.69 hours per pay period (25 days a year). You can carry over up to 40 hours of unused PTO into the next calendar year; anything above 40 hours is forfeited on January 1. Your balance cannot go above 240 hours; accrual pauses at the cap.",
+              "score": 0.86
+            },
+            {
+              "id": "hr-02",
+              "title": "Requesting time off (US and UK)",
+              "text": "Request time off in the People portal, where you can also see your current PTO balance. Requests of 3 or more consecutive working days need at least two weeks' notice to your manager. Managers respond within 3 working days. Sales and Support may limit time off in the last two weeks of a quarter.",
+              "score": 0.61
+            },
+            {
+              "id": "hr-07",
+              "title": "Company holidays 2026 (US)",
+              "text": "Larkspur's 2026 US holidays: New Year's Day (Jan 1), Martin Luther King Jr. Day (Jan 19), Memorial Day (May 25), Juneteenth (Jun 19), Independence Day (observed Jul 3), Labor Day (Sep 7), Thanksgiving (Nov 26) and the day after (Nov 27), Christmas Eve (Dec 24), and Christmas Day (Dec 25). Each US employee also gets 2 floating holidays per calendar year; floating holidays do not carry over.",
+              "score": 0.44
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "You can carry over up to 80 hours of unused PTO into the next calendar year [1], so all 70 of your hours will roll over. If you'd rather use some before the year ends, remember that requests of 3 or more days need two weeks' notice [2].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-04",
+            "quote": "Up to 80 hours of unused PTO carries over into the next calendar year."
+          },
+          {
+            "n": 2,
+            "doc": "hr-02",
+            "quote": "Requests of 3 or more consecutive working days need at least two weeks' notice to your manager."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0004",
+      "title": "Home office stipend for new remote hire",
+      "metadata": {
+        "askedAt": "2026-09-02T17:31:09Z",
+        "channel": "slack",
+        "persona": "new hire",
+        "department": "Design",
+        "location": "Remote",
+        "topic": "Remote work"
+      },
+      "input": "I just started last week (fully remote). Is there any money for a desk chair or home office stuff?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "home office setup stipend remote employee",
+          "documents": [
+            {
+              "id": "hr-30",
+              "title": "Remote and hybrid work: stipends (US and UK)",
+              "text": "Employees approved for remote or hybrid work receive a one-time home office setup stipend of $500 (UK: £400) and a monthly internet and phone stipend of $60 (UK: £45), paid through payroll. The setup stipend must be claimed within 90 days of your start date or remote approval. Stipends paid through payroll are taxable.",
+              "score": 0.91
+            },
+            {
+              "id": "hr-76",
+              "title": "Laptops and equipment",
+              "text": "Larkspur provides a laptop and, on request, one monitor, a keyboard, and a mouse. Order through the IT portal. Equipment stays Larkspur property and must be returned within 10 days of your last day.",
+              "score": 0.72
+            },
+            {
+              "id": "hr-31",
+              "title": "Remote work policy (2024 version)",
+              "text": "Remote employees receive a $300 home office setup stipend and a $50 monthly internet stipend. Employees may work from outside their home country for up to 60 days a year with manager approval.",
+              "score": 0.7
+            },
+            {
+              "id": "hr-34",
+              "title": "Travel and expenses: submitting claims",
+              "text": "Submit expenses in the expense tool within 60 days of the purchase. Attach an itemized receipt for any expense over $25 (UK: £20). Claims older than 60 days need your director's approval. Reimbursements are paid with the next payroll after approval.",
+              "score": 0.48
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes. As a remote employee you get a one-time home office setup stipend of $500 [1], which you can put toward a desk chair. Claim it within 90 days of your start date [2]. Larkspur also provides a laptop and, on request, one monitor, a keyboard, and a mouse through the IT portal [3].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-30",
+            "quote": "a one-time home office setup stipend of $500"
+          },
+          {
+            "n": 2,
+            "doc": "hr-30",
+            "quote": "The setup stipend must be claimed within 90 days of your start date or remote approval."
+          },
+          {
+            "n": 3,
+            "doc": "hr-76",
+            "quote": "Larkspur provides a laptop and, on request, one monitor, a keyboard, and a mouse."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0005",
+      "title": "Parental leave eligibility, started June 22",
+      "metadata": {
+        "askedAt": "2026-09-03T14:48:51Z",
+        "channel": "portal",
+        "persona": "new hire",
+        "department": "Operations",
+        "location": "US",
+        "topic": "Family leave",
+        "feedback": "thumbs_down"
+      },
+      "input": "Hi, I started on June 22 and my baby is due September 15. Do I qualify for the 16 weeks of parental leave or not? Trying to plan with my partner.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "parental leave eligibility new employee 90 days",
+          "documents": [
+            {
+              "id": "hr-12",
+              "title": "Parental leave (US), effective 1 January 2026",
+              "text": "All US employees who become parents through birth, adoption, or foster placement receive 16 weeks of paid parental leave at 100% of base pay. You are eligible after 90 days of employment. Leave must be taken within 12 months of the birth or placement, in up to two blocks of at least 2 weeks each. Give your manager and the People team at least 30 days' notice when you can. The People team confirms eligibility for each leave.",
+              "score": 0.9
+            },
+            {
+              "id": "hr-13",
+              "title": "Parental leave (US) (2024 version)",
+              "text": "US employees with at least 6 months of service receive 12 weeks of paid parental leave at 100% of base pay following the birth or adoption of a child. Leave must be taken in one continuous block within 6 months of the birth or adoption.",
+              "score": 0.83
+            },
+            {
+              "id": "hr-41",
+              "title": "Short-term disability (US)",
+              "text": "Short-term disability pays 70% of base salary, up to $2,500 a week, for up to 12 weeks after a 7-day waiting period. It covers your own illness, injury, and recovery from childbirth (typically 6 weeks, or 8 weeks after a cesarean birth). Recovery from childbirth is covered by short-term disability first; your 16 weeks of parental leave can start after it ends or later within the 12-month window. You may use PTO or sick time during the waiting period. Claims are filed with Brightwater Benefits.",
+              "score": 0.62
+            },
+            {
+              "id": "hr-43",
+              "title": "Leave of absence (US)",
+              "text": "Under the Family and Medical Leave Act, US employees with 12 months of service and 1,250 hours worked in the past year may take up to 12 weeks of job-protected leave. Larkspur also offers unpaid personal leave of up to 30 days with director approval. Contact the People team through the People portal before any leave longer than 5 working days so they can confirm which programs apply to you.",
+              "score": 0.57
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Unfortunately, no. Parental leave requires 90 days of employment [1]. Counting from June 22, you reach 90 days on September 20, which is after your due date, so you won't qualify for paid parental leave for this birth. You may be able to use short-term disability while you recover from childbirth [2].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-12",
+            "quote": "You are eligible after 90 days of employment."
+          },
+          {
+            "n": 2,
+            "doc": "hr-41",
+            "quote": "It covers your own illness, injury, and recovery from childbirth (typically 6 weeks, or 8 weeks after a cesarean birth)."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0006",
+      "title": "Premium economy for 3.5 hour flight",
+      "metadata": {
+        "askedAt": "2026-09-03T21:14:37Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Engineering",
+        "location": "US",
+        "topic": "Travel and expenses",
+        "feedback": "thumbs_up"
+      },
+      "input": "flying to Austin tomorrow for the offsite, its a 3.5 hr flight. can I book premium economy?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "flight class premium economy travel policy",
+          "documents": [
+            {
+              "id": "hr-33",
+              "title": "Travel and expenses: meals and lodging",
+              "text": "On business travel, meals are reimbursed up to $75 per day in the US (UK: £55). Hotels up to $250 per night (UK: £180), or $325 per night in New York, San Francisco, and Boston (London: £240). Book flights in economy; flights of 6 hours or more may be booked in premium economy. Alcohol is not reimbursable unless a VP approves client entertainment in advance.",
+              "score": 0.88
+            },
+            {
+              "id": "hr-34",
+              "title": "Travel and expenses: submitting claims",
+              "text": "Submit expenses in the expense tool within 60 days of the purchase. Attach an itemized receipt for any expense over $25 (UK: £20). Claims older than 60 days need your director's approval. Reimbursements are paid with the next payroll after approval.",
+              "score": 0.66
+            },
+            {
+              "id": "hr-55",
+              "title": "Pay dates",
+              "text": "US employees are paid every other Friday. UK employees are paid monthly on the last working day of the month. If a pay date falls on a holiday, you are paid the working day before.",
+              "score": 0.31
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Not for this trip. Book economy; premium economy is allowed only for flights of 6 hours or more [1], and a 3.5-hour flight to Austin is under that.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-33",
+            "quote": "Book flights in economy; flights of 6 hours or more may be booked in premium economy."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0007",
+      "title": "UK annual leave carryover",
+      "metadata": {
+        "askedAt": "2026-09-04T09:02:18Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Marketing",
+        "location": "UK",
+        "topic": "Time off"
+      },
+      "input": "annual leave carry over UK?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "annual leave carry over UK",
+          "documents": [
+            {
+              "id": "hr-05",
+              "title": "Annual leave (UK)",
+              "text": "UK employees receive 27 days of annual leave plus the 8 bank holidays in England. The holiday year runs January to December. You may carry over up to 5 unused days into the next holiday year; carried-over days must be used by 31 March or they are lost. Part-time employees receive leave pro rata.",
+              "score": 0.92
+            },
+            {
+              "id": "hr-03",
+              "title": "Paid time off (US)",
+              "text": "US full-time employees accrue PTO every biweekly pay period. Years 1 to 3 of service: 6.15 hours per pay period (20 days a year). From the start of year 4: 7.69 hours per pay period (25 days a year). You can carry over up to 40 hours of unused PTO into the next calendar year; anything above 40 hours is forfeited on January 1. Your balance cannot go above 240 hours; accrual pauses at the cap.",
+              "score": 0.63
+            },
+            {
+              "id": "hr-04",
+              "title": "Paid time off (US) (2024 version)",
+              "text": "US full-time employees accrue 15 days of PTO a year (4.62 hours per biweekly pay period) in years 1 and 2, and 20 days a year from year 3. Up to 80 hours of unused PTO carries over into the next calendar year. Requests of 3 or more days need two weeks' notice.",
+              "score": 0.58
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "You can carry over up to 5 unused days into the next holiday year [1]. Carried-over days must be used by 31 March or they are lost [1].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-05",
+            "quote": "You may carry over up to 5 unused days into the next holiday year; carried-over days must be used by 31 March or they are lost."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0008",
+      "title": "401(k) match details for a candidate",
+      "metadata": {
+        "askedAt": "2026-09-04T19:40:13Z",
+        "channel": "portal",
+        "persona": "people manager",
+        "department": "Finance",
+        "location": "US",
+        "topic": "Retirement"
+      },
+      "input": "What is the company 401k match? A candidate I'm interviewing on Monday asked and I want to get it right.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "401k company match",
+          "documents": [
+            {
+              "id": "hr-27",
+              "title": "401(k) plan (US) (2023 version)",
+              "text": "Larkspur matches 50% of the first 6% of eligible pay you contribute (maximum match 3%). The match is deposited quarterly and vests over 4 years in equal annual installments.",
+              "score": 0.85
+            },
+            {
+              "id": "hr-28",
+              "title": "Workplace pension (UK)",
+              "text": "UK employees are enrolled in the Larkspur pension plan with Fernhill Pensions after 1 month. Larkspur contributes 6% of basic salary when you contribute at least 4%. Contributions are made through salary sacrifice unless you opt out of salary sacrifice. You can raise your own contribution at any time through the pension portal.",
+              "score": 0.64
+            },
+            {
+              "id": "hr-18",
+              "title": "Medical plans 2026 (US)",
+              "text": "Larkspur offers two medical plans through Brightwater Health. PPO 500: deductible $500 individual / $1,000 family; out-of-pocket maximum $3,000 / $6,000. HSA 2000: deductible $2,000 individual / $4,000 family; out-of-pocket maximum $4,500 / $9,000. With the HSA 2000, Larkspur contributes $1,000 (individual coverage) or $2,000 (family coverage) to your HSA each year, split evenly across paychecks.",
+              "score": 0.4
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Larkspur matches 50% of the first 6% of eligible pay you contribute, for a maximum match of 3% [1]. The match is deposited quarterly and vests over 4 years in equal annual installments [2].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-27",
+            "quote": "Larkspur matches 50% of the first 6% of eligible pay you contribute (maximum match 3%)."
+          },
+          {
+            "n": 2,
+            "doc": "hr-27",
+            "quote": "The match is deposited quarterly and vests over 4 years in equal annual installments."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0009",
+      "title": "Sick time for child's dental cleaning",
+      "metadata": {
+        "askedAt": "2026-09-04T20:26:44Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Support",
+        "location": "US",
+        "topic": "Leave and absence"
+      },
+      "input": "can I use sick time to take my son to the dentist? its just a cleaning",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "sick time family member medical appointment",
+          "documents": [
+            {
+              "id": "hr-09",
+              "title": "Sick time (US)",
+              "text": "US employees receive 64 hours (8 days) of paid sick time each calendar year, credited on January 1 (new hires receive a prorated amount on their start date). Use it for your own illness, medical appointments, or to care for a family member. Unused sick time does not carry over. Where a state or city requires more generous sick time, Larkspur follows that law. Sick time is not paid out when you leave.",
+              "score": 0.84
+            },
+            {
+              "id": "hr-20",
+              "title": "Dental and vision (US)",
+              "text": "Dental (Keystone Dental): preventive care covered at 100%, basic services 80%, major services 50%, annual maximum $2,000 per person. Orthodontia is covered at 50% up to a $2,000 lifetime maximum for dependent children under 19; adult orthodontia is not covered. Vision (ClearSight): one eye exam every 12 months with a $10 copay, and a $150 allowance for frames or contact lenses every 12 months.",
+              "score": 0.55
+            },
+            {
+              "id": "hr-43",
+              "title": "Leave of absence (US)",
+              "text": "Under the Family and Medical Leave Act, US employees with 12 months of service and 1,250 hours worked in the past year may take up to 12 weeks of job-protected leave. Larkspur also offers unpaid personal leave of up to 30 days with director approval. Contact the People team through the People portal before any leave longer than 5 working days so they can confirm which programs apply to you.",
+              "score": 0.41
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes. Sick time covers medical appointments and caring for a family member [1], so your son's dental cleaning counts. US employees get 64 hours (8 days) of paid sick time each calendar year [2].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-09",
+            "quote": "Use it for your own illness, medical appointments, or to care for a family member."
+          },
+          {
+            "n": 2,
+            "doc": "hr-09",
+            "quote": "US employees receive 64 hours (8 days) of paid sick time each calendar year"
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0010",
+      "title": "Invisalign coverage, adult",
+      "metadata": {
+        "askedAt": "2026-09-08T15:55:30Z",
+        "channel": "portal",
+        "persona": "individual contributor",
+        "department": "Product",
+        "location": "US",
+        "topic": "Health benefits"
+      },
+      "input": "Does our dental plan cover Invisalign? I'm 34 and my dentist says I should get it.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "dental orthodontia Invisalign coverage",
+          "documents": [
+            {
+              "id": "hr-20",
+              "title": "Dental and vision (US)",
+              "text": "Dental (Keystone Dental): preventive care covered at 100%, basic services 80%, major services 50%, annual maximum $2,000 per person. Orthodontia is covered at 50% up to a $2,000 lifetime maximum for dependent children under 19; adult orthodontia is not covered. Vision (ClearSight): one eye exam every 12 months with a $10 copay, and a $150 allowance for frames or contact lenses every 12 months.",
+              "score": 0.87
+            },
+            {
+              "id": "hr-18",
+              "title": "Medical plans 2026 (US)",
+              "text": "Larkspur offers two medical plans through Brightwater Health. PPO 500: deductible $500 individual / $1,000 family; out-of-pocket maximum $3,000 / $6,000. HSA 2000: deductible $2,000 individual / $4,000 family; out-of-pocket maximum $4,500 / $9,000. With the HSA 2000, Larkspur contributes $1,000 (individual coverage) or $2,000 (family coverage) to your HSA each year, split evenly across paychecks.",
+              "score": 0.52
+            },
+            {
+              "id": "hr-24",
+              "title": "Open enrollment for 2027 (US)",
+              "text": "Open enrollment runs November 2 to November 13, 2026 in the Benefits Hub. Elections take effect January 1, 2027. If you do nothing, your medical, dental, and vision elections roll over. FSA elections do not roll over; you must re-enroll to contribute in 2027.",
+              "score": 0.47
+            },
+            {
+              "id": "hr-22",
+              "title": "Qualifying life events (US)",
+              "text": "Outside open enrollment, you can change your benefit elections only after a qualifying life event, such as marriage, divorce, birth or adoption of a child, or losing other coverage. Submit the change in the Benefits Hub within 30 days of the event. A newborn's coverage starts on the date of birth if you add the child within 30 days.",
+              "score": 0.36
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes. Invisalign counts as orthodontia, which the dental plan covers at 50% up to a $2,000 lifetime maximum [1]. For example, if your treatment costs $6,000, the plan would pay up to $2,000. Ask your dentist to send a pre-treatment estimate to Keystone Dental before you start.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-20",
+            "quote": "Orthodontia is covered at 50% up to a $2,000 lifetime maximum"
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0011",
+      "title": "On-call pay for platform rotation",
+      "metadata": {
+        "askedAt": "2026-09-08T22:03:12Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Engineering",
+        "location": "US",
+        "topic": "Pay and reviews"
+      },
+      "input": "whats the on-call pay for the platform rotation? I'm primary next week",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "primary rotation pay schedule",
+          "documents": [
+            {
+              "id": "hr-55",
+              "title": "Pay dates",
+              "text": "US employees are paid every other Friday. UK employees are paid monthly on the last working day of the month. If a pay date falls on a holiday, you are paid the working day before.",
+              "score": 0.58
+            },
+            {
+              "id": "hr-66",
+              "title": "Performance and pay reviews",
+              "text": "Performance reviews happen twice a year, in March and September. Self reviews are due at the start of each cycle, and your manager shares written feedback within 3 weeks. Pay changes from the March cycle take effect on April 1. Promotions can happen in either cycle and take effect on the first day of the following month.",
+              "score": 0.54
+            },
+            {
+              "id": "hr-53",
+              "title": "Jury duty and civic leave",
+              "text": "US: you receive full pay for up to 10 working days of jury service per year; send your summons to your manager. UK: you receive full pay for jury service, minus any loss of earnings allowance you claim from the court. In both countries, you can take up to 2 paid hours to vote if your schedule does not allow time outside work.",
+              "score": 0.41
+            },
+            {
+              "id": "hr-68",
+              "title": "Resigning and final pay (US)",
+              "text": "Please give at least two weeks' notice. Your final paycheck includes pay through your last day and any accrued, unused PTO. Health coverage ends on the last day of the month in which you leave; COBRA details are mailed within 14 days. Unused sick time and floating holidays are not paid out.",
+              "score": 0.33
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "I couldn't find a policy on on-call pay in the documents I searched. The closest match covers pay dates: US employees are paid every other Friday [1]. For on-call pay, ask your manager or open a case in the People portal.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-55",
+            "quote": "US employees are paid every other Friday."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0012",
+      "title": "UK payday in September",
+      "metadata": {
+        "askedAt": "2026-09-09T08:17:56Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Sales",
+        "location": "UK",
+        "topic": "Pay and reviews"
+      },
+      "input": "When's payday this month? Need to plan rent",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "UK pay date monthly",
+          "documents": [
+            {
+              "id": "hr-55",
+              "title": "Pay dates",
+              "text": "US employees are paid every other Friday. UK employees are paid monthly on the last working day of the month. If a pay date falls on a holiday, you are paid the working day before.",
+              "score": 0.9
+            },
+            {
+              "id": "hr-69",
+              "title": "Notice periods (UK)",
+              "text": "During probation (the first 6 months), either side gives 1 week's notice. After probation, employees give 1 month's notice, or 3 months for managers and above. Unused annual leave is paid in your final salary; leave taken beyond your accrued amount is deducted.",
+              "score": 0.44
+            },
+            {
+              "id": "hr-05",
+              "title": "Annual leave (UK)",
+              "text": "UK employees receive 27 days of annual leave plus the 8 bank holidays in England. The holiday year runs January to December. You may carry over up to 5 unused days into the next holiday year; carried-over days must be used by 31 March or they are lost. Part-time employees receive leave pro rata.",
+              "score": 0.38
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "UK employees are paid monthly on the last working day of the month [1], so September payday is Wednesday 30 September.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-55",
+            "quote": "UK employees are paid monthly on the last working day of the month."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0013",
+      "title": "Learning budget toward MBA",
+      "metadata": {
+        "askedAt": "2026-09-09T16:44:02Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Marketing",
+        "location": "US",
+        "topic": "Learning and wellness",
+        "feedback": "thumbs_up"
+      },
+      "input": "Can I use my learning budget toward an MBA? Part-time program starts in January, tuition is about $18k a year.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "learning budget MBA tuition degree",
+          "documents": [
+            {
+              "id": "hr-35",
+              "title": "Learning budget",
+              "text": "Each employee has a learning budget of $1,500 per calendar year (UK: £1,200) for courses, certifications, conferences, and books related to your current role or career growth. Get your manager's approval before spending more than $300 (UK: £250) on one item. Unused budget does not roll over. For any single course over $1,000 (UK: £800), you sign a repayment agreement: if you resign within 12 months of finishing it, you repay 50% of the cost.",
+              "score": 0.86
+            },
+            {
+              "id": "hr-66",
+              "title": "Performance and pay reviews",
+              "text": "Performance reviews happen twice a year, in March and September. Self reviews are due at the start of each cycle, and your manager shares written feedback within 3 weeks. Pay changes from the March cycle take effect on April 1. Promotions can happen in either cycle and take effect on the first day of the following month.",
+              "score": 0.45
+            },
+            {
+              "id": "hr-70",
+              "title": "Internal transfers",
+              "text": "You can apply for an internal role after 12 months in your current role, or earlier with your manager's agreement. Tell your manager before you apply. The hiring team will not contact your manager without telling you first.",
+              "score": 0.39
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes, your learning budget of $1,500 per calendar year covers courses related to your role or career growth [1], so it can go toward MBA tuition. Because a single course over $1,000 needs a repayment agreement, you'd sign one and repay 50% if you resign within 12 months of finishing [2]. Larkspur also offers tuition assistance of up to $5,250 a year for degree programs, which you can combine with your learning budget. Get your manager's approval first, since this is over $300 [3].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-35",
+            "quote": "Each employee has a learning budget of $1,500 per calendar year (UK: £1,200) for courses, certifications, conferences, and books related to your current role or career growth."
+          },
+          {
+            "n": 2,
+            "doc": "hr-35",
+            "quote": "For any single course over $1,000 (UK: £800), you sign a repayment agreement: if you resign within 12 months of finishing it, you repay 50% of the cost."
+          },
+          {
+            "n": 3,
+            "doc": "hr-35",
+            "quote": "Get your manager's approval before spending more than $300 (UK: £250) on one item."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0014",
+      "title": "Work from Lisbon in December, H-1B",
+      "metadata": {
+        "askedAt": "2026-09-09T18:22:47Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Engineering",
+        "location": "Remote",
+        "topic": "Remote work",
+        "feedback": "thumbs_up"
+      },
+      "input": "Can I work from Lisbon for 3 weeks in December? I'm remote, US based, on an H-1B. Want to book flights this week before prices go up.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "work from abroad limit approval",
+          "documents": [
+            {
+              "id": "hr-32",
+              "title": "Working from another location",
+              "text": "Tell the People team before working from a different US state for more than 30 days in a calendar year, because payroll taxes may change. Working from outside your employment country is limited to 30 days in any 12-month period and needs approval through the Work from abroad form at least 3 weeks in advance. Some countries are not allowed for tax, immigration, or security reasons; the People team reviews each request.",
+              "score": 0.89
+            },
+            {
+              "id": "hr-31",
+              "title": "Remote work policy (2024 version)",
+              "text": "Remote employees receive a $300 home office setup stipend and a $50 monthly internet stipend. Employees may work from outside their home country for up to 60 days a year with manager approval.",
+              "score": 0.81
+            },
+            {
+              "id": "hr-30",
+              "title": "Remote and hybrid work: stipends (US and UK)",
+              "text": "Employees approved for remote or hybrid work receive a one-time home office setup stipend of $500 (UK: £400) and a monthly internet and phone stipend of $60 (UK: £45), paid through payroll. The setup stipend must be claimed within 90 days of your start date or remote approval. Stipends paid through payroll are taxable.",
+              "score": 0.57
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes, you can. Working from outside your employment country is allowed for up to 30 days in any 12-month period [1], so 3 weeks in Lisbon fits within the limit. Submit the Work from abroad form at least 3 weeks before you go [1]; for early December, that means by mid-November.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-32",
+            "quote": "Working from outside your employment country is limited to 30 days in any 12-month period and needs approval through the Work from abroad form at least 3 weeks in advance."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0015",
+      "title": "Report's parental leave, can it be split",
+      "metadata": {
+        "askedAt": "2026-09-10T15:09:33Z",
+        "channel": "portal",
+        "persona": "people manager",
+        "department": "Support",
+        "location": "US",
+        "topic": "Family leave"
+      },
+      "input": "One of my reports is having a baby in November. How much parental leave does she get, and can she split it up?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "parental leave weeks split blocks",
+          "documents": [
+            {
+              "id": "hr-12",
+              "title": "Parental leave (US), effective 1 January 2026",
+              "text": "All US employees who become parents through birth, adoption, or foster placement receive 16 weeks of paid parental leave at 100% of base pay. You are eligible after 90 days of employment. Leave must be taken within 12 months of the birth or placement, in up to two blocks of at least 2 weeks each. Give your manager and the People team at least 30 days' notice when you can. The People team confirms eligibility for each leave.",
+              "score": 0.91
+            },
+            {
+              "id": "hr-13",
+              "title": "Parental leave (US) (2024 version)",
+              "text": "US employees with at least 6 months of service receive 12 weeks of paid parental leave at 100% of base pay following the birth or adoption of a child. Leave must be taken in one continuous block within 6 months of the birth or adoption.",
+              "score": 0.87
+            },
+            {
+              "id": "hr-41",
+              "title": "Short-term disability (US)",
+              "text": "Short-term disability pays 70% of base salary, up to $2,500 a week, for up to 12 weeks after a 7-day waiting period. It covers your own illness, injury, and recovery from childbirth (typically 6 weeks, or 8 weeks after a cesarean birth). Recovery from childbirth is covered by short-term disability first; your 16 weeks of parental leave can start after it ends or later within the 12-month window. You may use PTO or sick time during the waiting period. Claims are filed with Brightwater Benefits.",
+              "score": 0.66
+            },
+            {
+              "id": "hr-43",
+              "title": "Leave of absence (US)",
+              "text": "Under the Family and Medical Leave Act, US employees with 12 months of service and 1,250 hours worked in the past year may take up to 12 weeks of job-protected leave. Larkspur also offers unpaid personal leave of up to 30 days with director approval. Contact the People team through the People portal before any leave longer than 5 working days so they can confirm which programs apply to you.",
+              "score": 0.49
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Under the current policy she gets 16 weeks of paid parental leave at 100% of base pay [1], taken within 12 months of the birth in up to two blocks of at least 2 weeks each [2]. As the birthing parent, her recovery from childbirth is covered by short-term disability first, and her 16 weeks can start after that ends [3]. An older 2024 version of this policy said 12 weeks in one block; the policy effective 1 January 2026 replaced it. The People team confirms eligibility for each leave [4], so she should reach out to them with her dates.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-12",
+            "quote": "receive 16 weeks of paid parental leave at 100% of base pay"
+          },
+          {
+            "n": 2,
+            "doc": "hr-12",
+            "quote": "Leave must be taken within 12 months of the birth or placement, in up to two blocks of at least 2 weeks each."
+          },
+          {
+            "n": 3,
+            "doc": "hr-41",
+            "quote": "Recovery from childbirth is covered by short-term disability first; your 16 weeks of parental leave can start after it ends or later within the 12-month window."
+          },
+          {
+            "n": 4,
+            "doc": "hr-12",
+            "quote": "The People team confirms eligibility for each leave."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0016",
+      "title": "UK paternity leave, due January",
+      "metadata": {
+        "askedAt": "2026-09-10T16:38:25Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Engineering",
+        "location": "UK",
+        "topic": "Family leave"
+      },
+      "input": "My wife is due in January. What paternity leave do I get? I'm UK based and have been here 2 years.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "UK paternity partner leave pay",
+          "documents": [
+            {
+              "id": "hr-14",
+              "title": "Family leave (UK)",
+              "text": "Birth mothers and primary adopters with 26 weeks of continuous service by the qualifying week receive 20 weeks at full pay, then Statutory Maternity or Adoption Pay for the remaining weeks up to 39. Partners receive 6 weeks at full pay, to be taken within 12 months of the birth or placement. Employees with less service receive statutory pay if they qualify. Shared Parental Leave is paid at the statutory rate. If your contract is fixed-term or changing, the People team will confirm what applies to you.",
+              "score": 0.9
+            },
+            {
+              "id": "hr-12",
+              "title": "Parental leave (US), effective 1 January 2026",
+              "text": "All US employees who become parents through birth, adoption, or foster placement receive 16 weeks of paid parental leave at 100% of base pay. You are eligible after 90 days of employment. Leave must be taken within 12 months of the birth or placement, in up to two blocks of at least 2 weeks each. Give your manager and the People team at least 30 days' notice when you can. The People team confirms eligibility for each leave.",
+              "score": 0.71
+            },
+            {
+              "id": "hr-13",
+              "title": "Parental leave (US) (2024 version)",
+              "text": "US employees with at least 6 months of service receive 12 weeks of paid parental leave at 100% of base pay following the birth or adoption of a child. Leave must be taken in one continuous block within 6 months of the birth or adoption.",
+              "score": 0.63
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "As a partner you get 6 weeks at full pay, to be taken within 12 months of the birth [1]. You can also take 2 paid days off to go to antenatal appointments with your wife before the birth. If you want more time, Shared Parental Leave is available and is paid at the statutory rate [2].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-14",
+            "quote": "Partners receive 6 weeks at full pay, to be taken within 12 months of the birth or placement."
+          },
+          {
+            "n": 2,
+            "doc": "hr-14",
+            "quote": "Shared Parental Leave is paid at the statutory rate."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0017",
+      "title": "Late expense claim from June trip",
+      "metadata": {
+        "askedAt": "2026-09-11T14:51:08Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Sales",
+        "location": "US",
+        "topic": "Travel and expenses"
+      },
+      "input": "I forgot to submit my receipts from the Chicago trip in June. Is it too late??",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "expense claim deadline late submission",
+          "documents": [
+            {
+              "id": "hr-34",
+              "title": "Travel and expenses: submitting claims",
+              "text": "Submit expenses in the expense tool within 60 days of the purchase. Attach an itemized receipt for any expense over $25 (UK: £20). Claims older than 60 days need your director's approval. Reimbursements are paid with the next payroll after approval.",
+              "score": 0.89
+            },
+            {
+              "id": "hr-33",
+              "title": "Travel and expenses: meals and lodging",
+              "text": "On business travel, meals are reimbursed up to $75 per day in the US (UK: £55). Hotels up to $250 per night (UK: £180), or $325 per night in New York, San Francisco, and Boston (London: £240). Book flights in economy; flights of 6 hours or more may be booked in premium economy. Alcohol is not reimbursable unless a VP approves client entertainment in advance.",
+              "score": 0.63
+            },
+            {
+              "id": "hr-55",
+              "title": "Pay dates",
+              "text": "US employees are paid every other Friday. UK employees are paid monthly on the last working day of the month. If a pay date falls on a holiday, you are paid the working day before.",
+              "score": 0.35
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "It's not too late, but it needs one more approval. Expenses are due within 60 days of the purchase, and claims older than 60 days need your director's approval [1]. Attach an itemized receipt for anything over $25 [2]. Once approved, you're reimbursed with the next payroll [3].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-34",
+            "quote": "Claims older than 60 days need your director's approval."
+          },
+          {
+            "n": 2,
+            "doc": "hr-34",
+            "quote": "Attach an itemized receipt for any expense over $25 (UK: £20)."
+          },
+          {
+            "n": 3,
+            "doc": "hr-34",
+            "quote": "Reimbursements are paid with the next payroll after approval."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0018",
+      "title": "Day after Thanksgiving",
+      "metadata": {
+        "askedAt": "2026-09-11T17:20:41Z",
+        "channel": "portal",
+        "persona": "individual contributor",
+        "department": "Operations",
+        "location": "US",
+        "topic": "Time off"
+      },
+      "input": "is the day after thanksgiving a company holiday this year?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "company holidays 2026 Thanksgiving",
+          "documents": [
+            {
+              "id": "hr-07",
+              "title": "Company holidays 2026 (US)",
+              "text": "Larkspur's 2026 US holidays: New Year's Day (Jan 1), Martin Luther King Jr. Day (Jan 19), Memorial Day (May 25), Juneteenth (Jun 19), Independence Day (observed Jul 3), Labor Day (Sep 7), Thanksgiving (Nov 26) and the day after (Nov 27), Christmas Eve (Dec 24), and Christmas Day (Dec 25). Each US employee also gets 2 floating holidays per calendar year; floating holidays do not carry over.",
+              "score": 0.93
+            },
+            {
+              "id": "hr-03",
+              "title": "Paid time off (US)",
+              "text": "US full-time employees accrue PTO every biweekly pay period. Years 1 to 3 of service: 6.15 hours per pay period (20 days a year). From the start of year 4: 7.69 hours per pay period (25 days a year). You can carry over up to 40 hours of unused PTO into the next calendar year; anything above 40 hours is forfeited on January 1. Your balance cannot go above 240 hours; accrual pauses at the cap.",
+              "score": 0.51
+            },
+            {
+              "id": "hr-02",
+              "title": "Requesting time off (US and UK)",
+              "text": "Request time off in the People portal, where you can also see your current PTO balance. Requests of 3 or more consecutive working days need at least two weeks' notice to your manager. Managers respond within 3 working days. Sales and Support may limit time off in the last two weeks of a quarter.",
+              "score": 0.44
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes. The day after Thanksgiving, Friday November 27, is a Larkspur US holiday in 2026 [1].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-07",
+            "quote": "Thanksgiving (Nov 26) and the day after (Nov 27)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0019",
+      "title": "FMLA eligibility after part-time months",
+      "metadata": {
+        "askedAt": "2026-09-14T03:41:19Z",
+        "channel": "portal",
+        "persona": "individual contributor",
+        "department": "Engineering",
+        "location": "US",
+        "topic": "Leave and absence"
+      },
+      "input": "I've been at Larkspur 11 months, but I was part time (25 hrs/week) until March. I need surgery in mid November and will be out about 6 weeks. Am I eligible for FMLA? Sorry for the late message, can't sleep worrying about this.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "FMLA eligibility hours worked part time",
+          "documents": [
+            {
+              "id": "hr-43",
+              "title": "Leave of absence (US)",
+              "text": "Under the Family and Medical Leave Act, US employees with 12 months of service and 1,250 hours worked in the past year may take up to 12 weeks of job-protected leave. Larkspur also offers unpaid personal leave of up to 30 days with director approval. Contact the People team through the People portal before any leave longer than 5 working days so they can confirm which programs apply to you.",
+              "score": 0.91
+            },
+            {
+              "id": "hr-41",
+              "title": "Short-term disability (US)",
+              "text": "Short-term disability pays 70% of base salary, up to $2,500 a week, for up to 12 weeks after a 7-day waiting period. It covers your own illness, injury, and recovery from childbirth (typically 6 weeks, or 8 weeks after a cesarean birth). Recovery from childbirth is covered by short-term disability first; your 16 weeks of parental leave can start after it ends or later within the 12-month window. You may use PTO or sick time during the waiting period. Claims are filed with Brightwater Benefits.",
+              "score": 0.74
+            },
+            {
+              "id": "hr-09",
+              "title": "Sick time (US)",
+              "text": "US employees receive 64 hours (8 days) of paid sick time each calendar year, credited on January 1 (new hires receive a prorated amount on their start date). Use it for your own illness, medical appointments, or to care for a family member. Unused sick time does not carry over. Where a state or city requires more generous sick time, Larkspur follows that law. Sick time is not paid out when you leave.",
+              "score": 0.52
+            },
+            {
+              "id": "hr-03",
+              "title": "Paid time off (US)",
+              "text": "US full-time employees accrue PTO every biweekly pay period. Years 1 to 3 of service: 6.15 hours per pay period (20 days a year). From the start of year 4: 7.69 hours per pay period (25 days a year). You can carry over up to 40 hours of unused PTO into the next calendar year; anything above 40 hours is forfeited on January 1. Your balance cannot go above 240 hours; accrual pauses at the cap.",
+              "score": 0.4
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes, you'll be eligible. By mid-November you will have 12 months of service, and even at 25 hours a week until March you've worked well over 1,250 hours in the past year [1]. That gives you up to 12 weeks of job-protected leave [1], which covers your 6 weeks. For pay during recovery, short-term disability pays 70% of base salary after a 7-day waiting period [2].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-43",
+            "quote": "Under the Family and Medical Leave Act, US employees with 12 months of service and 1,250 hours worked in the past year may take up to 12 weeks of job-protected leave."
+          },
+          {
+            "n": 2,
+            "doc": "hr-41",
+            "quote": "Short-term disability pays 70% of base salary, up to $2,500 a week, for up to 12 weeks after a 7-day waiting period."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0020",
+      "title": "Wellness stipend for climbing gym",
+      "metadata": {
+        "askedAt": "2026-09-14T19:12:55Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Support",
+        "location": "Remote",
+        "topic": "Learning and wellness",
+        "feedback": "thumbs_up"
+      },
+      "input": "hw much is the wellnes stipnd and can i use it for a climbing gym",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "wellness stipend amount climbing gym",
+          "documents": [
+            {
+              "id": "hr-37",
+              "title": "Wellness stipend",
+              "text": "Every employee can claim up to $50 a month (UK: £40) for wellness costs: gym or studio memberships, fitness classes, sports leagues, meditation or sleep apps, and running races. Claim it through the expense tool by the end of the following month. The stipend is taxable and does not roll over.",
+              "score": 0.88
+            },
+            {
+              "id": "hr-35",
+              "title": "Learning budget",
+              "text": "Each employee has a learning budget of $1,500 per calendar year (UK: £1,200) for courses, certifications, conferences, and books related to your current role or career growth. Get your manager's approval before spending more than $300 (UK: £250) on one item. Unused budget does not roll over. For any single course over $1,000 (UK: £800), you sign a repayment agreement: if you resign within 12 months of finishing it, you repay 50% of the cost.",
+              "score": 0.57
+            },
+            {
+              "id": "hr-30",
+              "title": "Remote and hybrid work: stipends (US and UK)",
+              "text": "Employees approved for remote or hybrid work receive a one-time home office setup stipend of $500 (UK: £400) and a monthly internet and phone stipend of $60 (UK: £45), paid through payroll. The setup stipend must be claimed within 90 days of your start date or remote approval. Stipends paid through payroll are taxable.",
+              "score": 0.49
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "You can claim up to $50 a month for wellness costs, and gym or studio memberships count [1], so a climbing gym membership qualifies. Claim it through the expense tool by the end of the following month [2]. The stipend is taxable and doesn't roll over [3].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-37",
+            "quote": "Every employee can claim up to $50 a month (UK: £40) for wellness costs: gym or studio memberships"
+          },
+          {
+            "n": 2,
+            "doc": "hr-37",
+            "quote": "Claim it through the expense tool by the end of the following month."
+          },
+          {
+            "n": 3,
+            "doc": "hr-37",
+            "quote": "The stipend is taxable and does not roll over."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0021",
+      "title": "Referral bonus for data engineer hire",
+      "metadata": {
+        "askedAt": "2026-09-15T16:28:14Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Data",
+        "location": "US",
+        "topic": "Equity and bonuses"
+      },
+      "input": "My friend just accepted an offer for a senior data engineer role from my referral! How much is the referral bonus and when does it pay out?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "employee referral bonus amount payout timing",
+          "documents": [
+            {
+              "id": "hr-48",
+              "title": "Employee referral bonus",
+              "text": "Refer a candidate through the referral form. If they are hired, you receive $3,000 for engineering and design roles or $1,500 for all other roles, paid after the new hire completes 90 days. You must still be employed on the payout date. Hiring managers and People team members are not eligible for roles they hire for.",
+              "score": 0.9
+            },
+            {
+              "id": "hr-49",
+              "title": "Employee referral bonus (2024 version)",
+              "text": "Employees receive a $2,000 referral bonus for any hire, paid after the new hire completes 60 days.",
+              "score": 0.86
+            },
+            {
+              "id": "hr-70",
+              "title": "Internal transfers",
+              "text": "You can apply for an internal role after 12 months in your current role, or earlier with your manager's agreement. Tell your manager before you apply. The hiring team will not contact your manager without telling you first.",
+              "score": 0.42
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Congrats! Data engineering counts as an engineering role, so the referral bonus is $3,000 [1]. It's paid after your friend completes 60 days [2], and you need to still be employed on the payout date [3].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-48",
+            "quote": "you receive $3,000 for engineering and design roles or $1,500 for all other roles"
+          },
+          {
+            "n": 2,
+            "doc": "hr-49",
+            "quote": "paid after the new hire completes 60 days"
+          },
+          {
+            "n": 3,
+            "doc": "hr-48",
+            "quote": "You must still be employed on the payout date."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0022",
+      "title": "Doctor's note for 3 sick days",
+      "metadata": {
+        "askedAt": "2026-09-15T17:56:37Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Support",
+        "location": "UK",
+        "topic": "Leave and absence"
+      },
+      "input": "Do I need a doctor's note if I'm off sick for 3 days? Have a nasty flu.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "fit note doctor sick absence UK",
+          "documents": [
+            {
+              "id": "hr-10",
+              "title": "Sick pay (UK)",
+              "text": "UK employees receive full pay for up to 10 working days of sickness absence in any rolling 12-month period. After that, Statutory Sick Pay applies if you qualify. Tell your manager before 10:00 on the first day of absence. For absences longer than 7 calendar days, you need a fit note from a doctor.",
+              "score": 0.9
+            },
+            {
+              "id": "hr-09",
+              "title": "Sick time (US)",
+              "text": "US employees receive 64 hours (8 days) of paid sick time each calendar year, credited on January 1 (new hires receive a prorated amount on their start date). Use it for your own illness, medical appointments, or to care for a family member. Unused sick time does not carry over. Where a state or city requires more generous sick time, Larkspur follows that law. Sick time is not paid out when you leave.",
+              "score": 0.66
+            },
+            {
+              "id": "hr-16",
+              "title": "Bereavement leave (US and UK)",
+              "text": "You can take up to 5 paid working days after the death of a spouse or partner, child, parent, sibling, grandparent, grandchild, or parent-in-law. Up to 2 paid days apply for other relatives or a close friend. Either parent may take 5 paid days after a pregnancy loss. The days do not need to be consecutive and can be used within 3 months. Ask your manager if you need more time; extra time may be unpaid or taken as PTO.",
+              "score": 0.37
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "No. You need a fit note from a doctor only for absences longer than 7 calendar days [1]. For a 3-day absence, fill in a self-certification form in the People portal when you're back [1]. Remember to tell your manager before 10:00 on your first day off [2]. Feel better soon.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-10",
+            "quote": "For absences longer than 7 calendar days, you need a fit note from a doctor."
+          },
+          {
+            "n": 2,
+            "doc": "hr-10",
+            "quote": "Tell your manager before 10:00 on the first day of absence."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0023",
+      "title": "Open enrollment dates and plan switch after marriage",
+      "metadata": {
+        "askedAt": "2026-09-16T15:34:48Z",
+        "channel": "portal",
+        "persona": "individual contributor",
+        "department": "Finance",
+        "location": "US",
+        "topic": "Health benefits"
+      },
+      "input": "Two things: when is open enrollment this year, and since I got married in August can I switch from the PPO to the HSA plan now instead of waiting?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "open enrollment dates; qualifying life event marriage change plan",
+          "documents": [
+            {
+              "id": "hr-24",
+              "title": "Open enrollment for 2027 (US)",
+              "text": "Open enrollment runs November 2 to November 13, 2026 in the Benefits Hub. Elections take effect January 1, 2027. If you do nothing, your medical, dental, and vision elections roll over. FSA elections do not roll over; you must re-enroll to contribute in 2027.",
+              "score": 0.88
+            },
+            {
+              "id": "hr-22",
+              "title": "Qualifying life events (US)",
+              "text": "Outside open enrollment, you can change your benefit elections only after a qualifying life event, such as marriage, divorce, birth or adoption of a child, or losing other coverage. Submit the change in the Benefits Hub within 30 days of the event. A newborn's coverage starts on the date of birth if you add the child within 30 days.",
+              "score": 0.84
+            },
+            {
+              "id": "hr-18",
+              "title": "Medical plans 2026 (US)",
+              "text": "Larkspur offers two medical plans through Brightwater Health. PPO 500: deductible $500 individual / $1,000 family; out-of-pocket maximum $3,000 / $6,000. HSA 2000: deductible $2,000 individual / $4,000 family; out-of-pocket maximum $4,500 / $9,000. With the HSA 2000, Larkspur contributes $1,000 (individual coverage) or $2,000 (family coverage) to your HSA each year, split evenly across paychecks.",
+              "score": 0.71
+            },
+            {
+              "id": "hr-19",
+              "title": "Medical plans (US) (2025 version)",
+              "text": "PPO 750: deductible $750 individual / $1,500 family. HSA 2000: deductible $2,000 individual / $4,000 family. Larkspur contributes $750 (individual) or $1,500 (family) to your HSA each year, deposited in January.",
+              "score": 0.6
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Open enrollment runs November 2 to November 13, 2026, and elections take effect January 1, 2027 [1]. Marriage is a qualifying life event, so you can change plans mid-year, but you must submit the change in the Benefits Hub within 30 days of the event [2]. Check your wedding date: if more than 30 days have passed, you'll need to wait for open enrollment or ask the People team about your options.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-24",
+            "quote": "Open enrollment runs November 2 to November 13, 2026 in the Benefits Hub. Elections take effect January 1, 2027."
+          },
+          {
+            "n": 2,
+            "doc": "hr-22",
+            "quote": "Submit the change in the Benefits Hub within 30 days of the event."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0024",
+      "title": "RSU vesting during parental leave",
+      "metadata": {
+        "askedAt": "2026-09-16T20:07:26Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Engineering",
+        "location": "Remote",
+        "topic": "Equity and bonuses"
+      },
+      "input": "Does my RSU vesting keep going while I am on parental leave?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "RSU vesting during leave",
+          "documents": [
+            {
+              "id": "hr-46",
+              "title": "Equity: RSU vesting",
+              "text": "RSU grants vest over 4 years: 25% on the first anniversary of the grant date, then 6.25% each quarter. Vesting continues during paid leave. During unpaid leave longer than 90 days, vesting pauses and the schedule is extended by the length of the leave. Unvested RSUs are forfeited on your last day of employment.",
+              "score": 0.89
+            },
+            {
+              "id": "hr-12",
+              "title": "Parental leave (US), effective 1 January 2026",
+              "text": "All US employees who become parents through birth, adoption, or foster placement receive 16 weeks of paid parental leave at 100% of base pay. You are eligible after 90 days of employment. Leave must be taken within 12 months of the birth or placement, in up to two blocks of at least 2 weeks each. Give your manager and the People team at least 30 days' notice when you can. The People team confirms eligibility for each leave.",
+              "score": 0.7
+            },
+            {
+              "id": "hr-13",
+              "title": "Parental leave (US) (2024 version)",
+              "text": "US employees with at least 6 months of service receive 12 weeks of paid parental leave at 100% of base pay following the birth or adoption of a child. Leave must be taken in one continuous block within 6 months of the birth or adoption.",
+              "score": 0.55
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes. Vesting continues during paid leave [1], and parental leave is paid at 100% of base pay [2]. Vesting pauses only during unpaid leave longer than 90 days [3].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-46",
+            "quote": "Vesting continues during paid leave."
+          },
+          {
+            "n": 2,
+            "doc": "hr-12",
+            "quote": "receive 16 weeks of paid parental leave at 100% of base pay"
+          },
+          {
+            "n": 3,
+            "doc": "hr-46",
+            "quote": "During unpaid leave longer than 90 days, vesting pauses and the schedule is extended by the length of the leave."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0025",
+      "title": "Sabbatical at 5 years",
+      "metadata": {
+        "askedAt": "2026-09-17T15:46:03Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Sales",
+        "location": "US",
+        "topic": "Time off"
+      },
+      "input": "I hit 5 years in October!! what do I get for the sabbatical?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "sabbatical 5 years service",
+          "documents": [
+            {
+              "id": "hr-59",
+              "title": "Sabbatical",
+              "text": "After 5 years of continuous service, you can take a 4-week paid sabbatical. It must start within 2 years of becoming eligible and be agreed with your manager at least 3 months ahead. A sabbatical cannot be combined with more than 1 week of PTO.",
+              "score": 0.92
+            },
+            {
+              "id": "hr-03",
+              "title": "Paid time off (US)",
+              "text": "US full-time employees accrue PTO every biweekly pay period. Years 1 to 3 of service: 6.15 hours per pay period (20 days a year). From the start of year 4: 7.69 hours per pay period (25 days a year). You can carry over up to 40 hours of unused PTO into the next calendar year; anything above 40 hours is forfeited on January 1. Your balance cannot go above 240 hours; accrual pauses at the cap.",
+              "score": 0.58
+            },
+            {
+              "id": "hr-66",
+              "title": "Performance and pay reviews",
+              "text": "Performance reviews happen twice a year, in March and September. Self reviews are due at the start of each cycle, and your manager shares written feedback within 3 weeks. Pay changes from the March cycle take effect on April 1. Promotions can happen in either cycle and take effect on the first day of the following month.",
+              "score": 0.34
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Congratulations on 5 years! After 5 years of continuous service you can take a 4-week paid sabbatical [1]. It must start within 2 years of becoming eligible, and you need to agree the dates with your manager at least 3 months ahead [2]. You also receive a $2,000 sabbatical travel bonus to help you make the most of the time away.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-59",
+            "quote": "After 5 years of continuous service, you can take a 4-week paid sabbatical."
+          },
+          {
+            "n": 2,
+            "doc": "hr-59",
+            "quote": "It must start within 2 years of becoming eligible and be agreed with your manager at least 3 months ahead."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0026",
+      "title": "UK pension contributions",
+      "metadata": {
+        "askedAt": "2026-09-17T16:13:50Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Engineering",
+        "location": "UK",
+        "topic": "Retirement"
+      },
+      "input": "what does larkspur put into the pension, and do I have to put anything in myself?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "pension employer contribution UK",
+          "documents": [
+            {
+              "id": "hr-28",
+              "title": "Workplace pension (UK)",
+              "text": "UK employees are enrolled in the Larkspur pension plan with Fernhill Pensions after 1 month. Larkspur contributes 6% of basic salary when you contribute at least 4%. Contributions are made through salary sacrifice unless you opt out of salary sacrifice. You can raise your own contribution at any time through the pension portal.",
+              "score": 0.91
+            },
+            {
+              "id": "hr-26",
+              "title": "401(k) plan (US)",
+              "text": "Larkspur matches 100% of the first 4% of eligible pay you contribute, plus 50% of the next 2%, for a maximum match of 5%. The match is deposited each paycheck. New employees are enrolled automatically at 4% after 30 days unless they opt out. Your own contributions are always 100% vested. The company match vests over 3 years: 33% after year 1, 67% after year 2, and 100% after year 3.",
+              "score": 0.72
+            },
+            {
+              "id": "hr-27",
+              "title": "401(k) plan (US) (2023 version)",
+              "text": "Larkspur matches 50% of the first 6% of eligible pay you contribute (maximum match 3%). The match is deposited quarterly and vests over 4 years in equal annual installments.",
+              "score": 0.61
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Larkspur contributes 6% of your basic salary when you contribute at least 4% [1]. Contributions go through salary sacrifice unless you opt out of it [2], and you can raise your own contribution at any time in the pension portal [3].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-28",
+            "quote": "Larkspur contributes 6% of basic salary when you contribute at least 4%."
+          },
+          {
+            "n": 2,
+            "doc": "hr-28",
+            "quote": "Contributions are made through salary sacrifice unless you opt out of salary sacrifice."
+          },
+          {
+            "n": 3,
+            "doc": "hr-28",
+            "quote": "You can raise your own contribution at any time through the pension portal."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0027",
+      "title": "EAP confidentiality",
+      "metadata": {
+        "askedAt": "2026-09-18T16:31:12Z",
+        "channel": "portal",
+        "persona": "individual contributor",
+        "department": "Design",
+        "location": "US",
+        "topic": "Health benefits"
+      },
+      "input": "Is the counseling benefit actually confidential? I don't want my manager to find out I'm using it.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "employee assistance program counseling confidential",
+          "documents": [
+            {
+              "id": "hr-39",
+              "title": "Employee Assistance Program",
+              "text": "The Employee Assistance Program from Clearpath gives you and anyone in your household up to 6 free counseling sessions per issue per year, plus legal and financial consultations. It is confidential: Larkspur does not see who uses it. Call 1-800-555-0142 (UK: 0808 157 0142) any time, day or night.",
+              "score": 0.93
+            },
+            {
+              "id": "hr-84",
+              "title": "Reporting concerns",
+              "text": "Report harassment, discrimination, or other conduct concerns to your manager, any People team member, or anonymously through the Speak Up line at 1-800-555-0187 (UK: 0808 157 0187). The People team reviews every report within 2 working days. Larkspur does not tolerate retaliation against anyone who raises a concern in good faith.",
+              "score": 0.51
+            },
+            {
+              "id": "hr-18",
+              "title": "Medical plans 2026 (US)",
+              "text": "Larkspur offers two medical plans through Brightwater Health. PPO 500: deductible $500 individual / $1,000 family; out-of-pocket maximum $3,000 / $6,000. HSA 2000: deductible $2,000 individual / $4,000 family; out-of-pocket maximum $4,500 / $9,000. With the HSA 2000, Larkspur contributes $1,000 (individual coverage) or $2,000 (family coverage) to your HSA each year, split evenly across paychecks.",
+              "score": 0.42
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes. The Employee Assistance Program is confidential: Larkspur does not see who uses it [1]. You and anyone in your household get up to 6 free counseling sessions per issue per year [2]. You can call 1-800-555-0142 any time, day or night [3].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-39",
+            "quote": "It is confidential: Larkspur does not see who uses it."
+          },
+          {
+            "n": 2,
+            "doc": "hr-39",
+            "quote": "gives you and anyone in your household up to 6 free counseling sessions per issue per year"
+          },
+          {
+            "n": 3,
+            "doc": "hr-39",
+            "quote": "Call 1-800-555-0142 (UK: 0808 157 0142) any time, day or night."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0028",
+      "title": "Phone bill stipend, hybrid in Denver",
+      "metadata": {
+        "askedAt": "2026-09-18T18:49:40Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Support",
+        "location": "US",
+        "topic": "Remote work"
+      },
+      "input": "Does Larkspur pay for any of my cell phone bill? I am hybrid, in the Denver office 2 days a week. (also my phone is dying lol)",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "phone internet stipend hybrid",
+          "documents": [
+            {
+              "id": "hr-30",
+              "title": "Remote and hybrid work: stipends (US and UK)",
+              "text": "Employees approved for remote or hybrid work receive a one-time home office setup stipend of $500 (UK: £400) and a monthly internet and phone stipend of $60 (UK: £45), paid through payroll. The setup stipend must be claimed within 90 days of your start date or remote approval. Stipends paid through payroll are taxable.",
+              "score": 0.84
+            },
+            {
+              "id": "hr-76",
+              "title": "Laptops and equipment",
+              "text": "Larkspur provides a laptop and, on request, one monitor, a keyboard, and a mouse. Order through the IT portal. Equipment stays Larkspur property and must be returned within 10 days of your last day.",
+              "score": 0.71
+            },
+            {
+              "id": "hr-34",
+              "title": "Travel and expenses: submitting claims",
+              "text": "Submit expenses in the expense tool within 60 days of the purchase. Attach an itemized receipt for any expense over $25 (UK: £20). Claims older than 60 days need your director's approval. Reimbursements are paid with the next payroll after approval.",
+              "score": 0.52
+            },
+            {
+              "id": "hr-31",
+              "title": "Remote work policy (2024 version)",
+              "text": "Remote employees receive a $300 home office setup stipend and a $50 monthly internet stipend. Employees may work from outside their home country for up to 60 days a year with manager approval.",
+              "score": 0.5
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes. Employees approved for hybrid work receive a monthly internet and phone stipend of $60, paid through payroll [1]. It's taxable [2]. Phones aren't on the list of equipment Larkspur provides [3], so the policies I found don't cover a new phone.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-30",
+            "quote": "a monthly internet and phone stipend of $60 (UK: £45), paid through payroll"
+          },
+          {
+            "n": 2,
+            "doc": "hr-30",
+            "quote": "Stipends paid through payroll are taxable."
+          },
+          {
+            "n": 3,
+            "doc": "hr-76",
+            "quote": "Larkspur provides a laptop and, on request, one monitor, a keyboard, and a mouse."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0029",
+      "title": "London hotel and meal limits",
+      "metadata": {
+        "askedAt": "2026-09-21T08:15:27Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Sales",
+        "location": "UK",
+        "topic": "Travel and expenses"
+      },
+      "input": "Heading down to London for 3 nights for the customer summit. What's the hotel limit and the meal allowance?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "hotel limit London meal allowance",
+          "documents": [
+            {
+              "id": "hr-33",
+              "title": "Travel and expenses: meals and lodging",
+              "text": "On business travel, meals are reimbursed up to $75 per day in the US (UK: £55). Hotels up to $250 per night (UK: £180), or $325 per night in New York, San Francisco, and Boston (London: £240). Book flights in economy; flights of 6 hours or more may be booked in premium economy. Alcohol is not reimbursable unless a VP approves client entertainment in advance.",
+              "score": 0.87
+            },
+            {
+              "id": "hr-34",
+              "title": "Travel and expenses: submitting claims",
+              "text": "Submit expenses in the expense tool within 60 days of the purchase. Attach an itemized receipt for any expense over $25 (UK: £20). Claims older than 60 days need your director's approval. Reimbursements are paid with the next payroll after approval.",
+              "score": 0.8
+            },
+            {
+              "id": "hr-55",
+              "title": "Pay dates",
+              "text": "US employees are paid every other Friday. UK employees are paid monthly on the last working day of the month. If a pay date falls on a holiday, you are paid the working day before.",
+              "score": 0.33
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Meals on business travel are reimbursed up to £55 per day in the UK [1]. In London, hotels are covered up to £240 per night [2], and you'll need an itemized receipt for anything over £20 [2].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-33",
+            "quote": "On business travel, meals are reimbursed up to $75 per day in the US (UK: £55)."
+          },
+          {
+            "n": 2,
+            "doc": "hr-34",
+            "quote": "Attach an itemized receipt for any expense over $25 (UK: £20)."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0030",
+      "title": "PTO balance lookup",
+      "metadata": {
+        "askedAt": "2026-09-21T16:02:33Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Engineering",
+        "location": "US",
+        "topic": "Time off",
+        "feedback": "thumbs_down"
+      },
+      "input": "how many PTO hours do I have left?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "PTO balance hours remaining",
+          "documents": [
+            {
+              "id": "hr-03",
+              "title": "Paid time off (US)",
+              "text": "US full-time employees accrue PTO every biweekly pay period. Years 1 to 3 of service: 6.15 hours per pay period (20 days a year). From the start of year 4: 7.69 hours per pay period (25 days a year). You can carry over up to 40 hours of unused PTO into the next calendar year; anything above 40 hours is forfeited on January 1. Your balance cannot go above 240 hours; accrual pauses at the cap.",
+              "score": 0.82
+            },
+            {
+              "id": "hr-02",
+              "title": "Requesting time off (US and UK)",
+              "text": "Request time off in the People portal, where you can also see your current PTO balance. Requests of 3 or more consecutive working days need at least two weeks' notice to your manager. Managers respond within 3 working days. Sales and Support may limit time off in the last two weeks of a quarter.",
+              "score": 0.77
+            },
+            {
+              "id": "hr-04",
+              "title": "Paid time off (US) (2024 version)",
+              "text": "US full-time employees accrue 15 days of PTO a year (4.62 hours per biweekly pay period) in years 1 and 2, and 20 days a year from year 3. Up to 80 hours of unused PTO carries over into the next calendar year. Requests of 3 or more days need two weeks' notice.",
+              "score": 0.75
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "I can't see individual balances, so I can't tell you your hours. You can check your current balance in the People portal, where you also request time off [1]. For reference, you accrue 6.15 hours per pay period in your first 3 years, or 7.69 hours from the start of year 4 [2], and your balance can't go above 240 hours [3].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-02",
+            "quote": "Request time off in the People portal, where you can also see your current PTO balance."
+          },
+          {
+            "n": 2,
+            "doc": "hr-03",
+            "quote": "Years 1 to 3 of service: 6.15 hours per pay period (20 days a year). From the start of year 4: 7.69 hours per pay period (25 days a year)."
+          },
+          {
+            "n": 3,
+            "doc": "hr-03",
+            "quote": "Your balance cannot go above 240 hours; accrual pauses at the cap."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0031",
+      "title": "Help writing self review",
+      "metadata": {
+        "askedAt": "2026-09-21T21:37:18Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Marketing",
+        "location": "Remote",
+        "topic": "Pay and reviews",
+        "feedback": "thumbs_down"
+      },
+      "input": "can you help me write my self review? it's due friday and I have no idea where to start",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "self review performance review",
+          "documents": [
+            {
+              "id": "hr-66",
+              "title": "Performance and pay reviews",
+              "text": "Performance reviews happen twice a year, in March and September. Self reviews are due at the start of each cycle, and your manager shares written feedback within 3 weeks. Pay changes from the March cycle take effect on April 1. Promotions can happen in either cycle and take effect on the first day of the following month.",
+              "score": 0.71
+            },
+            {
+              "id": "hr-70",
+              "title": "Internal transfers",
+              "text": "You can apply for an internal role after 12 months in your current role, or earlier with your manager's agreement. Tell your manager before you apply. The hiring team will not contact your manager without telling you first.",
+              "score": 0.38
+            },
+            {
+              "id": "hr-35",
+              "title": "Learning budget",
+              "text": "Each employee has a learning budget of $1,500 per calendar year (UK: £1,200) for courses, certifications, conferences, and books related to your current role or career growth. Get your manager's approval before spending more than $300 (UK: £250) on one item. Unused budget does not roll over. For any single course over $1,000 (UK: £800), you sign a repayment agreement: if you resign within 12 months of finishing it, you repay 50% of the cost.",
+              "score": 0.3
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "I can only answer questions about Larkspur's policies and benefits, so I can't write your self review. What I can tell you is that self reviews are due at the start of each review cycle, and your manager shares written feedback within 3 weeks [1]. Your manager is the best person to ask what to focus on.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-66",
+            "quote": "Self reviews are due at the start of each cycle, and your manager shares written feedback within 3 weeks."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0032",
+      "title": "Enhanced maternity pay on fixed-term contract",
+      "metadata": {
+        "askedAt": "2026-09-22T10:44:09Z",
+        "channel": "portal",
+        "persona": "individual contributor",
+        "department": "Support",
+        "location": "UK",
+        "topic": "Family leave"
+      },
+      "input": "I'm on a 12-month fixed-term contract that ends in March 2027 and my baby is due in February. Do I still get the enhanced maternity pay (20 weeks full pay)? Contract started March this year.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "enhanced maternity pay fixed-term contract UK",
+          "documents": [
+            {
+              "id": "hr-14",
+              "title": "Family leave (UK)",
+              "text": "Birth mothers and primary adopters with 26 weeks of continuous service by the qualifying week receive 20 weeks at full pay, then Statutory Maternity or Adoption Pay for the remaining weeks up to 39. Partners receive 6 weeks at full pay, to be taken within 12 months of the birth or placement. Employees with less service receive statutory pay if they qualify. Shared Parental Leave is paid at the statutory rate. If your contract is fixed-term or changing, the People team will confirm what applies to you.",
+              "score": 0.92
+            },
+            {
+              "id": "hr-12",
+              "title": "Parental leave (US), effective 1 January 2026",
+              "text": "All US employees who become parents through birth, adoption, or foster placement receive 16 weeks of paid parental leave at 100% of base pay. You are eligible after 90 days of employment. Leave must be taken within 12 months of the birth or placement, in up to two blocks of at least 2 weeks each. Give your manager and the People team at least 30 days' notice when you can. The People team confirms eligibility for each leave.",
+              "score": 0.64
+            },
+            {
+              "id": "hr-69",
+              "title": "Notice periods (UK)",
+              "text": "During probation (the first 6 months), either side gives 1 week's notice. After probation, employees give 1 month's notice, or 3 months for managers and above. Unused annual leave is paid in your final salary; leave taken beyond your accrued amount is deducted.",
+              "score": 0.47
+            },
+            {
+              "id": "hr-13",
+              "title": "Parental leave (US) (2024 version)",
+              "text": "US employees with at least 6 months of service receive 12 weeks of paid parental leave at 100% of base pay following the birth or adoption of a child. Leave must be taken in one continuous block within 6 months of the birth or adoption.",
+              "score": 0.45
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes. You'll have 26 weeks of continuous service by your qualifying week, so you get 20 weeks at full pay, then Statutory Maternity Pay for the remaining weeks up to 39 [1]. Your fixed-term contract doesn't change this.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-14",
+            "quote": "Birth mothers and primary adopters with 26 weeks of continuous service by the qualifying week receive 20 weeks at full pay, then Statutory Maternity or Adoption Pay for the remaining weeks up to 39."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0033",
+      "title": "Working from Vermont for two months",
+      "metadata": {
+        "askedAt": "2026-09-22T15:18:51Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Product",
+        "location": "Remote",
+        "topic": "Remote work"
+      },
+      "input": "I want to spend October and most of November at my parents' place in Vermont (I normally work from home in Colorado). Anything I need to do first?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "working from a different US state temporarily",
+          "documents": [
+            {
+              "id": "hr-32",
+              "title": "Working from another location",
+              "text": "Tell the People team before working from a different US state for more than 30 days in a calendar year, because payroll taxes may change. Working from outside your employment country is limited to 30 days in any 12-month period and needs approval through the Work from abroad form at least 3 weeks in advance. Some countries are not allowed for tax, immigration, or security reasons; the People team reviews each request.",
+              "score": 0.9
+            },
+            {
+              "id": "hr-30",
+              "title": "Remote and hybrid work: stipends (US and UK)",
+              "text": "Employees approved for remote or hybrid work receive a one-time home office setup stipend of $500 (UK: £400) and a monthly internet and phone stipend of $60 (UK: £45), paid through payroll. The setup stipend must be claimed within 90 days of your start date or remote approval. Stipends paid through payroll are taxable.",
+              "score": 0.61
+            },
+            {
+              "id": "hr-31",
+              "title": "Remote work policy (2024 version)",
+              "text": "Remote employees receive a $300 home office setup stipend and a $50 monthly internet stipend. Employees may work from outside their home country for up to 60 days a year with manager approval.",
+              "score": 0.58
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes. Tell the People team before you go: working from a different US state for more than 30 days in a calendar year can change your payroll taxes [1]. About two months in Vermont is over that limit, so reach out to them now so they can set things up.",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-32",
+            "quote": "Tell the People team before working from a different US state for more than 30 days in a calendar year, because payroll taxes may change."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0034",
+      "title": "Salary range for L4",
+      "metadata": {
+        "askedAt": "2026-09-22T19:55:04Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Engineering",
+        "location": "US",
+        "topic": "Pay and reviews"
+      },
+      "input": "what's the salary range for a senior engineer (L4)? thinking about asking for a promo this cycle",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "salary range senior engineer L4 promotion",
+          "documents": [
+            {
+              "id": "hr-66",
+              "title": "Performance and pay reviews",
+              "text": "Performance reviews happen twice a year, in March and September. Self reviews are due at the start of each cycle, and your manager shares written feedback within 3 weeks. Pay changes from the March cycle take effect on April 1. Promotions can happen in either cycle and take effect on the first day of the following month.",
+              "score": 0.69
+            },
+            {
+              "id": "hr-70",
+              "title": "Internal transfers",
+              "text": "You can apply for an internal role after 12 months in your current role, or earlier with your manager's agreement. Tell your manager before you apply. The hiring team will not contact your manager without telling you first.",
+              "score": 0.52
+            },
+            {
+              "id": "hr-48",
+              "title": "Employee referral bonus",
+              "text": "Refer a candidate through the referral form. If they are hired, you receive $3,000 for engineering and design roles or $1,500 for all other roles, paid after the new hire completes 90 days. You must still be employed on the payout date. Hiring managers and People team members are not eligible for roles they hire for.",
+              "score": 0.34
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Salary ranges aren't in the policies I can search, so I can't give you the L4 range. Your manager or your People partner can share it. On timing: promotions can happen in either review cycle and take effect on the first day of the following month [1].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-66",
+            "quote": "Promotions can happen in either cycle and take effect on the first day of the following month."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0035",
+      "title": "Coworker comments about accent",
+      "metadata": {
+        "askedAt": "2026-09-22T20:26:37Z",
+        "channel": "portal",
+        "persona": "individual contributor",
+        "department": "Operations",
+        "location": "US",
+        "topic": "Workplace concerns"
+      },
+      "input": "A coworker keeps making comments about my accent in meetings and I don't know who to tell. I don't want it to become a big thing.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "report harassment coworker comments",
+          "documents": [
+            {
+              "id": "hr-84",
+              "title": "Reporting concerns",
+              "text": "Report harassment, discrimination, or other conduct concerns to your manager, any People team member, or anonymously through the Speak Up line at 1-800-555-0187 (UK: 0808 157 0187). The People team reviews every report within 2 working days. Larkspur does not tolerate retaliation against anyone who raises a concern in good faith.",
+              "score": 0.88
+            },
+            {
+              "id": "hr-39",
+              "title": "Employee Assistance Program",
+              "text": "The Employee Assistance Program from Clearpath gives you and anyone in your household up to 6 free counseling sessions per issue per year, plus legal and financial consultations. It is confidential: Larkspur does not see who uses it. Call 1-800-555-0142 (UK: 0808 157 0142) any time, day or night.",
+              "score": 0.66
+            },
+            {
+              "id": "hr-16",
+              "title": "Bereavement leave (US and UK)",
+              "text": "You can take up to 5 paid working days after the death of a spouse or partner, child, parent, sibling, grandparent, grandchild, or parent-in-law. Up to 2 paid days apply for other relatives or a close friend. Either parent may take 5 paid days after a pregnancy loss. The days do not need to be consecutive and can be used within 3 months. Ask your manager if you need more time; extra time may be unpaid or taken as PTO.",
+              "score": 0.31
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "I'm sorry you're dealing with this. You can report it to your manager, any People team member, or anonymously through the Speak Up line at 1-800-555-0187 [1]. Larkspur does not tolerate retaliation against anyone who raises a concern in good faith [2]. If it would help to talk it through first, the Employee Assistance Program offers free, confidential counseling [3].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-84",
+            "quote": "Report harassment, discrimination, or other conduct concerns to your manager, any People team member, or anonymously through the Speak Up line at 1-800-555-0187"
+          },
+          {
+            "n": 2,
+            "doc": "hr-84",
+            "quote": "Larkspur does not tolerate retaliation against anyone who raises a concern in good faith."
+          },
+          {
+            "n": 3,
+            "doc": "hr-39",
+            "quote": "It is confidential: Larkspur does not see who uses it."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0036",
+      "title": "FSA if I skip open enrollment",
+      "metadata": {
+        "askedAt": "2026-09-23T14:39:22Z",
+        "channel": "portal",
+        "persona": "individual contributor",
+        "department": "Finance",
+        "location": "US",
+        "topic": "Health benefits"
+      },
+      "input": "If I don't do anything during open enrollment do I lose my FSA?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "open enrollment FSA roll over",
+          "documents": [
+            {
+              "id": "hr-24",
+              "title": "Open enrollment for 2027 (US)",
+              "text": "Open enrollment runs November 2 to November 13, 2026 in the Benefits Hub. Elections take effect January 1, 2027. If you do nothing, your medical, dental, and vision elections roll over. FSA elections do not roll over; you must re-enroll to contribute in 2027.",
+              "score": 0.9
+            },
+            {
+              "id": "hr-22",
+              "title": "Qualifying life events (US)",
+              "text": "Outside open enrollment, you can change your benefit elections only after a qualifying life event, such as marriage, divorce, birth or adoption of a child, or losing other coverage. Submit the change in the Benefits Hub within 30 days of the event. A newborn's coverage starts on the date of birth if you add the child within 30 days.",
+              "score": 0.55
+            },
+            {
+              "id": "hr-18",
+              "title": "Medical plans 2026 (US)",
+              "text": "Larkspur offers two medical plans through Brightwater Health. PPO 500: deductible $500 individual / $1,000 family; out-of-pocket maximum $3,000 / $6,000. HSA 2000: deductible $2,000 individual / $4,000 family; out-of-pocket maximum $4,500 / $9,000. With the HSA 2000, Larkspur contributes $1,000 (individual coverage) or $2,000 (family coverage) to your HSA each year, split evenly across paychecks.",
+              "score": 0.47
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Your medical, dental, and vision elections roll over if you do nothing, but FSA elections don't [1]. To keep contributing to an FSA in 2027, re-enroll during open enrollment, November 2 to November 13, 2026 [2].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-24",
+            "quote": "If you do nothing, your medical, dental, and vision elections roll over. FSA elections do not roll over; you must re-enroll to contribute in 2027."
+          },
+          {
+            "n": 2,
+            "doc": "hr-24",
+            "quote": "Open enrollment runs November 2 to November 13, 2026 in the Benefits Hub."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0037",
+      "title": "UK notice period for team lead",
+      "metadata": {
+        "askedAt": "2026-09-23T15:27:45Z",
+        "channel": "slack",
+        "persona": "people manager",
+        "department": "Engineering",
+        "location": "UK",
+        "topic": "Changing or leaving a job"
+      },
+      "input": "UK team lead here. If I resign, how much notice do I need to give? Past probation.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "notice period resignation UK manager",
+          "documents": [
+            {
+              "id": "hr-69",
+              "title": "Notice periods (UK)",
+              "text": "During probation (the first 6 months), either side gives 1 week's notice. After probation, employees give 1 month's notice, or 3 months for managers and above. Unused annual leave is paid in your final salary; leave taken beyond your accrued amount is deducted.",
+              "score": 0.92
+            },
+            {
+              "id": "hr-68",
+              "title": "Resigning and final pay (US)",
+              "text": "Please give at least two weeks' notice. Your final paycheck includes pay through your last day and any accrued, unused PTO. Health coverage ends on the last day of the month in which you leave; COBRA details are mailed within 14 days. Unused sick time and floating holidays are not paid out.",
+              "score": 0.7
+            },
+            {
+              "id": "hr-70",
+              "title": "Internal transfers",
+              "text": "You can apply for an internal role after 12 months in your current role, or earlier with your manager's agreement. Tell your manager before you apply. The hiring team will not contact your manager without telling you first.",
+              "score": 0.36
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "After probation, employees give 1 month's notice, or 3 months for managers and above [1]. I can't tell from the policy whether a team lead role counts as a manager role, so check your contract or ask the People team. Any unused annual leave is paid in your final salary [2].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-69",
+            "quote": "After probation, employees give 1 month's notice, or 3 months for managers and above."
+          },
+          {
+            "n": 2,
+            "doc": "hr-69",
+            "quote": "Unused annual leave is paid in your final salary"
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0038",
+      "title": "Bereavement days for grandparent",
+      "metadata": {
+        "askedAt": "2026-09-23T16:04:16Z",
+        "channel": "slack",
+        "persona": "individual contributor",
+        "department": "Support",
+        "location": "US",
+        "topic": "Leave and absence",
+        "feedback": "thumbs_up"
+      },
+      "input": "my grandma passed away last night. how many days can I take",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "bereavement leave grandparent days",
+          "documents": [
+            {
+              "id": "hr-16",
+              "title": "Bereavement leave (US and UK)",
+              "text": "You can take up to 5 paid working days after the death of a spouse or partner, child, parent, sibling, grandparent, grandchild, or parent-in-law. Up to 2 paid days apply for other relatives or a close friend. Either parent may take 5 paid days after a pregnancy loss. The days do not need to be consecutive and can be used within 3 months. Ask your manager if you need more time; extra time may be unpaid or taken as PTO.",
+              "score": 0.93
+            },
+            {
+              "id": "hr-43",
+              "title": "Leave of absence (US)",
+              "text": "Under the Family and Medical Leave Act, US employees with 12 months of service and 1,250 hours worked in the past year may take up to 12 weeks of job-protected leave. Larkspur also offers unpaid personal leave of up to 30 days with director approval. Contact the People team through the People portal before any leave longer than 5 working days so they can confirm which programs apply to you.",
+              "score": 0.52
+            },
+            {
+              "id": "hr-39",
+              "title": "Employee Assistance Program",
+              "text": "The Employee Assistance Program from Clearpath gives you and anyone in your household up to 6 free counseling sessions per issue per year, plus legal and financial consultations. It is confidential: Larkspur does not see who uses it. Call 1-800-555-0142 (UK: 0808 157 0142) any time, day or night.",
+              "score": 0.44
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "I'm very sorry about your grandmother. You can take up to 5 paid working days after the death of a grandparent [1]. The days don't need to be in a row and can be used within 3 months [2]. If you need more time, talk to your manager [3]. The Employee Assistance Program also offers free, confidential counseling for you and your household [4].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-16",
+            "quote": "You can take up to 5 paid working days after the death of a spouse or partner, child, parent, sibling, grandparent, grandchild, or parent-in-law."
+          },
+          {
+            "n": 2,
+            "doc": "hr-16",
+            "quote": "The days do not need to be consecutive and can be used within 3 months."
+          },
+          {
+            "n": 3,
+            "doc": "hr-16",
+            "quote": "Ask your manager if you need more time; extra time may be unpaid or taken as PTO."
+          },
+          {
+            "n": 4,
+            "doc": "hr-39",
+            "quote": "gives you and anyone in your household up to 6 free counseling sessions per issue per year"
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0039",
+      "title": "Egg freezing benefit, UK",
+      "metadata": {
+        "askedAt": "2026-09-23T16:48:02Z",
+        "channel": "portal",
+        "persona": "individual contributor",
+        "department": "Marketing",
+        "location": "UK",
+        "topic": "Health benefits"
+      },
+      "input": "Does the fertility benefit cover egg freezing for UK employees? How much can I claim?",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "fertility benefit egg freezing UK amount",
+          "documents": [
+            {
+              "id": "hr-64",
+              "title": "Family-forming benefit",
+              "text": "US employees can use up to $20,000 in lifetime benefits through Bloom Family Benefits for fertility treatment, egg freezing, adoption, and surrogacy costs. UK employees can use up to £10,000. You are eligible from your first day, and you do not need to be enrolled in a Larkspur medical plan.",
+              "score": 0.91
+            },
+            {
+              "id": "hr-14",
+              "title": "Family leave (UK)",
+              "text": "Birth mothers and primary adopters with 26 weeks of continuous service by the qualifying week receive 20 weeks at full pay, then Statutory Maternity or Adoption Pay for the remaining weeks up to 39. Partners receive 6 weeks at full pay, to be taken within 12 months of the birth or placement. Employees with less service receive statutory pay if they qualify. Shared Parental Leave is paid at the statutory rate. If your contract is fixed-term or changing, the People team will confirm what applies to you.",
+              "score": 0.6
+            },
+            {
+              "id": "hr-18",
+              "title": "Medical plans 2026 (US)",
+              "text": "Larkspur offers two medical plans through Brightwater Health. PPO 500: deductible $500 individual / $1,000 family; out-of-pocket maximum $3,000 / $6,000. HSA 2000: deductible $2,000 individual / $4,000 family; out-of-pocket maximum $4,500 / $9,000. With the HSA 2000, Larkspur contributes $1,000 (individual coverage) or $2,000 (family coverage) to your HSA each year, split evenly across paychecks.",
+              "score": 0.42
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Yes. Egg freezing is covered through Bloom Family Benefits, and UK employees can use up to £10,000 [1]. You're eligible from your first day, and you don't need to be on a Larkspur medical plan [2].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-64",
+            "quote": "UK employees can use up to £10,000."
+          },
+          {
+            "n": 2,
+            "doc": "hr-64",
+            "quote": "You are eligible from your first day, and you do not need to be enrolled in a Larkspur medical plan."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0040",
+      "title": "Short-term disability pay for knee surgery",
+      "metadata": {
+        "askedAt": "2026-09-23T18:21:59Z",
+        "channel": "portal",
+        "persona": "individual contributor",
+        "department": "Design",
+        "location": "US",
+        "topic": "Leave and absence"
+      },
+      "input": "How much do I get paid while on short term disability? I'm having knee surgery in October and will be out a few weeks.",
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "search_policies",
+          "input": "short-term disability pay amount",
+          "documents": [
+            {
+              "id": "hr-41",
+              "title": "Short-term disability (US)",
+              "text": "Short-term disability pays 70% of base salary, up to $2,500 a week, for up to 12 weeks after a 7-day waiting period. It covers your own illness, injury, and recovery from childbirth (typically 6 weeks, or 8 weeks after a cesarean birth). Recovery from childbirth is covered by short-term disability first; your 16 weeks of parental leave can start after it ends or later within the 12-month window. You may use PTO or sick time during the waiting period. Claims are filed with Brightwater Benefits.",
+              "score": 0.9
+            },
+            {
+              "id": "hr-43",
+              "title": "Leave of absence (US)",
+              "text": "Under the Family and Medical Leave Act, US employees with 12 months of service and 1,250 hours worked in the past year may take up to 12 weeks of job-protected leave. Larkspur also offers unpaid personal leave of up to 30 days with director approval. Contact the People team through the People portal before any leave longer than 5 working days so they can confirm which programs apply to you.",
+              "score": 0.72
+            },
+            {
+              "id": "hr-09",
+              "title": "Sick time (US)",
+              "text": "US employees receive 64 hours (8 days) of paid sick time each calendar year, credited on January 1 (new hires receive a prorated amount on their start date). Use it for your own illness, medical appointments, or to care for a family member. Unused sick time does not carry over. Where a state or city requires more generous sick time, Larkspur follows that law. Sick time is not paid out when you leave.",
+              "score": 0.51
+            }
+          ]
+        }
+      ],
+      "output": {
+        "type": "answer",
+        "text": "Short-term disability pays 70% of base salary, up to $2,500 a week, for up to 12 weeks after a 7-day waiting period [1]. You can use PTO or sick time during the waiting period [2]. Because you will be out for more than 5 working days, contact the People team before your leave so they can confirm which programs apply to you [3].",
+        "citations": [
+          {
+            "n": 1,
+            "doc": "hr-41",
+            "quote": "Short-term disability pays 70% of base salary, up to $2,500 a week, for up to 12 weeks after a 7-day waiting period."
+          },
+          {
+            "n": 2,
+            "doc": "hr-41",
+            "quote": "You may use PTO or sick time during the waiting period."
+          },
+          {
+            "n": 3,
+            "doc": "hr-43",
+            "quote": "Contact the People team through the People portal before any leave longer than 5 working days so they can confirm which programs apply to you."
+          }
+        ]
+      }
+    }
+  ],
+  "reviews": {},
+  "labels": {},
+  "critiques": {},
+  "closeCalls": {},
+  "modes": [],
+  "checks": [],
+  "splits": {},
+  "suggestions": [],
+  "batch": {
+    "createdAt": "2026-09-23T19:30:00Z",
+    "strategy": "mix",
+    "items": [
+      {
+        "traceId": "t-0014",
+        "reason": "Remote, Remote work, long trace"
+      },
+      {
+        "traceId": "t-0002",
+        "reason": "UK, Leave and absence, short trace"
+      },
+      {
+        "traceId": "t-0023",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0036",
+        "reason": "US, Health benefits, short trace"
+      },
+      {
+        "traceId": "t-0029",
+        "reason": "UK, Travel and expenses, short trace"
+      },
+      {
+        "traceId": "t-0005",
+        "reason": "US, Family leave, long trace"
+      },
+      {
+        "traceId": "t-0031",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0007",
+        "reason": "UK, Time off, short trace"
+      },
+      {
+        "traceId": "t-0024",
+        "reason": "Remote, Equity and bonuses, short trace"
+      },
+      {
+        "traceId": "t-0013",
+        "reason": "US, Learning and wellness, long trace"
+      },
+      {
+        "traceId": "t-0035",
+        "reason": "US, Workplace concerns, long trace"
+      },
+      {
+        "traceId": "t-0003",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0037",
+        "reason": "UK, Changing or leaving a job, medium trace"
+      },
+      {
+        "traceId": "t-0017",
+        "reason": "US, Travel and expenses, medium trace"
+      },
+      {
+        "traceId": "t-0004",
+        "reason": "Remote, Remote work, medium trace"
+      },
+      {
+        "traceId": "t-0027",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0034",
+        "reason": "US, Pay and reviews, medium trace"
+      },
+      {
+        "traceId": "t-0009",
+        "reason": "US, Leave and absence, short trace"
+      },
+      {
+        "traceId": "t-0022",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0001",
+        "reason": "Random pick"
+      }
+    ]
+  },
+  "settings": {
+    "seed": 7
+  }
+}

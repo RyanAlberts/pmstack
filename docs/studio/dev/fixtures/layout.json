@@ -1,0 +1,127 @@
+{
+  "id": "t-0003",
+  "title": "Birthday gift, no details at first",
+  "metadata": {
+    "channel": "mobile app",
+    "persona": "returning customer",
+    "occasion": "birthday",
+    "budget": "$25 to $50",
+    "recipient": "sibling"
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+    },
+    {
+      "role": "user",
+      "content": "need a bday gift",
+      "time": "2026-09-08T19:05:41Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Happy to help! Who's the birthday for, and what do they like to cook or drink?",
+      "time": "2026-09-08T19:05:49Z"
+    },
+    {
+      "role": "user",
+      "content": "my little brother, he's a junior in college and basically lives on coffee. 30 to 40 bucks",
+      "time": "2026-09-08T19:07:18Z"
+    }
+  ],
+  "steps": [
+    {
+      "type": "handoff",
+      "name": "route_request",
+      "input": {
+        "category": "coffee-and-tea"
+      },
+      "time": "2026-09-08T19:07:20Z"
+    },
+    {
+      "type": "tool",
+      "name": "search_catalog",
+      "input": {
+        "category": "coffee-and-tea",
+        "query": "coffee",
+        "max_price": 40
+      },
+      "output": {
+        "items": [
+          {
+            "name": "Glass Cold Brew Pitcher",
+            "price": 32,
+            "in_stock": true,
+            "tags": [
+              "coffee",
+              "cold brew",
+              "iced tea"
+            ]
+          },
+          {
+            "name": "Ceramic Pour-Over Dripper with 100 Filters",
+            "price": 26,
+            "in_stock": true,
+            "tags": [
+              "coffee",
+              "pour-over"
+            ]
+          },
+          {
+            "name": "Handheld Milk Frother",
+            "price": 19,
+            "in_stock": true,
+            "tags": [
+              "coffee",
+              "latte"
+            ]
+          },
+          {
+            "name": "Loose Leaf Tea Infuser Mug",
+            "price": 24,
+            "in_stock": true,
+            "tags": [
+              "tea",
+              "mug"
+            ]
+          }
+        ]
+      },
+      "time": "2026-09-08T19:07:21Z"
+    }
+  ],
+  "output": {
+    "type": "list",
+    "intro": "A coffee-powered college junior, got it. Here are three picks under $40 that work in a dorm kitchen.",
+    "items": [
+      {
+        "title": "Glass Cold Brew Pitcher",
+        "subtitle": "$32.00 · In stock",
+        "details": {
+          "Price": "$32.00",
+          "Why": "No machine needed"
+        },
+        "reason": "He makes a big batch overnight and has iced coffee ready all week."
+      },
+      {
+        "title": "Ceramic Pour-Over Dripper with 100 Filters",
+        "subtitle": "$26.00 · In stock",
+        "details": {
+          "Price": "$26.00",
+          "Why": "A cheap, great cup"
+        },
+        "reason": "Sits right on a mug, and the filters last him most of a semester."
+      },
+      {
+        "title": "Handheld Milk Frother",
+        "subtitle": "$19.00 · In stock",
+        "details": {
+          "Price": "$19.00",
+          "Why": "For latte fans"
+        },
+        "reason": "Turns any cup into a cafe-style latte."
+      }
+    ]
+  },
+  "result": "Added Glass Cold Brew Pitcher to cart ($32.00)"
+}

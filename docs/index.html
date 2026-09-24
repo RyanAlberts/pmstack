@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pmstack: find how your AI product fails</title>
+<meta name="description" content="Find how your AI product fails. Then prove it's fixed. Read real traces, name the failure modes, and turn the ones that matter into checks you can trust.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F6F2">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0F1216">
+<link rel="canonical" href="https://ryanalberts.github.io/pmstack/">
+<link rel="icon" href="studio/icon.svg" type="image/svg+xml">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="pmstack">
+<meta property="og:url" content="https://ryanalberts.github.io/pmstack/">
+<meta property="og:title" content="pmstack: Find how your AI product fails. Then prove it's fixed.">
+<meta property="og:description" content="Read real traces, name the failure modes, and turn the ones that matter into checks you can trust. Free, and it runs in your browser.">
+<meta property="og:image" content="https://ryanalberts.github.io/pmstack/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="pmstack Eval Studio for product managers: Find how your AI product fails. Then prove it's fixed.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="pmstack: Find how your AI product fails. Then prove it's fixed.">
+<meta name="twitter:description" content="Read real traces, name the failure modes, and turn the ones that matter into checks you can trust. Free, and it runs in your browser.">
+<meta name="twitter:image" content="https://ryanalberts.github.io/pmstack/assets/og.png">
+<meta name="twitter:image:alt" content="pmstack Eval Studio for product managers: Find how your AI product fails. Then prove it's fixed.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+/* Design tokens from SPEC 5.4 (same values as the studio's tokens.css). */
+:root {
+  color-scheme: light;
+  --bg: #F7F6F2; --surface: #FFFFFF; --surface-2: #F0EEE8;
+  --ink: #16191D; --ink-2: #4A525C; --ink-3: #646B73; --line: #E2DFD8;
+  --accent: #3A56D4; --accent-soft: #E7EBFB;
+  --good: #1B7851; --good-soft: #E3F2EA; --bad: #BE3E29; --bad-soft: #FBE7E2;
+  --warn: #965F00; --warn-soft: #FBF0DC; --ai: #7A4FD1; --ai-soft: #F1EAFD;
+  --on-accent: #FFFFFF;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 4px 16px rgba(0, 0, 0, .04);
+  --shadow-pop: 0 2px 6px rgba(0, 0, 0, .06), 0 10px 28px rgba(0, 0, 0, .08);
+  --card-border: transparent;
+  --font-sans: "Instrument Sans", ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --gutter: 24px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0F1216; --surface: #171B21; --surface-2: #1E232A;
+    --ink: #E9EBEE; --ink-2: #A9B1BB; --ink-3: #8A929D; --line: #2A3038;
+    --accent: #8AA2FF; --accent-soft: #1F2747;
+    --good: #4CC38A; --good-soft: #14301F; --bad: #FF7A63; --bad-soft: #3A1D18;
+    --warn: #F0B34A; --warn-soft: #33260F; --ai: #B79CFF; --ai-soft: #2A2140;
+    --on-accent: #0F1216;
+    --shadow: none; --shadow-pop: none; --card-border: #2A3038;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0F1216; --surface: #171B21; --surface-2: #1E232A;
+  --ink: #E9EBEE; --ink-2: #A9B1BB; --ink-3: #8A929D; --line: #2A3038;
+  --accent: #8AA2FF; --accent-soft: #1F2747;
+  --good: #4CC38A; --good-soft: #14301F; --bad: #FF7A63; --bad-soft: #3A1D18;
+  --warn: #F0B34A; --warn-soft: #33260F; --ai: #B79CFF; --ai-soft: #2A2140;
+  --on-accent: #0F1216;
+  --shadow: none; --shadow-pop: none; --card-border: #2A3038;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 16px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.6 var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+img, svg { max-width: 100%; }
+img { height: auto; display: block; }
+h1, h2, h3, p, ol, ul, figure { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+code, pre { font-family: var(--font-mono); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.skip {
+  position: absolute; left: 12px; top: -48px; z-index: 10;
+  padding: 8px 14px; border-radius: 8px;
+  background: var(--accent); color: var(--on-accent); font-weight: 600; text-decoration: none;
+}
+.skip:focus { top: 12px; }
+.wrap { width: 100%; max-width: 1168px; margin: 0 auto; padding: 0 var(--gutter); }
+
+/* Header */
+.site-head { border-bottom: 1px solid var(--line); }
+.head-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; }
+.brand { display: inline-flex; align-items: center; gap: 9px; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+.brand:hover { text-decoration: none; }
+.brand svg { flex: none; }
+.brand rect { fill: var(--accent); }
+.nav ul { display: flex; align-items: center; gap: 4px; }
+.nav a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 10px; border-radius: 8px; color: var(--ink-2); font-size: 14px; font-weight: 500; text-decoration: none; transition: background-color 140ms var(--ease), color 140ms var(--ease); }
+.nav a:hover { background: var(--surface-2); color: var(--ink); }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 46px; padding: 0 20px; border: 1px solid transparent; border-radius: 9px;
+  font: 600 16px/1.2 var(--font-sans); text-decoration: none; text-align: center;
+  cursor: pointer; transition: background-color 140ms var(--ease), border-color 140ms var(--ease), transform 140ms var(--ease);
+}
+.btn:hover { text-decoration: none; }
+.btn:active { transform: translateY(1px); }
+.btn svg { flex: none; }
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-primary:hover { background: color-mix(in srgb, var(--accent) 86%, var(--ink)); }
+.btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--line); }
+.btn-secondary:hover { background: var(--surface-2); }
+
+/* Hero */
+.hero { padding: 88px 0 0; }
+.kicker { display: inline-flex; align-items: center; gap: 10px; color: var(--ink-2); font: 500 14px/1.4 var(--font-mono); margin-bottom: 22px; }
+.kicker::before { content: ""; width: 22px; height: 1px; background: var(--ink-3); }
+h1 {
+  font-family: var(--font-serif); font-style: italic; font-weight: 400;
+  font-size: 44px; line-height: 1.08; letter-spacing: -0.012em;
+  max-width: 15.5em; text-wrap: balance;
+}
+h1 .line { display: block; }
+.lead { margin-top: 18px; max-width: 36em; color: var(--ink-2); font-size: 20px; line-height: 1.5; text-wrap: pretty; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.fine { margin-top: 16px; color: var(--ink-3); font-size: 14px; }
+
+.hero-visual { margin-top: 56px; }
+
+/* Figures */
+.visual { position: relative; }
+/* The generated visuals draw their own rounded card (20 px corners, thin border), so the frame adds only depth. */
+.visual-frame { border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); background: var(--surface); }
+.visual-frame img { width: 100%; }
+.swipe { display: none; }
+figcaption { margin-top: 16px; max-width: 74ch; color: var(--ink-2); font-size: 14px; line-height: 1.6; text-wrap: pretty; }
+figcaption b { color: var(--ink); font-weight: 600; }
+
+/* Sections */
+.section { padding: 96px 0 0; }
+.section-head { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 16px 48px; align-items: baseline; padding-top: 28px; border-top: 1px solid var(--line); margin-bottom: 40px; }
+h2 { font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: 36px; line-height: 1.12; letter-spacing: -0.01em; text-wrap: balance; }
+.section-head p { color: var(--ink-2); font-size: 16px; max-width: 58ch; text-wrap: pretty; }
+.section-head p + p { margin-top: 10px; }
+h3 { font-size: 16px; line-height: 1.35; font-weight: 600; letter-spacing: -0.005em; }
+
+/* Sample cards */
+.samples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.sample {
+  position: relative; display: flex; flex-direction: column; gap: 10px; min-width: 0;
+  padding: 20px 20px 18px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--card-border); box-shadow: var(--shadow);
+  transition: box-shadow 160ms var(--ease), border-color 160ms var(--ease), transform 160ms var(--ease);
+}
+.sample:hover { box-shadow: var(--shadow-pop); transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 45%, var(--card-border)); }
+.sample:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
+.sample-view { display: flex; align-items: center; gap: 10px; color: var(--ink-3); font-size: 13px; font-weight: 500; }
+.sample-icon { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; background: var(--surface-2); color: var(--ink); flex: none; }
+.sample h3 a { color: var(--ink); text-decoration: none; }
+.sample h3 a::after { content: ""; position: absolute; inset: 0; border-radius: 10px; }
+.sample h3 a:focus-visible { outline: none; }
+.sample h3 a:hover { text-decoration: none; }
+.sample p { color: var(--ink-2); font-size: 14px; line-height: 1.55; }
+.sample-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin-top: auto; padding-top: 6px; font-size: 13px; color: var(--ink-3); }
+.sample-foot .count { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.pill { display: inline-flex; align-items: center; min-height: 22px; padding: 1px 9px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); font-size: 12.5px; font-weight: 500; line-height: 1.3; }
+.sample-go { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-weight: 600; font-size: 14px; }
+.sample-go svg { transition: transform 160ms var(--ease); }
+.sample:hover .sample-go svg { transform: translateX(3px); }
+
+/* Steps */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; margin-top: 40px; counter-reset: step; }
+.step { display: grid; grid-template-columns: 32px minmax(0, 1fr); align-content: start; gap: 4px 14px; padding: 20px 0 24px; border-top: 1px solid var(--line); }
+.num {
+  display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 999px;
+  background: var(--surface-2); color: var(--ink); font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums;
+}
+.step .num { grid-row: span 3; margin-top: -2px; }
+.step p { color: var(--ink-2); font-size: 15px; line-height: 1.55; }
+.step .where { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.step .where b { color: var(--ink-2); font-weight: 600; }
+
+/* Tool call checks */
+.questions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 32px; }
+.question {
+  display: flex; flex-direction: column; gap: 10px; min-width: 0;
+  padding: 20px; border-radius: 10px; background: var(--surface); border: 1px solid var(--card-border); box-shadow: var(--shadow);
+}
+.question h3 { font-size: 18px; line-height: 1.35; }
+.q-word { display: block; margin-bottom: 8px; font: 500 13px/1.3 var(--font-mono); color: var(--ink-2); letter-spacing: 0; }
+.question p { color: var(--ink-2); font-size: 14.5px; line-height: 1.55; }
+.question .pill { align-self: flex-start; margin-top: auto; }
+.tools-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; margin-top: 28px; }
+.tools-foot p { color: var(--ink-2); font-size: 15px; max-width: 60ch; }
+.linkrow { display: flex; flex-wrap: wrap; gap: 8px 20px; font-weight: 600; font-size: 15px; }
+.linkrow a { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.linkrow a:hover { text-decoration: underline; }
+.slash { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.slash-label { align-self: center; margin-right: 2px; color: var(--ink-3); font-size: 13px; }
+.slash code { font-size: 13px; padding: 4px 9px; border-radius: 6px; background: var(--surface-2); color: var(--ink); }
+
+/* Commands */
+.cmd-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 16px; align-items: start; }
+.cmds { border-radius: 10px; background: var(--surface); border: 1px solid var(--card-border); box-shadow: var(--shadow); overflow: hidden; }
+.cmd { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 6px 14px; padding: 18px 20px; }
+.cmd + .cmd { border-top: 1px solid var(--line); }
+.cmd .num { grid-row: span 2; }
+.cmd-label { font-size: 14px; color: var(--ink-2); }
+.code { display: flex; align-items: flex-start; gap: 8px; min-width: 0; border-radius: 8px; background: var(--surface-2); padding: 4px 4px 4px 12px; }
+.code pre { flex: 1; min-width: 0; margin: 0; padding: 7px 0; font-size: 14px; line-height: 1.55; color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy {
+  flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px;
+  border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--ink-2);
+  font: 500 13px/1 var(--font-sans); cursor: pointer; transition: color 140ms var(--ease), border-color 140ms var(--ease);
+}
+.copy:hover { color: var(--ink); border-color: var(--ink-3); }
+.copy[data-done] { color: var(--ink); }
+.aside { padding: 22px; border-radius: 10px; border: 1px solid var(--line); }
+.aside h3 { margin-bottom: 6px; }
+.aside p { color: var(--ink-2); font-size: 14.5px; }
+.aside .code { margin-top: 14px; }
+.aside .code pre { font-size: 13px; }
+.ln { display: block; padding-left: 2ch; text-indent: -2ch; }
+
+/* Footer */
+.site-foot { margin-top: 112px; border-top: 1px solid var(--line); padding: 40px 0 56px; color: var(--ink-3); font-size: 14px; }
+.foot-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px 48px; }
+.site-foot p { max-width: 62ch; line-height: 1.6; }
+.site-foot p + p { margin-top: 10px; }
+.site-foot a { color: var(--ink-2); }
+.site-foot a:hover { color: var(--ink); }
+.foot-links { display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: flex-end; align-content: flex-start; }
+.foot-links a { font-weight: 500; }
+
+/* Entrance: one calm reveal on load. */
+@media (prefers-reduced-motion: no-preference) {
+  .rise { animation: rise 420ms var(--ease) both; }
+  .rise-2 { animation-delay: 60ms; }
+  .rise-3 { animation-delay: 120ms; }
+  .rise-4 { animation-delay: 180ms; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* Tablet */
+@media (max-width: 980px) {
+  .samples { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .questions { grid-template-columns: minmax(0, 1fr); }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cmd-grid, .foot-grid { grid-template-columns: minmax(0, 1fr); }
+  .foot-links { justify-content: flex-start; }
+}
+/* Phone */
+@media (max-width: 720px) {
+  :root { --gutter: 16px; }
+  .hero { padding-top: 48px; }
+  .kicker { margin-bottom: 16px; font-size: 13px; }
+  h1 { font-size: 40px; }
+  .lead { font-size: 18px; }
+  .actions { margin-top: 26px; }
+  .actions .btn { width: 100%; }
+  .hero-visual { margin-top: 40px; }
+  .section { padding-top: 72px; }
+  .section-head { grid-template-columns: minmax(0, 1fr); margin-bottom: 28px; padding-top: 22px; }
+  h2 { font-size: 32px; }
+  .samples, .questions, .steps { grid-template-columns: minmax(0, 1fr); }
+  .steps { margin-top: 28px; }
+  .scroll { overflow-x: auto; overscroll-behavior-x: contain; border-radius: 20px; }
+  .scroll .visual-frame { width: 760px; }
+  .swipe { display: flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--ink-3); font-size: 13px; }
+  .cmd { padding: 16px; grid-template-columns: minmax(0, 1fr); }
+  .cmd .num { display: none; }
+  .nav a { padding: 0 8px; }
+  .copy { width: 32px; padding: 0; justify-content: center; }
+  .copy span { display: none; }
+  .site-foot { margin-top: 88px; }
+}
+@media (max-width: 380px) {
+  .brand span { font-size: 16px; }
+  .nav a { padding: 0 6px; font-size: 13.5px; }
+  .nav ul { gap: 0; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="./" aria-label="pmstack home">
+      <svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect x="3" y="5" width="26" height="6" rx="3"/><rect x="7.5" y="13" width="17" height="6" rx="3"/><rect x="12" y="21" width="8" height="6" rx="3"/></svg>
+      <span>pmstack</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <ul>
+        <li><a href="studio/">Eval Studio</a></li>
+        <li><a href="https://github.com/RyanAlberts/pmstack/blob/main/guides/method.md">Method</a></li>
+        <li><a href="https://github.com/RyanAlberts/pmstack">GitHub</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <p class="kicker rise">Eval Studio for product managers</p>
+      <h1 id="hero-title" class="rise rise-2"><span class="line">Find how your AI product fails.</span> <span class="line">Then prove it's fixed.</span></h1>
+      <p class="lead rise rise-3">Read real traces, name the failure modes, and turn the ones that matter into checks you can trust.</p>
+      <div class="actions rise rise-4">
+        <a class="btn btn-primary" href="studio/">Open Eval Studio
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn-secondary" href="studio/#/open/clinic-booking">Try the dental booking sample</a>
+      </div>
+      <p class="fine rise rise-4">Free. Runs in your browser. Your traces stay on your computer.</p>
+    </div>
+
+    <figure class="wrap visual hero-visual">
+      <div class="scroll">
+        <div class="visual-frame">
+          <picture>
+            <source srcset="assets/visuals/funnel-dark.svg" media="(prefers-color-scheme: dark)">
+            <img src="assets/visuals/funnel-light.svg" width="1200" height="720" fetchpriority="high" decoding="async"
+              alt="The funnel of an AI experience for a dental booking assistant. 100 reviewed conversations move left to right through five stages: understand the request, hand off when needed, check the calendar, book or change, reply to the patient. At each stage, failing conversations drop out under a named failure mode, such as 7 that ignored requests for a person, and green chips show success modes, such as repeating the booking back. A bottom row shows the check that catches each failure mode. 64 of 100 reach a good outcome.">
+          </picture>
+        </div>
+      </div>
+      <p class="swipe" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        Scroll sideways to see the whole funnel.
+      </p>
+      <figcaption><b>How to read it.</b> Each trace is one full conversation or task, with every step the AI took. Green chips are success modes to keep working. Red ribbons are failure modes leaving the funnel, each counted once at the first stage that went wrong. The bottom row is the check that now catches each one: a code check (a rule a computer can test) or an AI judge (a prompt that asks a model for pass or fail).</figcaption>
+    </figure>
+  </section>
+
+  <section class="section" id="samples" aria-labelledby="samples-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="samples-title">Pick a sample product</h2>
+        <p>Each sample is a made-up product with realistic traces. It opens in Eval Studio, ready to review, with nothing to upload or install.</p>
+      </div>
+      <ul class="samples">
+        <li class="sample">
+          <span class="sample-view"><span class="sample-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4z"/></svg></span>Chat or call</span>
+          <h3><a href="studio/#/open/clinic-booking">Maple Dental booking assistant</a></h3>
+          <p>Books, moves, and cancels dental appointments by text message, web chat, and phone.</p>
+          <span class="sample-foot"><span class="count">170 traces</span><span class="pill">Every tab filled in</span><span class="sample-go" aria-hidden="true">Open <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span></span>
+        </li>
+        <li class="sample">
+          <span class="sample-view"><span class="sample-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M4.5 6.5l7.5 6 7.5-6"/></svg></span>Email</span>
+          <h3><a href="studio/#/open/sales-email">Tidewater Scheduling outreach email writer</a></h3>
+          <p>Writes a first outreach email to each sales prospect from a brief and account notes.</p>
+          <span class="sample-foot"><span class="count">40 traces</span><span class="pill">Fresh: start at trace 1</span><span class="sample-go" aria-hidden="true">Open <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span></span>
+        </li>
+        <li class="sample">
+          <span class="sample-view"><span class="sample-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></svg></span>Answer with sources</span>
+          <h3><a href="studio/#/open/policy-answers">Larkspur Labs policy answer bot</a></h3>
+          <p>Answers employee questions about benefits and workplace policy, citing its sources.</p>
+          <span class="sample-foot"><span class="count">40 traces</span><span class="pill">Fresh: start at trace 1</span><span class="sample-go" aria-hidden="true">Open <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span></span>
+        </li>
+        <li class="sample">
+          <span class="sample-view"><span class="sample-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><path d="M4.5 6h.01"/><path d="M4.5 12h.01"/><path d="M4.5 18h.01"/></svg></span>Ranked list or cards</span>
+          <h3><a href="studio/#/open/gift-finder">Copper &amp; Clay Kitchen gift finder</a></h3>
+          <p>Suggests kitchen gifts from an online store, sorted by fit and within the budget.</p>
+          <span class="sample-foot"><span class="count">40 traces</span><span class="pill">Fresh: start at trace 1</span><span class="sample-go" aria-hidden="true">Open <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span></span>
+        </li>
+        <li class="sample">
+          <span class="sample-view"><span class="sample-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v6"/><path d="M4 7h6"/><path d="M14 17h6"/><path d="M5 19L19 5"/></svg></span>Code review</span>
+          <h3><a href="studio/#/open/code-review">Northwind Freight pull request reviewer</a></h3>
+          <p>Reviews pull requests for a small platform team: reads the change, runs tests, comments.</p>
+          <span class="sample-foot"><span class="count">30 traces</span><span class="pill">Fresh: start at trace 1</span><span class="sample-go" aria-hidden="true">Open <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span></span>
+        </li>
+        <li class="sample">
+          <span class="sample-view"><span class="sample-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v4h-4"/><path d="M12 12h.01"/></svg></span>Chat with tool calls</span>
+          <h3><a href="studio/#/open/support-agent">Northstar Internet support agent</a></h3>
+          <p>Explains bills, gives credits, changes plans, and books technicians with account tools.</p>
+          <span class="sample-foot"><span class="count">45 traces</span><span class="pill">Partly reviewed</span><span class="sample-go" aria-hidden="true">Open <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span></span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="how" aria-labelledby="how-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="how-title">How it works</h2>
+        <p>pmstack follows error discovery, the method taught by Hamel Husain and Shreya Shankar. You read before you measure, so every check you build tracks a problem your customers actually hit.</p>
+      </div>
+      <figure class="visual">
+        <div class="scroll">
+          <div class="visual-frame">
+            <picture>
+              <source srcset="assets/visuals/loop-dark.svg" media="(prefers-color-scheme: dark)">
+              <img src="assets/visuals/loop-light.svg" width="1200" height="600" loading="lazy" decoding="async"
+                alt="Error discovery in six steps: read traces, write notes, group into failure modes, count by stage, build checks, then test the checks and keep them running. Steps one to three repeat until new failure modes stop appearing. A problem caused by a missing instruction is fixed right away instead of getting a check.">
+            </picture>
+          </div>
+        </div>
+        <p class="swipe" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          Scroll sideways to see every step.
+        </p>
+      </figure>
+      <ol class="steps">
+        <li class="step"><span class="num" aria-hidden="true">1</span><h3><span class="sr-only">Step 1: </span>Read traces</h3><p>See each trace the way your customer saw it.</p><p class="where">In <b>Review traces</b></p></li>
+        <li class="step"><span class="num" aria-hidden="true">2</span><h3><span class="sr-only">Step 2: </span>Write notes</h3><p>Note the first thing that went wrong, in plain words.</p><p class="where">In <b>Review traces</b></p></li>
+        <li class="step"><span class="num" aria-hidden="true">3</span><h3><span class="sr-only">Step 3: </span>Group into failure modes</h3><p>Sort your notes into a short list of named problems, and name what went well as success modes.</p><p class="where">In <b>Failure modes</b></p></li>
+        <li class="step"><span class="num" aria-hidden="true">4</span><h3><span class="sr-only">Step 4: </span>Count by stage</h3><p>See where each failure mode starts and how often, then decide: fix it now, build a check, or keep watching.</p><p class="where">In <b>Funnel</b></p></li>
+        <li class="step"><span class="num" aria-hidden="true">5</span><h3><span class="sr-only">Step 5: </span>Build checks</h3><p>Turn each failure mode worth tracking into a code check or an AI judge.</p><p class="where">In <b>Checks</b></p></li>
+        <li class="step"><span class="num" aria-hidden="true">6</span><h3><span class="sr-only">Step 6: </span>Test, then keep running</h3><p>Make sure each check agrees with your labels, then run it on every change.</p><p class="where">In <b>Checks</b> and <b>Report</b></p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="patterns" aria-labelledby="patterns-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="patterns-title">Every product is a different funnel</h2>
+        <p>Eval Studio suggests stages from how your AI works, then shows each trace the way your customer saw it: a text message, a phone call, an email, an answer with sources, a ranked list, or a code review. If none of those fit, build your own view.</p>
+      </div>
+      <figure class="visual">
+        <div class="scroll">
+          <div class="visual-frame">
+            <picture>
+              <source srcset="assets/visuals/patterns-dark.svg" media="(prefers-color-scheme: dark)">
+              <img src="assets/visuals/patterns-light.svg" width="1200" height="800" loading="lazy" decoding="async"
+                alt="Six ways AI products are built, drawn on the same stages from understand to answer, with a red mark where failures usually start in each.">
+            </picture>
+          </div>
+        </div>
+        <p class="swipe" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          Scroll sideways to see every stage.
+        </p>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="tool-calls" aria-labelledby="tools-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="tools-title">Checks for agents that use tools</h2>
+        <p>When your AI looks up an account, issues a credit, or books a visit, each tool call can go wrong in three ways. Tool call checks ask one question for each.</p>
+      </div>
+      <figure class="visual">
+        <div class="scroll">
+          <div class="visual-frame">
+            <picture>
+              <source srcset="assets/visuals/tool-calls-dark.svg" media="(prefers-color-scheme: dark)">
+              <img src="assets/visuals/tool-calls-light.svg" width="1200" height="620" loading="lazy" decoding="async"
+                alt="Three questions for every tool call, shown on one example. The customer asks: The outage took us down for two days. Can I get a credit? The agent calls the tool issue_credit with account_id A-1182 and amount 80. The tool returns status pending_approval. The agent replies: Done! $80 is off your next bill. Policy sits on the call: allowed, verified, confirmed, under the limit? Here it fails, because a credit over $50 needs a supervisor. It is checked with a code check of policy rules. Relevance spans the request and the call: right tool, right details for what they asked? It is checked with a code check that uses an intent map, or with an AI judge. Output grounding spans the tool result and the reply: does the reply match what the tool returned? Here it fails, because a pending credit is shown as done. It is checked with a code check of the values, then an AI judge. Policy rules come from your company. Relevance and grounding problems show up when you read traces.">
+            </picture>
+          </div>
+        </div>
+        <p class="swipe" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          Scroll sideways to see the whole call.
+        </p>
+      </figure>
+      <ol class="questions">
+        <li class="question">
+          <h3><span class="q-word">Policy:</span> Is this call allowed?</h3>
+          <p>Your company's rules for which tools the agent may use, when, and with what details.</p>
+          <span class="pill">Code check: policy rules</span>
+        </li>
+        <li class="question">
+          <h3><span class="q-word">Relevance:</span> Is it the right call for what the customer asked?</h3>
+          <p>Right tool, right details, no calls the request didn't need, none it skipped.</p>
+          <span class="pill">Code check: intent map, or AI judge</span>
+        </li>
+        <li class="question">
+          <h3><span class="q-word">Output grounding:</span> Does the reply match what the tool returned?</h3>
+          <p>No contradicted values, no invented facts, no dropped qualifiers (pending shown as done), no success claimed after a failed call.</p>
+          <span class="pill">Code check: values, then AI judge</span>
+        </li>
+      </ol>
+      <div class="tools-foot">
+        <div>
+          <p>Write your policy rules down up front, then read traces to find the rules you forgot. Confirm relevance and output grounding problems in your own traces, then start from <a href="https://github.com/RyanAlberts/pmstack/tree/main/templates/tool-calls">the templates</a>: an enterprise policy file, an intent map, and AI judge prompts.</p>
+          <div class="slash">
+            <span class="slash-label">In Claude Code:</span><code>/pmstack:tool-policy</code><code>/pmstack:tool-relevance</code><code>/pmstack:tool-grounding</code>
+          </div>
+        </div>
+        <div class="linkrow">
+          <a href="studio/#/open/support-agent">Try the support agent sample
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+          <a href="https://github.com/RyanAlberts/pmstack/blob/main/guides/tool-call-evals.md">Read the guide
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="claude-code" aria-labelledby="cc-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="cc-title">Use it with Claude Code</h2>
+        <p>The pmstack skills set up your traces, start Eval Studio on your own folder, and help you group notes, write AI judges, and test them. You still make every call on what counts as a failure.</p>
+      </div>
+      <div class="cmd-grid">
+        <ol class="cmds">
+          <li class="cmd"><span class="num" aria-hidden="true">1</span><span class="cmd-label">Add the pmstack marketplace</span><div class="code"><pre><code><span class="ln">/plugin marketplace add RyanAlberts/pmstack</span></code></pre></div></li>
+          <li class="cmd"><span class="num" aria-hidden="true">2</span><span class="cmd-label">Install the plugin</span><div class="code"><pre><code><span class="ln">/plugin install pmstack@pmstack</span></code></pre></div></li>
+          <li class="cmd"><span class="num" aria-hidden="true">3</span><span class="cmd-label">Start: it asks a few questions and picks the right skill</span><div class="code"><pre><code><span class="ln">/pmstack:start</span></code></pre></div></li>
+        </ol>
+        <div class="aside">
+          <h3>Or run it on your computer</h3>
+          <p>Node 20 or newer, nothing to install. Point it at your own folder of traces the same way.</p>
+          <div class="code"><pre><code><span class="ln">git clone https://github.com/RyanAlberts/pmstack</span><span class="ln">cd pmstack</span><span class="ln">node bin/pmstack.mjs studio examples/quickstart --open</span></code></pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-grid">
+    <div>
+      <p>pmstack follows the error discovery method taught by Hamel Husain and Shreya Shankar: see their <a href="https://hamel.dev/blog/posts/evals-faq/">evals FAQ</a> and <a href="https://maven.com/parlance-labs/evals">course</a>. Pattern names follow Anthropic's <a href="https://www.anthropic.com/engineering/building-effective-agents">Building effective agents</a>. pmstack is independent and not affiliated with them.</p>
+      <p>MIT license. Made by Ryan Alberts.</p>
+    </div>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="https://github.com/RyanAlberts/pmstack">GitHub</a>
+      <a href="https://github.com/RyanAlberts/pmstack/blob/main/guides/credits.md">Credits</a>
+      <a href="https://github.com/RyanAlberts/pmstack/blob/main/LICENSE">License</a>
+      <a href="eval-readiness/">Eval readiness check</a>
+    </nav>
+  </div>
+</footer>
+
+<p class="sr-only" id="copy-status" aria-live="polite"></p>
+<script>
+// Optional: a copy button on each command. The page works fully without it.
+(function () {
+  if (!navigator.clipboard) return;
+  var status = document.getElementById('copy-status');
+  var icon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 8h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><path d="M16 8V5a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h2"/></svg>';
+  var done = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4.5 12.5l5 5L19.5 7"/></svg>';
+  document.querySelectorAll('.code').forEach(function (box) {
+    var code = box.querySelector('code');
+    var text = Array.prototype.map.call(code.querySelectorAll('.ln'), function (l) { return l.textContent; }).join('\n') || code.textContent;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy';
+    btn.innerHTML = icon + '<span>Copy</span>';
+    btn.setAttribute('aria-label', 'Copy: ' + text.split('\n')[0]);
+    var label = btn.querySelector('span');
+    var timer;
+    btn.addEventListener('click', function () {
+      navigator.clipboard.writeText(text).then(function () {
+        label.textContent = 'Copied';
+        btn.firstChild.outerHTML = done;
+        status.textContent = 'Copied to the clipboard.';
+        btn.setAttribute('data-done', '');
+        clearTimeout(timer);
+        timer = setTimeout(function () { label.textContent = 'Copy'; btn.firstChild.outerHTML = icon; btn.removeAttribute('data-done'); status.textContent = ''; }, 1600);
+      }, function () { label.textContent = 'Select and copy'; status.textContent = 'Could not copy. Select the text and copy it yourself.'; });
+    });
+    box.appendChild(btn);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{"traces":[
+  {"id":"dup","input":"first","output":"one"},
+  {"id":"dup","input":"second","output":"two"},
+  {"id":"dup","input":"third","output":"three"}
+]}

@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trace views</title>
+<meta name="description" content="Every Eval Studio trace view, drawn from fixtures or from any sample trace.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../icon.svg" type="image/svg+xml">
+<script>try{var t=new URLSearchParams(location.search).get('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/renderers.css">
+<style>
+  /* Dev page only. Tokens from tokens.css; class prefix dv-. */
+  .dv-page { width: 100%; max-width: 1180px; margin: 0 auto; padding: 24px 24px 64px; }
+  .dv-top { display: grid; gap: 12px; margin-bottom: 24px; }
+  .dv-title { font-size: var(--text-xl); }
+  .dv-lead { margin: 0; color: var(--ink-2); max-width: 70ch; }
+  .dv-bar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+    margin: 0 -24px 24px; padding: 10px 24px;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(6px);
+  }
+  .dv-bar .check-row { font-size: var(--text-xs); color: var(--ink-2); white-space: nowrap; }
+  .dv-bar select { max-width: 100%; }
+  .dv-grow { flex: 1 1 auto; }
+  .dv-status { font-size: var(--text-xs); color: var(--ink-3); }
+  .dv-status strong { color: var(--ink); font-weight: 600; }
+  .dv-cases { display: grid; gap: 40px; }
+  .dv-case { display: grid; gap: 12px; min-width: 0; }
+  .dv-case-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .dv-case-title { font-size: var(--text-md); }
+  .dv-case-file { font: 400 var(--text-xs)/1.3 var(--font-mono); color: var(--ink-3); }
+  .dv-frame { min-width: 0; }
+  .dv-frame.is-narrow { width: 375px; max-width: 100%; margin: 0 auto; padding: 16px; border: 1px dashed var(--line); border-radius: 12px; background: var(--bg); }
+  .dv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }
+  .dv-grid .dv-case-head { border: 0; padding: 0; }
+  .dv-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+  .dv-picker select { min-width: 0; max-width: min(520px, 100%); }
+  .dv-msg { padding: 14px 16px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+  .dv-msg.is-bad { background: var(--bad-soft); border-color: transparent; }
+  .dv-trace { display: grid; gap: 16px; min-width: 0; }
+  .dv-trace-head { display: grid; gap: 8px; }
+  .dv-trace-title { font-size: var(--text-lg); overflow-wrap: anywhere; }
+  .dv-review { font-size: var(--text-xs); color: var(--ink-2); padding: 8px 12px; border-radius: 8px; background: var(--surface-2); }
+  .dv-review strong { color: var(--ink); }
+  @media (max-width: 899px) { .dv-grid { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 640px) {
+    .dv-page { padding: 16px 16px 48px; }
+    .dv-bar { margin: 0 -16px 20px; padding: 10px 16px; }
+  }
+</style>
+<script type="importmap">{"imports":{"preact":"../vendor/preact.module.js","preact/hooks":"../vendor/hooks.module.js","htm":"../vendor/htm.module.js","pmstack/ui":"../ui.mjs","pmstack/renderers/common":"../renderers/common.mjs"}}</script>
+<script type="module">
+import { html, render, useState, useEffect, useMemo, useKeys, Segmented, Button, classes } from 'pmstack/ui';
+import * as lib from '../lib/index.mjs';
+import { TraceView, defaultShowHidden } from '../renderers/index.mjs';
+import { ContextPanel, MetaChips } from 'pmstack/renderers/common';
+
+const params = new URLSearchParams(location.search);
+
+// ------------------------------------------------------------------ setups for the fixtures (stages copied from the samples)
+const CLINIC = {
+  product: 'Maple Dental booking assistant', userLabel: 'patient', renderer: 'chat',
+  stages: [
+    { id: 'understand', label: 'Understand the request', column: 'understand', match: {} },
+    { id: 'handoff', label: 'Hand off when needed', column: 'plan', match: { tools: ['transfer_to_staff'], kinds: ['handoff'] } },
+    { id: 'lookup', label: 'Check the calendar', column: 'gather', match: { tools: ['find_slots', 'get_patient'] } },
+    { id: 'act', label: 'Book or change', column: 'act', match: { tools: ['book_appointment', 'cancel_appointment', 'reschedule_appointment'] } },
+    { id: 'reply', label: 'Reply to the patient', column: 'answer', match: { last: 'assistant' } },
+  ],
+};
+const SALES = {
+  product: 'Tidewater Scheduling outreach email writer', userLabel: 'prospect', renderer: 'email',
+  stages: [
+    { id: 'understand', label: 'Read the brief and notes', column: 'understand', match: { tools: ['lookup_crm'] } },
+    { id: 'draft', label: 'First draft', column: 'plan', match: { kinds: ['llm'], tools: ['draft'] } },
+    { id: 'gate', label: 'Quality gate', column: 'check', match: { kinds: ['guardrail'], tools: ['self_check'] } },
+    { id: 'final', label: 'Final pass', column: 'answer', match: { last: 'assistant' } },
+  ],
+};
+const POLICY = {
+  product: 'Larkspur Labs policy answer bot', userLabel: 'employee', renderer: 'answer',
+  stages: [
+    { id: 'understand', label: 'Understand the request', column: 'understand', match: {} },
+    { id: 'gather', label: 'Look things up', column: 'gather', match: { kinds: ['retrieval'], tools: ['search_policies'] } },
+    { id: 'act', label: 'Use tools', column: 'act', match: { kinds: ['tool_call', 'tool_result', 'tool'] } },
+    { id: 'answer', label: 'Reply', column: 'answer', match: { last: 'assistant' } },
+  ],
+};
+const DOC = { ...POLICY, product: 'Larkspur Labs policy writer', userLabel: 'employee', renderer: 'document',
+  stages: [...POLICY.stages.slice(0, 2), { id: 'draft', label: 'Draft', column: 'plan', match: { kinds: ['llm'] } },
+    { id: 'check', label: 'Quality gate', column: 'check', match: { kinds: ['guardrail'] } }, { id: 'answer', label: 'Final page', column: 'answer', match: { last: 'assistant' } }] };
+const REVIEW = {
+  product: 'Pull request review agent', userLabel: 'developer', renderer: 'code-review',
+  stages: [
+    { id: 'clarify', label: 'Clarify the task', column: 'understand', match: { tools: ['read_diff'] } },
+    { id: 'gather', label: 'Gather context', column: 'gather', match: { kinds: ['retrieval'], tools: ['read_file'] } },
+    { id: 'plan', label: 'Plan', column: 'plan', match: {} },
+    { id: 'act', label: 'Take actions', column: 'act', match: { tools: ['post_comment'] } },
+    { id: 'check', label: 'Check results', column: 'check', match: { kinds: ['guardrail'], tools: ['run_tests'] } },
+    { id: 'report', label: 'Report back', column: 'answer', match: { last: 'assistant' } },
+  ],
+};
+const GIFT = {
+  product: 'Copper & Clay Kitchen gift finder', userLabel: 'shopper', renderer: 'list',
+  stages: [
+    { id: 'classify', label: 'Sort the request', column: 'understand', match: {} },
+    { id: 'route', label: 'Pick the right path', column: 'plan', match: { kinds: ['handoff'], tools: ['route_request'] } },
+    { id: 'handle', label: 'Handle it', column: 'act', match: { tools: ['search_catalog'] } },
+    { id: 'answer', label: 'Reply', column: 'answer', match: { last: 'assistant' } },
+  ],
+};
+const FIELDS = { product: 'CRM form filler', userLabel: 'sales rep', renderer: 'fields',
+  stages: [{ id: 'extract', label: 'Read the notes', column: 'gather', match: { kinds: ['llm'] } }, { id: 'answer', label: 'Fill the form', column: 'answer', match: { last: 'assistant' } }] };
+const LAYOUT = { ...GIFT, renderer: 'layout', layout: [
+  { label: "Shopper's first message", path: 'messages[1].content', as: 'text' },
+  { label: 'Conversation', path: 'messages', as: 'chat' },
+  { label: 'What the search returned', path: 'steps[1].output.items', as: 'table' },
+  { label: 'Picks shown', path: 'output.items', as: 'cards' },
+  { label: 'Intro line', path: 'output.intro', as: 'markdown' },
+  { label: 'Details', path: 'metadata', as: 'details' },
+  { label: 'Search request', path: 'steps[1].input', as: 'json' },
+  { label: 'Coupon offered', path: 'output.coupon', as: 'text' },
+] };
+const AUTO = { product: 'Larkspur Labs policy answer bot', userLabel: 'employee', renderer: 'auto', stages: [] };
+const HOSTILE = { ...CLINIC, renderer: 'chat' };
+
+const FIXTURES = [
+  { file: 'chat', title: 'Chat or call: text messages', experience: CLINIC },
+  { file: 'chat-web', title: 'Chat or call: web chat', experience: CLINIC },
+  { file: 'chat-voice', title: 'Chat or call: phone call', experience: CLINIC },
+  { file: 'email', title: 'Email', experience: SALES },
+  { file: 'document', title: 'Document', experience: DOC },
+  { file: 'answer', title: 'Answer with sources', experience: POLICY },
+  { file: 'agent', title: 'Agent steps', experience: { ...REVIEW, renderer: 'agent' } },
+  { file: 'code-review', title: 'Code review', experience: REVIEW },
+  { file: 'fields', title: 'Form fields', experience: FIELDS },
+  { file: 'list', title: 'Ranked list or cards', experience: GIFT },
+  { file: 'layout', title: 'Build your own view', experience: LAYOUT },
+  { file: 'auto', title: 'Automatic', experience: AUTO },
+  { file: 'hostile', title: 'Hostile text', experience: HOSTILE },
+];
+const byFile = Object.fromEntries(FIXTURES.map((f) => [f.file, f]));
+
+// Example highlights and badges, to see the AI suggestion outline, the note highlight, and policy badges.
+function examples(file, trace) {
+  const out = trace.steps.find((s) => s.isOutput);
+  const firstCall = trace.steps.find((s) => s.kind === 'tool_call');
+  const hl = [];
+  const badges = {};
+  if (file === 'chat' && out) hl.push({ stepId: out.id, quote: '**New time:**', tone: 'ai' });
+  if (file === 'chat' && firstCall) badges[firstCall.id] = [{ tone: 'warn', text: 'Check: looked up by phone only' }];
+  if (file === 'chat-web' && out) hl.push({ stepId: out.id, quote: 'free lot behind the building', tone: 'note' });
+  if (file === 'chat-voice') {
+    const turn = trace.steps.find((s) => s.kind === 'user');
+    if (turn) hl.push({ stepId: turn.id, quote: turn.text.split(/[.,]/)[0].slice(0, 30), tone: 'ai' });
+  }
+  if (file === 'email' && out) hl.push({ stepId: out.id, quote: 'cut no-shows from 12% to 7%', tone: 'ai' });
+  if (file === 'answer' && out) hl.push({ stepId: out.id, quote: '90 days', tone: 'ai' });
+  if (file === 'list' && out) {
+    hl.push({ stepId: out.id, quote: 'crackly crust', tone: 'ai' });
+    badges['out.i0'] = [{ tone: 'bad', text: 'Not found in tool results: $72.00' }];
+  }
+  if (file === 'code-review') hl.push({ stepId: 'out', quote: 'rows.Err()', tone: 'ai' });
+  if (file === 'agent' && firstCall) badges[firstCall.id] = [{ tone: 'bad', text: 'Breaks policy: Do this first' }];
+  if (file === 'agent') {
+    const tests = trace.steps.find((s) => /test/.test(s.name || ''));
+    if (tests) badges[tests.id] = [{ tone: 'bad', text: 'Breaks policy: Never approve with failing tests' }];
+  }
+  if (file === 'fields') hl.push({ stepId: 'out.f3', quote: '(503) 555-0142', tone: 'ai' });
+  if (file === 'hostile') hl.push({ stepId: 'm4', quote: "$& $' $` $1 $$", tone: 'ai' });
+  return { highlights: hl, stepBadges: badges };
+}
+
+// Highlights and badges from the address: &hl=<stepId>~<quote> (AI suggestion), &note=<stepId>~<quote>,
+// &badge=<stepId>~<text> (red) or &warn=<stepId>~<text>. Repeat a parameter for more than one.
+function fromParams() {
+  const split = (v) => { const i = v.indexOf('~'); return i > 0 ? [v.slice(0, i), v.slice(i + 1)] : null; };
+  const highlights = [];
+  const stepBadges = {};
+  for (const [key, tone] of [['hl', 'ai'], ['note', 'note']]) {
+    for (const v of params.getAll(key)) { const p = split(v); if (p) highlights.push({ stepId: p[0], quote: p[1], tone }); }
+  }
+  for (const [key, tone] of [['badge', 'bad'], ['warn', 'warn']]) {
+    for (const v of params.getAll(key)) { const p = split(v); if (p) (stepBadges[p[0]] = stepBadges[p[0]] || []).push({ tone, text: p[1] }); }
+  }
+  return { highlights, stepBadges };
+}
+const URL_EXTRA = fromParams();
+function merge(a, b) {
+  const stepBadges = { ...a.stepBadges };
+  for (const [k, v] of Object.entries(b.stepBadges)) stepBadges[k] = [...(stepBadges[k] || []), ...v];
+  return { highlights: [...a.highlights, ...b.highlights], stepBadges };
+}
+
+// ------------------------------------------------------------------ helpers
+function setParam(key, value) {
+  const u = new URL(location.href);
+  if (value == null || value === '' || value === false) u.searchParams.delete(key);
+  else u.searchParams.set(key, value === true ? '1' : String(value));
+  history.replaceState(null, '', u);
+}
+
+function applyTheme(theme) {
+  if (theme === 'light' || theme === 'dark') document.documentElement.setAttribute('data-theme', theme);
+  else document.documentElement.removeAttribute('data-theme');
+}
+
+const cache = new Map();
+function getJson(url) {
+  if (!cache.has(url)) {
+    cache.set(url, fetch(url).then((r) => {
+      if (!r.ok) throw new Error(`${url} answered ${r.status}`);
+      return r.json();
+    }));
+  }
+  return cache.get(url);
+}
+
+function useJson(url) {
+  const [state, setState] = useState({ loading: true, data: null, error: null });
+  useEffect(() => {
+    if (!url) return undefined;
+    let live = true;
+    setState({ loading: true, data: null, error: null });
+    getJson(url).then((data) => live && setState({ loading: false, data, error: null }))
+      .catch((error) => live && setState({ loading: false, data: null, error }));
+    return () => { live = false; };
+  }, [url]);
+  return state;
+}
+
+// ------------------------------------------------------------------ one trace, with the review panel's pieces around it
+function Case({ file, fixture, opts, grid }) {
+  const { data, error, loading } = useJson(`fixtures/${file}.json`);
+  const [picked, setPicked] = useState(null);
+  const [retrieval, setRetrieval] = useState(file === 'answer' ? { needed: ['hr-12'], missing: [] } : null);
+  const trace = useMemo(() => (data ? lib.normalizeTrace(data, fixture.experience) : null), [data]);
+  const extra = useMemo(() => merge(trace && opts.demo ? examples(file, trace) : { highlights: [], stepBadges: {} }, URL_EXTRA), [trace, opts.demo]);
+  const view = trace ? lib.viewFor(trace, fixture.experience) : null;
+  return html`<section class="dv-case" id=${'case-' + file}>
+    <header class="dv-case-head">
+      <h2 class="dv-case-title">${fixture.title}</h2>
+      <span class="dv-case-file">fixtures/${file}.json${view ? ` · view ${view}` : ''}</span>
+      ${picked && html`<span class="dv-status">First problem: <strong>${picked.id}</strong>${picked.stage ? ` (stage ${picked.stage})` : ''}
+        <${Button} kind="ghost" size="sm" onClick=${() => setPicked(null)}>Clear<//></span>`}
+    </header>
+    <div class=${classes('dv-frame', opts.narrow && 'is-narrow')}>
+      ${loading && html`<p class="dv-msg">Loading ${file}.json...</p>`}
+      ${error && html`<p class="dv-msg is-bad">Could not load fixtures/${file}.json: ${error.message}</p>`}
+      ${trace && html`<div class="dv-trace">
+        ${!grid && html`<${ContextPanel} context=${trace.context} compact=${opts.compact} />`}
+        <${TraceView} trace=${trace} experience=${fixture.experience} showHidden=${opts.hidden}
+          compact=${opts.compact} pickedStepId=${picked && picked.id}
+          onPickStep=${opts.pick ? (id, stage) => setPicked({ id, stage }) : undefined}
+          highlights=${extra.highlights} stepBadges=${extra.stepBadges}
+          retrieval=${retrieval} onRetrieval=${opts.pick ? setRetrieval : undefined} />
+      </div>`}
+    </div>
+  </section>`;
+}
+
+// ------------------------------------------------------------------ any sample trace: ?sample=clinic-booking&trace=t-0003
+function SampleCase({ sampleId, traceId, opts, onTrace }) {
+  const safe = /^[a-z0-9][a-z0-9-]{0,60}$/.test(sampleId) ? sampleId : '';
+  const { data: project, error, loading } = useJson(safe ? `../samples/${safe}.json` : null);
+  const [picked, setPicked] = useState(null);
+  const [retrieval, setRetrieval] = useState(null);
+  const traces = project ? project.traces : [];
+  const id = traceId && traces.some((t) => String(t.id) === traceId) ? traceId : (traces[0] && String(traces[0].id));
+  const raw = traces.find((t) => String(t.id) === id);
+  const exp = project ? project.experience : null;
+  const trace = useMemo(() => (raw ? lib.normalizeTrace(raw, exp) : null), [raw, exp]);
+  const review = project && id ? project.reviews?.[id] : null;
+  useEffect(() => {
+    setPicked(review && review.step ? { id: review.step, stage: review.stage } : null);
+    setRetrieval(review && review.retrieval ? review.retrieval : null);
+  }, [sampleId, id]);
+  const index = traces.findIndex((t) => String(t.id) === id);
+  const go = (d) => {
+    const next = traces[index + d];
+    if (next) onTrace(String(next.id));
+  };
+  useKeys({ j: () => go(1), k: () => go(-1) }, { active: !!project });
+  if (!safe) return html`<p class="dv-msg is-bad">Sample names use lowercase letters, numbers, and dashes.</p>`;
+  if (loading) return html`<p class="dv-msg">Loading the ${safe} sample...</p>`;
+  if (error) return html`<p class="dv-msg is-bad">Could not load the ${safe} sample: ${error.message}</p>`;
+  if (!trace) return html`<p class="dv-msg">This sample has no traces.</p>`;
+  const view = lib.viewFor(trace, exp);
+  const hidden = opts.hidden ?? exp.showHiddenDefault ?? defaultShowHidden(view);
+  const modes = new Map((project.modes || []).map((m) => [m.id, m.name]));
+  return html`<section class="dv-trace">
+    <div class="dv-picker">
+      <${Button} kind="secondary" size="sm" icon="arrow-left" title="Previous trace (K)" disabled=${index <= 0} onClick=${() => go(-1)} />
+      <label class="sr-only" for="dv-trace-pick">Trace</label>
+      <select id="dv-trace-pick" class="select" value=${id} onChange=${(e) => onTrace(e.currentTarget.value)}>
+        ${traces.map((t) => html`<option value=${String(t.id)} key=${t.id}>${t.id}  ${String(t.title || '').slice(0, 70)}</option>`)}
+      </select>
+      <${Button} kind="secondary" size="sm" icon="arrow-right" title="Next trace (J)" disabled=${index >= traces.length - 1} onClick=${() => go(1)} />
+      <span class="dv-status">${index + 1} of ${traces.length} · view <strong>${view}</strong></span>
+    </div>
+    <div class="dv-trace-head">
+      <h2 class="dv-trace-title">${trace.title}</h2>
+      <${MetaChips} metadata=${trace.metadata} keys=${exp.filters} />
+      ${review && review.verdict && html`<p class="dv-review"><strong>${review.verdict === 'pass' ? 'Good' : review.verdict === 'fail' ? 'Problem' : review.verdict === 'skip' ? 'Not sure yet' : 'Label only'}</strong>
+        ${review.note ? ': ' + review.note : ''}${(review.modes || []).length ? ` (${review.modes.map((m) => modes.get(m) || m).join(', ')})` : ''}</p>`}
+      ${picked && html`<span class="dv-status">First problem: <strong>${picked.id}</strong>${picked.stage ? ` (stage ${picked.stage})` : ''}
+        <${Button} kind="ghost" size="sm" onClick=${() => setPicked(null)}>Clear<//></span>`}
+    </div>
+    <div class=${classes('dv-frame', opts.narrow && 'is-narrow')}>
+      <div class="dv-trace">
+        <${ContextPanel} context=${trace.context} compact=${opts.compact} />
+        <${TraceView} trace=${trace} experience=${exp} showHidden=${hidden} compact=${opts.compact}
+          highlights=${URL_EXTRA.highlights} stepBadges=${URL_EXTRA.stepBadges}
+          pickedStepId=${picked && picked.id} onPickStep=${opts.pick ? (sid, stage) => setPicked({ id: sid, stage }) : undefined}
+          retrieval=${retrieval} onRetrieval=${opts.pick ? setRetrieval : undefined} />
+      </div>
+    </div>
+  </section>`;
+}
+
+// ------------------------------------------------------------------ page
+const HIDDEN_OPTIONS = [{ value: 'default', label: 'View default' }, { value: 'show', label: 'Shown' }, { value: 'hide', label: 'Folded' }];
+
+function App() {
+  const [theme, setTheme] = useState(params.get('theme') || 'auto');
+  const [hidden, setHidden] = useState(params.get('hidden') === '1' ? 'show' : params.get('hidden') === '0' ? 'hide' : 'default');
+  const [compact, setCompact] = useState(params.get('compact') === '1');
+  const [demo, setDemo] = useState(params.get('demo') === '1');
+  const [pick, setPick] = useState(params.get('pick') !== '0');
+  const [narrow, setNarrow] = useState(params.get('narrow') === '1');
+  const [sampleTrace, setSampleTrace] = useState(params.get('trace'));
+  const sample = params.get('sample');
+  const only = params.get('fixture') || params.get('view');
+  const gridList = (params.get('views') || '').split(',').map((s) => s.trim()).filter((s) => byFile[s]);
+  const bare = params.get('bare') === '1';
+  useEffect(() => applyTheme(theme), [theme]);
+  const opts = { hidden: hidden === 'show' ? true : hidden === 'hide' ? false : undefined, compact, demo, pick, narrow };
+  const cases = only ? FIXTURES.filter((f) => f.file === only) : FIXTURES;
+
+  const bar = html`<div class="dv-bar" role="region" aria-label="Display options">
+    <${Segmented} label="Theme" value=${theme} onChange=${(v) => { setTheme(v); setParam('theme', v === 'auto' ? null : v); }}
+      options=${[{ value: 'auto', label: 'Auto' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]} />
+    <label class="check-row"><span>Behind-the-scenes steps</span>
+      <select class="select" value=${hidden} onChange=${(e) => { const v = e.currentTarget.value; setHidden(v); setParam('hidden', v === 'show' ? '1' : v === 'hide' ? '0' : null); }}>
+        ${HIDDEN_OPTIONS.map((o) => html`<option value=${o.value} key=${o.value}>${o.label}</option>`)}
+      </select></label>
+    <label class="check-row"><input type="checkbox" checked=${compact} onChange=${(e) => { setCompact(e.currentTarget.checked); setParam('compact', e.currentTarget.checked); }} />Compact</label>
+    <label class="check-row"><input type="checkbox" checked=${pick} onChange=${(e) => { setPick(e.currentTarget.checked); setParam('pick', e.currentTarget.checked ? null : '0'); }} />Pick steps</label>
+    <label class="check-row"><input type="checkbox" checked=${demo} onChange=${(e) => { setDemo(e.currentTarget.checked); setParam('demo', e.currentTarget.checked); }} />Example highlights and badges</label>
+    <label class="check-row"><input type="checkbox" checked=${narrow} onChange=${(e) => { setNarrow(e.currentTarget.checked); setParam('narrow', e.currentTarget.checked); }} />Phone width</label>
+    <span class="dv-grow"></span>
+    ${(only || sample || gridList.length) && html`<a class="dv-status" href="renderers.html">All fixtures</a>`}
+  </div>`;
+
+  if (gridList.length) {
+    return html`<main class="dv-page">
+      ${!bare && bar}
+      <div class="dv-grid">${gridList.map((f) => html`<${Case} key=${f} file=${f} fixture=${byFile[f]} opts=${opts} grid=${true} />`)}</div>
+    </main>`;
+  }
+  return html`<main class="dv-page">
+    ${!bare && html`<header class="dv-top">
+      <h1 class="dv-title">Trace views</h1>
+      <p class="dv-lead">${sample
+        ? 'A sample trace drawn the way the reviewer sees it. Press J and K to move between traces.'
+        : 'Every view, drawn from one trace each in fixtures/. Add ?sample=clinic-booking&trace=t-0003 to draw any sample trace.'}</p>
+    </header>`}
+    ${!bare && bar}
+    ${sample
+      ? html`<${SampleCase} sampleId=${sample} traceId=${sampleTrace} opts=${opts} onTrace=${(t) => { setSampleTrace(t); setParam('trace', t); }} />`
+      : html`<div class="dv-cases">${cases.length
+          ? cases.map((f) => html`<${Case} key=${f.file} file=${f.file} fixture=${f} opts=${opts} />`)
+          : html`<p class="dv-msg is-bad">No fixture named ${only}.</p>`}</div>`}
+  </main>`;
+}
+
+render(html`<${App} />`, document.getElementById('app'));
+</script>
+</head>
+<body>
+<div id="app"></div>
+</body>
+</html>

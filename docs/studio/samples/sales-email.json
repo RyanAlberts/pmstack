@@ -1,0 +1,3425 @@
+{
+  "format": "pmstack.project/1",
+  "revision": 1,
+  "id": "sales-email",
+  "name": "Tidewater Scheduling outreach email writer",
+  "sample": true,
+  "createdAt": "2026-09-23T23:30:00Z",
+  "updatedAt": "2026-09-23T23:30:00Z",
+  "experience": {
+    "product": "Tidewater Scheduling outreach email writer",
+    "userLabel": "prospect",
+    "customerGoal": "Get a short, accurate email from a Tidewater rep that gets their details right and makes the next step easy.",
+    "renderer": "email",
+    "rendererBy": null,
+    "pattern": "chain",
+    "stages": [
+      {
+        "id": "understand",
+        "label": "Read brief and CRM notes",
+        "column": "understand",
+        "match": {
+          "tools": [
+            "lookup_crm"
+          ]
+        }
+      },
+      {
+        "id": "draft",
+        "label": "Write the draft",
+        "column": "plan",
+        "match": {
+          "kinds": [
+            "llm"
+          ],
+          "tools": [
+            "draft"
+          ]
+        }
+      },
+      {
+        "id": "gate",
+        "label": "Self-check",
+        "column": "check",
+        "match": {
+          "kinds": [
+            "guardrail"
+          ],
+          "tools": [
+            "self_check"
+          ]
+        }
+      },
+      {
+        "id": "final",
+        "label": "Final email",
+        "column": "answer",
+        "match": {
+          "last": "assistant"
+        }
+      }
+    ],
+    "fieldMap": null,
+    "layout": null,
+    "filters": [
+      "persona",
+      "industry",
+      "deal stage"
+    ],
+    "reviewer": "",
+    "gate": 10,
+    "groupGate": 30
+  },
+  "tracesFile": null,
+  "traces": [
+    {
+      "id": "t-0001",
+      "title": "First touch: Cedar Row Dental owner, no-show playbook download",
+      "metadata": {
+        "channel": "email",
+        "persona": "clinic owner",
+        "industry": "healthcare",
+        "deal stage": "new lead",
+        "email type": "first touch",
+        "rep": "Jess Moreau",
+        "rep action": "sent as is",
+        "drafted": "2026-09-08T16:12:00Z"
+      },
+      "context": {
+        "Brief": "first touch. she downloaded the no-show playbook. mention the Northmoor Dental case (no-shows 12% to 7% in one quarter). offer a 20 min call to show text reminders",
+        "CRM notes": "Contact: Dr. Helen Achterberg, Owner (helen@cedarrowdental.example)\nAccount: Cedar Row Dental, 2 offices (Beaverton, Tigard), 19 staff\nDeal: New lead\nScheduling today: Front desk confirms appointments by phone; paper day sheets\nActivity:\n- Sep 4: Downloaded the No-show playbook.\n- Sep 4: Web form comment: \"Our front desk spends Monday mornings calling patients to confirm the week.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Helen Achterberg, Cedar Row Dental",
+          "documents": [
+            {
+              "id": "contact-1000",
+              "title": "Contact: Dr. Helen Achterberg",
+              "text": "Owner at Cedar Row Dental. Email helen@cedarrowdental.example.",
+              "score": 0.95
+            },
+            {
+              "id": "account-1017",
+              "title": "Account: Cedar Row Dental",
+              "text": "2 offices (Beaverton, Tigard), 19 staff. Deal: New lead. Scheduling today: Front desk confirms appointments by phone; paper day sheets.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-1041",
+              "title": "Recent activity",
+              "text": "Sep 4: Downloaded the No-show playbook. Sep 4: Web form comment: \"Our front desk spends Monday mornings calling patients to confirm the week.\"",
+              "score": 0.86
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "first touch",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Your Monday confirmation calls\n\nHi Dr. Achterberg,\n\nThanks for downloading the No-show playbook. You mentioned your front desk spends Monday mornings calling patients to confirm the week. That is the exact job Tidewater Appointments takes over: patients get a text two days ahead, reply C to confirm, and your team only calls the few who don't answer.\n\nPractices like Northmoor Dental Group cut no-shows from 12% to 7% in one quarter this way.\n\nWould you have 20 minutes this Thursday or Friday for me to show you how it would look for Beaverton and Tigard?\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "first touch",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 92,
+            "notes": "Within 150 words (92). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Jess Moreau <jess.moreau@tidewaterscheduling.example>",
+        "to": "Helen Achterberg <helen@cedarrowdental.example>",
+        "subject": "Your Monday confirmation calls",
+        "body": "Hi Dr. Achterberg,\n\nThanks for downloading the No-show playbook. You mentioned your front desk spends Monday mornings calling patients to confirm the week. That is the exact job Tidewater Appointments takes over: patients get a text two days ahead, reply C to confirm, and your team only calls the few who don't answer.\n\nPractices like Northmoor Dental Group cut no-shows from 12% to 7% in one quarter this way.\n\nWould you have 20 minutes this Thursday or Friday for me to show you how it would look for Beaverton and Tigard?\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 8. Reply on Sep 9: \"Friday at 1 works. Please loop in my office manager, Rosa.\""
+    },
+    {
+      "id": "t-0002",
+      "title": "Confirm discovery call: Halvorsen Freight VP Ops, overtime by site",
+      "metadata": {
+        "channel": "email",
+        "persona": "VP Operations",
+        "industry": "logistics",
+        "deal stage": "discovery call booked",
+        "email type": "call confirmation",
+        "rep": "Tomás Rivera",
+        "rep action": "sent as is",
+        "drafted": "2026-09-08T18:40:00Z"
+      },
+      "context": {
+        "Brief": "Confirm the 17th and ask her to bring Q2 overtime by site if she has it. Keep it tight, she's busy.",
+        "CRM notes": "Contact: Renata Solberg, VP Operations (renata.solberg@halvorsenfreight.example)\nAccount: Halvorsen Freight, 3 cross-dock warehouses (Kent, Auburn, Sumner), about 410 hourly staff\nDeal: Discovery call booked for Thu Sep 17, 10:00 AM PT\nScheduling today: Shift leads build schedules in spreadsheets; overtime approved by text\nActivity:\n- Aug 27: Inbound from the overtime calculator page.\n- Sep 2 (Tomás): Intro call. Overtime ran about 14% of hours in Q2; she wants it under 8%.\n- Sep 2: Discovery call booked for Sep 17."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Renata Solberg, Halvorsen Freight",
+          "documents": [
+            {
+              "id": "contact-1373",
+              "title": "Contact: Renata Solberg",
+              "text": "VP Operations at Halvorsen Freight. Email renata.solberg@halvorsenfreight.example.",
+              "score": 0.94
+            },
+            {
+              "id": "account-1390",
+              "title": "Account: Halvorsen Freight",
+              "text": "3 cross-dock warehouses (Kent, Auburn, Sumner), about 410 hourly staff. Deal: Discovery call booked for Thu Sep 17, 10:00 AM PT. Scheduling today: Shift leads build schedules in spreadsheets; overtime approved by text.",
+              "score": 0.89
+            },
+            {
+              "id": "activity-1414",
+              "title": "Recent activity",
+              "text": "Aug 27: Inbound from the overtime calculator page. Sep 2 (Tomás): Intro call. Overtime ran about 14% of hours in Q2; she wants it under 8%. Sep 2: Discovery call booked for Sep 17.",
+              "score": 0.85
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "call confirmation",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Thursday, Sept 17 at 10:00: overtime by site\n\nHi Renata,\n\nConfirming our call on Thursday, September 17 at 10:00 AM Pacific.\n\nOn our intro call you said overtime ran about 14% of hours in Q2 and you want it under 8%. To make the hour useful, could you bring Q2 overtime broken out by site (Kent, Auburn, Sumner)? I'll show you where Tidewater Shifts would have flagged it before the shifts were posted.\n\nTalk soon,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "call confirmation",
+            "limit_words": 200
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 67,
+            "notes": "Within 200 words (67). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Tomás Rivera <tomas.rivera@tidewaterscheduling.example>",
+        "to": "Renata Solberg <renata.solberg@halvorsenfreight.example>",
+        "subject": "Thursday, Sept 17 at 10:00: overtime by site",
+        "body": "Hi Renata,\n\nConfirming our call on Thursday, September 17 at 10:00 AM Pacific.\n\nOn our intro call you said overtime ran about 14% of hours in Q2 and you want it under 8%. To make the hour useful, could you bring Q2 overtime broken out by site (Kent, Auburn, Sumner)? I'll show you where Tidewater Shifts would have flagged it before the shifts were posted.\n\nTalk soon,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 8. Reply on Sep 8: \"Will do. Our controller may join.\""
+    },
+    {
+      "id": "t-0003",
+      "title": "Expo follow-up: Copperline Plumbing founder, whiteboard dispatch",
+      "metadata": {
+        "channel": "email",
+        "persona": "founder",
+        "industry": "home services",
+        "deal stage": "new lead",
+        "email type": "first touch",
+        "rep": "Marcus Lindqvist",
+        "rep action": "sent as is",
+        "drafted": "2026-09-08T21:05:00Z"
+      },
+      "context": {
+        "Brief": "met her at the expo booth last week. whiteboard + group text for dispatch. short and friendly, ask for a demo",
+        "CRM notes": "Contact: Devika Raman, Founder and CEO (devika@copperlineplumbing.example)\nAccount: Copperline Plumbing & Drain, 1 shop (Spokane Valley), 34 technicians\nDeal: New lead\nScheduling today: Dispatch on a whiteboard plus a group text\nActivity:\n- Sep 3: Stopped by our booth at the Inland Trades Expo in Spokane.\n- Sep 3 (Marcus): \"Whiteboard + group text for dispatch. Techs miss changes made after 7 AM.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Devika Raman, Copperline Plumbing & Drain",
+          "documents": [
+            {
+              "id": "contact-1746",
+              "title": "Contact: Devika Raman",
+              "text": "Founder and CEO at Copperline Plumbing & Drain. Email devika@copperlineplumbing.example.",
+              "score": 0.93
+            },
+            {
+              "id": "account-1763",
+              "title": "Account: Copperline Plumbing & Drain",
+              "text": "1 shop (Spokane Valley), 34 technicians. Deal: New lead. Scheduling today: Dispatch on a whiteboard plus a group text.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-1787",
+              "title": "Recent activity",
+              "text": "Sep 3: Stopped by our booth at the Inland Trades Expo in Spokane. Sep 3 (Marcus): \"Whiteboard + group text for dispatch. Techs miss changes made after 7 AM.\"",
+              "score": 0.84
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "first touch",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Great meeting you at the Expo\n\nHi Devika,\n\nGreat meeting you at our booth in Spokane last week, and congrats on opening the new Coeur d'Alene shop!\n\nYou mentioned dispatch still lives on a whiteboard and a group text, and that techs miss changes made after 7 AM. With Tidewater Shifts, every change goes straight to the tech's phone with a notification, so nobody shows up at the wrong job.\n\nWould a 20-minute demo next Tuesday or Wednesday work? I can show it with your own crew list.\n\nCheers,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "first touch",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 83,
+            "notes": "Within 150 words (83). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Marcus Lindqvist <marcus.lindqvist@tidewaterscheduling.example>",
+        "to": "Devika Raman <devika@copperlineplumbing.example>",
+        "subject": "Great meeting you at the Expo",
+        "body": "Hi Devika,\n\nGreat meeting you at our booth in Spokane last week, and congrats on opening the new Coeur d'Alene shop!\n\nYou mentioned dispatch still lives on a whiteboard and a group text, and that techs miss changes made after 7 AM. With Tidewater Shifts, every change goes straight to the tech's phone with a notification, so nobody shows up at the wrong job.\n\nWould a 20-minute demo next Tuesday or Wednesday work? I can show it with your own crew list.\n\nCheers,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 8. Reply on Sep 10: \"We only have the one shop, but sure, Wednesday.\""
+    },
+    {
+      "id": "t-0004",
+      "title": "Proposal nudge: Sound Valley Medical Group HR, seniority bidding",
+      "metadata": {
+        "channel": "email",
+        "persona": "HR director",
+        "industry": "healthcare",
+        "deal stage": "proposal sent",
+        "email type": "follow-up",
+        "rep": "Dana Okafor",
+        "rep action": "edited before sending",
+        "drafted": "2026-09-08T22:30:00Z"
+      },
+      "context": {
+        "Brief": "Nudge on proposal + answer her Q: yes seniority based bidding works (bidding rounds, ordered by seniority date). Ask for 30 min w/ her + payroll lead before the 30th",
+        "CRM notes": "Contact: Lorraine Kibbe, HR Director (lkibbe@soundvalleymed.example)\nAccount: Sound Valley Medical Group, 11 clinics, about 620 staff (about 180 in the nurses' union)\nDeal: Proposal sent Sep 1: Tidewater Shifts, 620 staff, annual. Pricing valid through Sep 30.\nScheduling today: Each clinic manager builds schedules; union shift bids on paper every quarter\nActivity:\n- Sep 1 (Dana): Proposal sent.\n- Sep 4: Lorraine asked by email whether we support seniority-based shift bidding for union nurses.\n- Sep 4 (Dana): Checked with product: yes, seniority bidding rounds are supported."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Lorraine Kibbe, Sound Valley Medical Group",
+          "documents": [
+            {
+              "id": "contact-2119",
+              "title": "Contact: Lorraine Kibbe",
+              "text": "HR Director at Sound Valley Medical Group. Email lkibbe@soundvalleymed.example.",
+              "score": 0.92
+            },
+            {
+              "id": "account-2136",
+              "title": "Account: Sound Valley Medical Group",
+              "text": "11 clinics, about 620 staff (about 180 in the nurses' union). Deal: Proposal sent Sep 1: Tidewater Shifts, 620 staff, annual. Pricing valid through Sep 30. Scheduling today: Each clinic manager builds schedules; union shift bids on paper every quarter.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-2160",
+              "title": "Recent activity",
+              "text": "Sep 1 (Dana): Proposal sent. Sep 4: Lorraine asked by email whether we support seniority-based shift bidding for union nurses. Sep 4 (Dana): Checked with product: yes, seniority bidding rounds are supported.",
+              "score": 0.83
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "follow-up",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Seniority-based shift bidding, and a review before Sept 30\n\nHi Lorraine,\n\nTo answer your question from last week: yes, Tidewater Shifts supports seniority-based shift bidding. You open a bidding round, nurses see the open shifts in order of their seniority date, and each pick locks before the next person's turn. The quarterly bid you run on paper today could run inside the app.\n\nBefore the proposal pricing expires on September 30, could we hold 30 minutes with you and your payroll lead to walk through the bidding setup and the payroll export? Any time the week of September 21 works on my side.\n\nBest regards,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "follow-up",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 96,
+            "notes": "Within 150 words (96). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Dana Okafor <dana.okafor@tidewaterscheduling.example>",
+        "to": "Lorraine Kibbe <lkibbe@soundvalleymed.example>",
+        "subject": "Seniority-based shift bidding, and a review before Sept 30",
+        "body": "Hi Lorraine,\n\nTo answer your question from last week: yes, Tidewater Shifts supports seniority-based shift bidding. You open a bidding round, nurses see the open shifts in order of their seniority date, and each pick locks before the next person's turn. The quarterly bid you run on paper today could run inside the app.\n\nBefore the proposal pricing expires on September 30, could we hold 30 minutes with you and your payroll lead to walk through the bidding setup and the payroll export? Any time the week of September 21 works on my side.\n\nBest regards,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Rep changed the sign-off to \"Thanks,\" and sent on Sep 9. Review set for Sep 22."
+    },
+    {
+      "id": "t-0005",
+      "title": "Trial check-in: Larch Valley Community College IT, sign-on questions",
+      "metadata": {
+        "channel": "email",
+        "persona": "IT manager",
+        "industry": "education",
+        "deal stage": "trial",
+        "email type": "trial check-in",
+        "rep": "Tomás Rivera",
+        "rep action": "sent as is",
+        "drafted": "2026-09-09T15:48:00Z"
+      },
+      "context": {
+        "Brief": "Answer his three questions (SAML SSO yes, SCIM yes, shift history kept 7 years or deleted on request). Ask for a call with our SE Imani to set up SSO.",
+        "CRM notes": "Contact: Elias Mwangi, IT Manager (emwangi@larchvalley.example)\nAccount: Larch Valley Community College, Trial in 3 departments (library, student services, facilities), about 150 student workers and staff\nDeal: Tidewater Shifts trial, Sep 4 to Sep 18\nScheduling today: Each department keeps its own spreadsheet\nActivity:\n- Sep 4: Trial started.\n- Sep 8 (Tomás): Elias asked about single sign-on with their identity provider (SAML), automatic account removal when students leave (SCIM), and how long we keep shift history.\n- Sep 8 (Tomás): \"They looked at Kettleshift last spring and dropped it because it had no SCIM.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Elias Mwangi, Larch Valley Community College",
+          "documents": [
+            {
+              "id": "contact-2492",
+              "title": "Contact: Elias Mwangi",
+              "text": "IT Manager at Larch Valley Community College. Email emwangi@larchvalley.example.",
+              "score": 0.95
+            },
+            {
+              "id": "account-2509",
+              "title": "Account: Larch Valley Community College",
+              "text": "Trial in 3 departments (library, student services, facilities), about 150 student workers and staff. Deal: Tidewater Shifts trial, Sep 4 to Sep 18. Scheduling today: Each department keeps its own spreadsheet.",
+              "score": 0.89
+            },
+            {
+              "id": "activity-2533",
+              "title": "Recent activity",
+              "text": "Sep 4: Trial started. Sep 8 (Tomás): Elias asked about single sign-on with their identity provider (SAML), automatic account removal when students leave (SCIM), and how long we keep shift history. Sep 8 (Tomás): \"They looked at Kettleshift last spring and dropped it because it had no SCIM.\"",
+              "score": 0.82
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "trial check-in",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Single sign-on, SCIM, and shift history for Larch Valley\n\nHi Elias,\n\nThanks for the great questions during setup this week. Here are answers to all three, plus a bit of context that may help as you plan the rollout across the library, student services, and facilities.\n\n1. Single sign-on: yes. Tidewater supports SAML 2.0 single sign-on with any standard identity provider. Your staff and student workers would sign in with their college accounts, and you can require it for everyone or allow a password fallback for a pilot group.\n\n2. Automatic account removal: yes. We support SCIM provisioning, so when a student worker leaves the college and is removed from your directory, their Tidewater account is deactivated within minutes. No extra module or add-on is needed.\n\n3. Shift history: we keep shift history for seven years by default, and we can delete it sooner on request or set a shorter retention period for your account.\n\nThe easiest next step would be a 30-minute session with Imani Clarke, our solutions engineer, to connect single sign-on and SCIM together. Would Thursday or Friday afternoon work for you?\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "trial check-in",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 138,
+            "notes": "Within 150 words (138). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Tomás Rivera <tomas.rivera@tidewaterscheduling.example>",
+        "to": "Elias Mwangi <emwangi@larchvalley.example>",
+        "subject": "Single sign-on, SCIM, and shift history for Larch Valley",
+        "body": "Hi Elias,\n\nThanks for the great questions during setup this week. Here are answers to all three, plus a bit of context that may help as you plan the rollout across the library, student services, and facilities.\n\n1. Single sign-on: yes. Tidewater supports SAML 2.0 single sign-on with any standard identity provider. Your staff and student workers would sign in with their college accounts, and you can require it for everyone or allow a password fallback for a pilot group.\n\n2. Automatic account removal: yes. We support SCIM provisioning, so when a student worker leaves the college and is removed from your directory, their Tidewater account is deactivated within minutes. No extra module or add-on is needed.\n\n3. Shift history: we keep shift history for seven years by default, and we can delete it sooner on request or set a shorter retention period for your account.\n\nThe easiest next step would be a 30-minute session with Imani Clarke, our solutions engineer, to connect single sign-on and SCIM together. Would Thursday or Friday afternoon work for you?\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 9. Reply on Sep 11: \"Friday 2 PM. Please send the SAML metadata ahead.\""
+    },
+    {
+      "id": "t-0006",
+      "title": "Webinar follow-up: Ironbark Climbing founder, swap approvals",
+      "metadata": {
+        "channel": "email",
+        "persona": "founder",
+        "industry": "fitness",
+        "deal stage": "new lead",
+        "email type": "first touch",
+        "rep": "Jess Moreau",
+        "rep action": "sent as is",
+        "drafted": "2026-09-09T17:20:00Z"
+      },
+      "context": {
+        "Brief": "she asked in webinar Q&A about auto-approving swaps >48h out. answer: yes, swap rules. offer the 14 day trial",
+        "CRM notes": "Contact: Maya Castellanos, Founder (maya@ironbarkclimbing.example)\nAccount: Ironbark Climbing, 2 gyms (Boise, Meridian), 48 staff (route setters, front desk, coaches)\nDeal: New lead\nScheduling today: Group chat for swaps; the owner approves every swap\nActivity:\n- Sep 9: Attended the webinar \"Shift swaps without the group chat\" (stayed 41 minutes).\n- Sep 9: Q&A question: \"Can coaches swap shifts without my approval if it's more than 48 hours out?\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Maya Castellanos, Ironbark Climbing",
+          "documents": [
+            {
+              "id": "contact-2865",
+              "title": "Contact: Maya Castellanos",
+              "text": "Founder at Ironbark Climbing. Email maya@ironbarkclimbing.example.",
+              "score": 0.94
+            },
+            {
+              "id": "account-2882",
+              "title": "Account: Ironbark Climbing",
+              "text": "2 gyms (Boise, Meridian), 48 staff (route setters, front desk, coaches). Deal: New lead. Scheduling today: Group chat for swaps; the owner approves every swap.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-2906",
+              "title": "Recent activity",
+              "text": "Sep 9: Attended the webinar \"Shift swaps without the group chat\" (stayed 41 minutes). Sep 9: Q&A question: \"Can coaches swap shifts without my approval if it's more than 48 hours out?\"",
+              "score": 0.86
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "first touch",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Yes, swaps more than 48 hours out can approve themselves\n\nHi Maya,\n\nThanks for sticking around for the Q&A today. To your question: yes. In Tidewater Shifts you can set a swap rule so any swap made more than 48 hours before the shift is approved automatically, as long as both people are qualified for it. Anything closer than that still comes to you.\n\nFor 48 staff across Boise and Meridian, that takes most swaps out of the group chat.\n\nWant to try it with your own staff? You can start a free 14-day trial here, no card needed: tidewaterscheduling.example/trial\n\nCheers,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "first touch",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 91,
+            "notes": "Within 150 words (91). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Jess Moreau <jess.moreau@tidewaterscheduling.example>",
+        "to": "Maya Castellanos <maya@ironbarkclimbing.example>",
+        "subject": "Yes, swaps more than 48 hours out can approve themselves",
+        "body": "Hi Maya,\n\nThanks for sticking around for the Q&A today. To your question: yes. In Tidewater Shifts you can set a swap rule so any swap made more than 48 hours before the shift is approved automatically, as long as both people are qualified for it. Anything closer than that still comes to you.\n\nFor 48 staff across Boise and Meridian, that takes most swaps out of the group chat.\n\nWant to try it with your own staff? You can start a free 14-day trial here, no card needed: tidewaterscheduling.example/trial\n\nCheers,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 9. Trial started Sep 10."
+    },
+    {
+      "id": "t-0007",
+      "title": "Pricing page lead: Kessler Precision Castings VP Ops, rotating crews",
+      "metadata": {
+        "channel": "email",
+        "persona": "VP Operations",
+        "industry": "manufacturing",
+        "deal stage": "new lead",
+        "email type": "first touch",
+        "rep": "Marcus Lindqvist",
+        "rep action": "sent as is",
+        "drafted": "2026-09-09T20:55:00Z"
+      },
+      "context": {
+        "Brief": "Inbound from pricing page, wants 4 on 4 off rotation across 2 plants. Formal, VP. Ask for a 30 min call.",
+        "CRM notes": "Contact: Gordon Ferro, VP Operations (gferro@kesslercastings.example)\nAccount: Kessler Precision Castings, 2 plants (Erie, Meadville), 3 shifts, about 280 hourly staff\nDeal: New lead\nScheduling today: Printed rotation calendar posted at each time clock\nActivity:\n- Sep 8: Visited the pricing page 3 times, then filled in the contact form.\n- Sep 8: Form comment: \"Need rotating 4-on-4-off crews across two plants.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Gordon Ferro, Kessler Precision Castings",
+          "documents": [
+            {
+              "id": "contact-3238",
+              "title": "Contact: Gordon Ferro",
+              "text": "VP Operations at Kessler Precision Castings. Email gferro@kesslercastings.example.",
+              "score": 0.93
+            },
+            {
+              "id": "account-3255",
+              "title": "Account: Kessler Precision Castings",
+              "text": "2 plants (Erie, Meadville), 3 shifts, about 280 hourly staff. Deal: New lead. Scheduling today: Printed rotation calendar posted at each time clock.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-3279",
+              "title": "Recent activity",
+              "text": "Sep 8: Visited the pricing page 3 times, then filled in the contact form. Sep 8: Form comment: \"Need rotating 4-on-4-off crews across two plants.\"",
+              "score": 0.85
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "first touch",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: 4-on-4-off rotations across Erie and Meadville\n\nDear Gordon,\n\nThank you for reaching out through our pricing page. You mentioned you need rotating 4-on-4-off crews across both plants, which Tidewater Shifts handles with rotation templates: you define the pattern once, assign crews, and the schedule fills forward for as many months as you need, including holidays and planned shutdowns.\n\nYour supervisors would also be able to see coverage for all three shifts at both Erie and Meadville on one screen, and your hourly staff would get their rotation on their phones instead of the printed calendar at the time clock.\n\nWe recently helped Graystone Logistics, a three-site operation with similar rotating crews, reduce overtime by 11% in their first two months, mostly by catching short-staffed shifts a week earlier than before. Their site managers also stopped rebuilding the rotation by hand every month.\n\nWould you be open to a 30-minute call next week so I can show you a rotation built for your two plants?\n\nKind regards,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "first touch",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "flag",
+            "word_count": 160,
+            "notes": "Over 150 words (160). Final pass removed the case study paragraph."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Marcus Lindqvist <marcus.lindqvist@tidewaterscheduling.example>",
+        "to": "Gordon Ferro <gferro@kesslercastings.example>",
+        "subject": "4-on-4-off rotations across Erie and Meadville",
+        "body": "Dear Gordon,\n\nThank you for reaching out through our pricing page. You mentioned you need rotating 4-on-4-off crews across both plants, which Tidewater Shifts handles with rotation templates: you define the pattern once, assign crews, and the schedule fills forward for as many months as you need, including holidays and planned shutdowns.\n\nYour supervisors would also be able to see coverage for all three shifts at both Erie and Meadville on one screen, and your hourly staff would get their rotation on their phones instead of the printed calendar at the time clock.\n\nWould you be open to a 30-minute call next week so I can show you a rotation built for your two plants?\n\nKind regards,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 9. No reply yet."
+    },
+    {
+      "id": "t-0008",
+      "title": "Call agenda: Fernwood Home & Garden VP Store Ops",
+      "metadata": {
+        "channel": "email",
+        "persona": "VP Operations",
+        "industry": "retail",
+        "deal stage": "discovery call booked",
+        "email type": "call confirmation",
+        "rep": "Jess Moreau",
+        "rep action": "discarded",
+        "drafted": "2026-09-10T15:30:00Z"
+      },
+      "context": {
+        "Brief": "Confirm the 22nd, include a short agenda (she wants one in advance). Chief of staff Ellis Grant will join.",
+        "CRM notes": "Contact: Patricia Holloway-Brandt, VP Store Operations (pholloway-brandt@fernwoodhg.example)\nAccount: Fernwood Home & Garden, 64 stores in 5 states, about 3,100 staff\nDeal: Discovery call booked for Tue Sep 22, 1:00 PM PT, with her chief of staff, Ellis Grant\nScheduling today: Store managers schedule in the point-of-sale add-on; seasonal hiring spikes every spring\nActivity:\n- Sep 3: Badge scan at our booth, Northwest Retail Ops Forum.\n- Sep 8 (Jess): Call booked through her chief of staff. \"Very formal. Wants an agenda in advance.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Patricia Holloway-Brandt, Fernwood Home & Garden",
+          "documents": [
+            {
+              "id": "contact-3611",
+              "title": "Contact: Patricia Holloway-Brandt",
+              "text": "VP Store Operations at Fernwood Home & Garden. Email pholloway-brandt@fernwoodhg.example.",
+              "score": 0.92
+            },
+            {
+              "id": "account-3628",
+              "title": "Account: Fernwood Home & Garden",
+              "text": "64 stores in 5 states, about 3,100 staff. Deal: Discovery call booked for Tue Sep 22, 1:00 PM PT, with her chief of staff, Ellis Grant. Scheduling today: Store managers schedule in the point-of-sale add-on; seasonal hiring spikes every spring.",
+              "score": 0.89
+            },
+            {
+              "id": "activity-3652",
+              "title": "Recent activity",
+              "text": "Sep 3: Badge scan at our booth, Northwest Retail Ops Forum. Sep 8 (Jess): Call booked through her chief of staff. \"Very formal. Wants an agenda in advance.\"",
+              "score": 0.84
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "call confirmation",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Quick agenda for the 22nd!\n\nHey Patricia!\n\nSuper excited for our chat on the 22nd! Figured I'd send over a quick agenda so you and Ellis know what you're in for (don't worry, it's painless).\n\nHere's the plan:\n- Quick intros (we'll keep it short, promise!)\n- How your store managers are building schedules today and what's driving them nuts\n- A peek at how Tidewater Shifts handles the spring hiring rush, which is where it really shines\n- How other big retailers roll it out store by store without a giant IT project\n- Pricing stuff, if you want to get into it\n- Next steps, and who else on your team should be looped in\n\nThe demo is the fun part, so I'll leave plenty of time for that. And no pressure at all, this is just a chance to see if we're a good fit!\n\nIf there's anything else you'd like me to cover, just shoot me a note and I'll add it. Otherwise, see you Tuesday the 22nd at 1:00 PM Pacific!\n\nTalk soon,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "call confirmation",
+            "limit_words": 200
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 167,
+            "notes": "Within 200 words (167). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Jess Moreau <jess.moreau@tidewaterscheduling.example>",
+        "to": "Patricia Holloway-Brandt <pholloway-brandt@fernwoodhg.example>",
+        "subject": "Quick agenda for the 22nd!",
+        "body": "Hey Patricia!\n\nSuper excited for our chat on the 22nd! Figured I'd send over a quick agenda so you and Ellis know what you're in for (don't worry, it's painless).\n\nHere's the plan:\n- Quick intros (we'll keep it short, promise!)\n- How your store managers are building schedules today and what's driving them nuts\n- A peek at how Tidewater Shifts handles the spring hiring rush, which is where it really shines\n- How other big retailers roll it out store by store without a giant IT project\n- Pricing stuff, if you want to get into it\n- Next steps, and who else on your team should be looped in\n\nThe demo is the fun part, so I'll leave plenty of time for that. And no pressure at all, this is just a chance to see if we're a good fit!\n\nIf there's anything else you'd like me to cover, just shoot me a note and I'll add it. Otherwise, see you Tuesday the 22nd at 1:00 PM Pacific!\n\nTalk soon,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Discarded by the rep, who wrote the agenda email by hand."
+    },
+    {
+      "id": "t-0009",
+      "title": "Mid-trial check-in: Stonecress Veterinary, waitlist fill off",
+      "metadata": {
+        "channel": "email",
+        "persona": "clinic owner",
+        "industry": "veterinary",
+        "deal stage": "trial",
+        "email type": "trial check-in",
+        "rep": "Dana Okafor",
+        "rep action": "sent as is",
+        "drafted": "2026-09-10T18:10:00Z"
+      },
+      "context": {
+        "Brief": "mid trial. 212 reminders sent, waitlist fill not on. offer 15 min to turn it on + add Keizer",
+        "CRM notes": "Contact: Dr. Tamsin Wolfe, Owner (tamsin@stonecressvet.example)\nAccount: Stonecress Veterinary, 3 clinics (Salem, Keizer, Silverton), 46 staff\nDeal: Tidewater Appointments trial, Sep 4 to Sep 18 (Salem only)\nScheduling today: Phone confirmations and a paper waitlist at each front desk\nActivity:\n- Sep 4: Trial started at Salem.\n- Sep 9: 212 reminder texts sent; 5 cancellations refilled by phone.\n- Sep 9 (Dana): Waitlist fill not turned on yet. \"Wants Keizer live before she decides.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Tamsin Wolfe, Stonecress Veterinary",
+          "documents": [
+            {
+              "id": "contact-3984",
+              "title": "Contact: Dr. Tamsin Wolfe",
+              "text": "Owner at Stonecress Veterinary. Email tamsin@stonecressvet.example.",
+              "score": 0.95
+            },
+            {
+              "id": "account-4001",
+              "title": "Account: Stonecress Veterinary",
+              "text": "3 clinics (Salem, Keizer, Silverton), 46 staff. Deal: Tidewater Appointments trial, Sep 4 to Sep 18 (Salem only). Scheduling today: Phone confirmations and a paper waitlist at each front desk.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-4025",
+              "title": "Recent activity",
+              "text": "Sep 4: Trial started at Salem. Sep 9: 212 reminder texts sent; 5 cancellations refilled by phone. Sep 9 (Dana): Waitlist fill not turned on yet. \"Wants Keizer live before she decides.\"",
+              "score": 0.83
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "trial check-in",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Stonecress trial: 212 reminders so far\n\nHi Dr. Wolfe,\n\nQuick update from your Salem trial: 212 reminder texts have gone out since September 4, and your team refilled 5 cancellations by phone.\n\nWaitlist fill isn't switched on yet. Once it is, a cancelled slot is offered by text to the next client on the waitlist, so those 5 would have filled without a call.\n\nCould we take 15 minutes this Friday to turn it on and add Keizer, so you can see both clinics before the trial ends on the 18th?\n\nBest,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "trial check-in",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 86,
+            "notes": "Within 150 words (86). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Dana Okafor <dana.okafor@tidewaterscheduling.example>",
+        "to": "Tamsin Wolfe <tamsin@stonecressvet.example>",
+        "subject": "Stonecress trial: 212 reminders so far",
+        "body": "Hi Dr. Wolfe,\n\nQuick update from your Salem trial: 212 reminder texts have gone out since September 4, and your team refilled 5 cancellations by phone.\n\nWaitlist fill isn't switched on yet. Once it is, a cancelled slot is offered by text to the next client on the waitlist, so those 5 would have filled without a call.\n\nCould we take 15 minutes this Friday to turn it on and add Keizer, so you can see both clinics before the trial ends on the 18th?\n\nBest,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 10. Reply on Sep 10: \"Friday 8:30 before we open?\""
+    },
+    {
+      "id": "t-0010",
+      "title": "Proposal follow-up: Saltmarsh Hotels HR, housekeeping swaps",
+      "metadata": {
+        "channel": "email",
+        "persona": "HR director",
+        "industry": "hospitality",
+        "deal stage": "proposal sent",
+        "email type": "follow-up",
+        "rep": "Tomás Rivera",
+        "rep action": "sent as is",
+        "drafted": "2026-09-10T21:45:00Z"
+      },
+      "context": {
+        "Brief": "Follow up on proposal. Key pain is housekeeping swaps done by text + managers re-entering. Ask for decision timeline.",
+        "CRM notes": "Contact: Anneliese Moreno, HR Director (amoreno@saltmarshhotels.example)\nAccount: Saltmarsh Hotels, 5 hotels on the Oregon coast, about 780 staff\nDeal: Proposal sent Sep 3: Tidewater Shifts, 780 staff, annual\nScheduling today: Rostermint (renews Jan 31); housekeeping swaps happen by text\nActivity:\n- Aug 20: Demo. Housekeeping leads swap shifts by text; managers re-enter every change by hand.\n- Aug 20 (Tomás): \"Says staff don't use the Rostermint app. Renewal Jan 31.\"\n- Sep 3: Proposal sent."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Anneliese Moreno, Saltmarsh Hotels",
+          "documents": [
+            {
+              "id": "contact-4357",
+              "title": "Contact: Anneliese Moreno",
+              "text": "HR Director at Saltmarsh Hotels. Email amoreno@saltmarshhotels.example.",
+              "score": 0.94
+            },
+            {
+              "id": "account-4374",
+              "title": "Account: Saltmarsh Hotels",
+              "text": "5 hotels on the Oregon coast, about 780 staff. Deal: Proposal sent Sep 3: Tidewater Shifts, 780 staff, annual. Scheduling today: Rostermint (renews Jan 31); housekeeping swaps happen by text.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-4398",
+              "title": "Recent activity",
+              "text": "Aug 20: Demo. Housekeeping leads swap shifts by text; managers re-enter every change by hand. Aug 20 (Tomás): \"Says staff don't use the Rostermint app. Renewal Jan 31.\" Sep 3: Proposal sent.",
+              "score": 0.82
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "follow-up",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Housekeeping swaps, and timing for Saltmarsh\n\nHi Anneliese,\n\nI wanted to follow up on the proposal I sent on September 3.\n\nWhen we spoke in August, you said your housekeeping leads swap shifts by text and managers then re-enter every change by hand. Unlike Rostermint, Tidewater Shifts has a mobile app your housekeepers will use: they request a swap, a qualified coworker accepts, and the schedule updates on its own.\n\nWith your current contract renewing January 31, what does your decision timeline look like? If it helps, I can hold the proposed pricing through October 31.\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "follow-up",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 91,
+            "notes": "Within 150 words (91). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Tomás Rivera <tomas.rivera@tidewaterscheduling.example>",
+        "to": "Anneliese Moreno <amoreno@saltmarshhotels.example>",
+        "subject": "Housekeeping swaps, and timing for Saltmarsh",
+        "body": "Hi Anneliese,\n\nI wanted to follow up on the proposal I sent on September 3.\n\nWhen we spoke in August, you said your housekeeping leads swap shifts by text and managers then re-enter every change by hand. Unlike Rostermint, Tidewater Shifts has a mobile app your housekeepers will use: they request a swap, a qualified coworker accepts, and the schedule updates on its own.\n\nWith your current contract renewing January 31, what does your decision timeline look like? If it helps, I can hold the proposed pricing through October 31.\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 10. No reply yet."
+    },
+    {
+      "id": "t-0011",
+      "title": "Security questionnaire: Juniper Loop PT IT, NDA for the SOC 2 report",
+      "metadata": {
+        "channel": "email",
+        "persona": "IT manager",
+        "industry": "healthcare",
+        "deal stage": "discovery call booked",
+        "email type": "call confirmation",
+        "rep": "Dana Okafor",
+        "rep action": "sent as is",
+        "drafted": "2026-09-11T16:05:00Z"
+      },
+      "context": {
+        "Brief": "Send NDA link, ask him to sign so we can share SOC 2 before the 18th. Questionnaire answers coming Monday.",
+        "CRM notes": "Contact: Samir Haddad, IT Manager (shaddad@juniperlooppt.example)\nAccount: Juniper Loop Physical Therapy, 9 clinics, about 210 staff\nDeal: Discovery call booked for Fri Sep 18, 11:00 AM PT\nScheduling today: Front desk books in their practice software; staff schedules in spreadsheets\nActivity:\n- Sep 8: Security questionnaire received (82 questions).\n- Sep 10 (Dana): Samir wants the SOC 2 Type II report before the call. Our NDA must be signed first."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Samir Haddad, Juniper Loop Physical Therapy",
+          "documents": [
+            {
+              "id": "contact-4730",
+              "title": "Contact: Samir Haddad",
+              "text": "IT Manager at Juniper Loop Physical Therapy. Email shaddad@juniperlooppt.example.",
+              "score": 0.93
+            },
+            {
+              "id": "account-4747",
+              "title": "Account: Juniper Loop Physical Therapy",
+              "text": "9 clinics, about 210 staff. Deal: Discovery call booked for Fri Sep 18, 11:00 AM PT. Scheduling today: Front desk books in their practice software; staff schedules in spreadsheets.",
+              "score": 0.89
+            },
+            {
+              "id": "activity-4771",
+              "title": "Recent activity",
+              "text": "Sep 8: Security questionnaire received (82 questions). Sep 10 (Dana): Samir wants the SOC 2 Type II report before the call. Our NDA must be signed first.",
+              "score": 0.86
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "call confirmation",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: NDA for the SOC 2 report before the 18th\n\nHi Samir,\n\nThanks for sending the security questionnaire. Our team is working through all 82 questions, and you'll have the completed answers on Monday.\n\nWe share the SOC 2 Type II report under a short mutual NDA. Could you sign it here by Wednesday so I can send the report before our call on Friday the 18th?\n\ntidewaterscheduling.example/nda\n\nThanks,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "call confirmation",
+            "limit_words": 200
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 59,
+            "notes": "Within 200 words (59). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Dana Okafor <dana.okafor@tidewaterscheduling.example>",
+        "to": "Samir Haddad <shaddad@juniperlooppt.example>",
+        "subject": "NDA for the SOC 2 report before the 18th",
+        "body": "Hi Samir,\n\nThanks for sending the security questionnaire. Our team is working through all 82 questions, and you'll have the completed answers on Monday.\n\nWe share the SOC 2 Type II report under a short mutual NDA. Could you sign it here by Wednesday so I can send the report before our call on Friday the 18th?\n\ntidewaterscheduling.example/nda\n\nThanks,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 11. NDA signed Sep 14."
+    },
+    {
+      "id": "t-0012",
+      "title": "test brief, template v3",
+      "metadata": {
+        "channel": "email",
+        "persona": "founder",
+        "industry": "home services",
+        "deal stage": "new lead",
+        "email type": "first touch",
+        "rep": "Marcus Lindqvist",
+        "rep action": "discarded",
+        "drafted": "2026-09-11T19:30:00Z"
+      },
+      "context": {
+        "Brief": "test - ignore. checking new template v3 renders sig ok",
+        "CRM notes": "Contact: Test Contact, Founder (qa+founder@tidewaterscheduling.example)\nAccount: Tidewater QA Sandbox, 10 staff\nDeal: New lead\nScheduling today: Not recorded\nActivity:\n- Sep 11: Record created by Marcus for template testing."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Test Contact, Tidewater QA Sandbox",
+          "documents": [
+            {
+              "id": "contact-5103",
+              "title": "Contact: Test Contact",
+              "text": "Founder at Tidewater QA Sandbox. Email qa+founder@tidewaterscheduling.example.",
+              "score": 0.92
+            },
+            {
+              "id": "account-5120",
+              "title": "Account: Tidewater QA Sandbox",
+              "text": "10 staff. Deal: New lead. Scheduling today: Not recorded.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-5144",
+              "title": "Recent activity",
+              "text": "Sep 11: Record created by Marcus for template testing.",
+              "score": 0.85
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "first touch",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Scheduling for Tidewater QA Sandbox\n\nHi Test,\n\nI noticed Tidewater QA Sandbox has a team of 10. Many teams that size still schedule in spreadsheets, and a small change can take a whole afternoon to sort out.\n\nWould you be open to a 15-minute call next week to see how Tidewater Shifts could help?\n\nBest,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "first touch",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 50,
+            "notes": "Within 150 words (50). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Marcus Lindqvist <marcus.lindqvist@tidewaterscheduling.example>",
+        "to": "Test Contact <qa+founder@tidewaterscheduling.example>",
+        "subject": "Scheduling for Tidewater QA Sandbox",
+        "body": "Hi Test,\n\nI noticed Tidewater QA Sandbox has a team of 10. Many teams that size still schedule in spreadsheets, and a small change can take a whole afternoon to sort out.\n\nWould you be open to a 15-minute call next week to see how Tidewater Shifts could help?\n\nBest,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Discarded by the rep."
+    },
+    {
+      "id": "t-0013",
+      "title": "Re-engage: Quarry Hill Urgent Care VP Ops after budget review",
+      "metadata": {
+        "channel": "email",
+        "persona": "VP Operations",
+        "industry": "healthcare",
+        "deal stage": "gone quiet",
+        "email type": "re-engage",
+        "rep": "Tomás Rivera",
+        "rep action": "sent as is",
+        "drafted": "2026-09-11T22:10:00Z"
+      },
+      "context": {
+        "Brief": "Re-engage. Budget review should be done by now. Get a time on the calendar to restart.",
+        "CRM notes": "Contact: Colette Varga, VP Operations (cvarga@quarryhillurgent.example)\nAccount: Quarry Hill Urgent Care, 7 clinics, about 260 staff\nDeal: Gone quiet since Aug 20\nScheduling today: Float pool managed in a shared spreadsheet\nActivity:\n- Aug 12: Demo. Colette liked the float pool view (one screen for all 7 clinics).\n- Aug 20: \"Parking this until our budget review in early September.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Colette Varga, Quarry Hill Urgent Care",
+          "documents": [
+            {
+              "id": "contact-5476",
+              "title": "Contact: Colette Varga",
+              "text": "VP Operations at Quarry Hill Urgent Care. Email cvarga@quarryhillurgent.example.",
+              "score": 0.95
+            },
+            {
+              "id": "account-5493",
+              "title": "Account: Quarry Hill Urgent Care",
+              "text": "7 clinics, about 260 staff. Deal: Gone quiet since Aug 20. Scheduling today: Float pool managed in a shared spreadsheet.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-5517",
+              "title": "Recent activity",
+              "text": "Aug 12: Demo. Colette liked the float pool view (one screen for all 7 clinics). Aug 20: \"Parking this until our budget review in early September.\"",
+              "score": 0.84
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "re-engage",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Picking back up after your budget review\n\nHi Colette,\n\nI hope the budget review went smoothly, and congratulations on the new Eastside clinic opening this month.\n\nWhen we met in August, the float pool view stood out for you: one screen showing open shifts across all seven clinics, so float staff go where they're needed without a round of phone calls. That is still the part most urgent care groups tell us saves them the most time.\n\nWhenever the timing is right for your team, I'm glad to pick things back up.\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "re-engage",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "flag",
+            "word_count": 86,
+            "notes": "No clear ask found. Facts found in CRM notes. Recipient matches the CRM contact."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Tomás Rivera <tomas.rivera@tidewaterscheduling.example>",
+        "to": "Colette Varga <cvarga@quarryhillurgent.example>",
+        "subject": "Picking back up after your budget review",
+        "body": "Hi Colette,\n\nI hope the budget review went smoothly, and congratulations on the new Eastside clinic opening this month.\n\nWhen we met in August, the float pool view stood out for you: one screen showing open shifts across all seven clinics, so float staff go where they're needed without a round of phone calls. That is still the part most urgent care groups tell us saves them the most time.\n\nWhenever the timing is right for your team, I'm glad to pick things back up.\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 11. No reply yet."
+    },
+    {
+      "id": "t-0014",
+      "title": "Reply follow-up: Hitchpost Mobile Vet founder, after vaccine season",
+      "metadata": {
+        "channel": "email",
+        "persona": "founder",
+        "industry": "veterinary",
+        "deal stage": "new lead",
+        "email type": "follow-up",
+        "rep": "Jess Moreau",
+        "rep action": "sent as is",
+        "drafted": "2026-09-14T15:40:00Z"
+      },
+      "context": {
+        "Brief": "he said after mid oct. short note, suggest a call week of oct 19, dont push",
+        "CRM notes": "Contact: Theo Barrington, Founder (theo@hitchpostvet.example)\nAccount: Hitchpost Mobile Vet, 4 vans, 12 staff\nDeal: New lead\nScheduling today: Paper route sheets each morning\nActivity:\n- Sep 1: Cold email sent (Jess).\n- Sep 9: Reply: \"Maybe after our busy season. Vaccine clinics run through mid-October.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Theo Barrington, Hitchpost Mobile Vet",
+          "documents": [
+            {
+              "id": "contact-5849",
+              "title": "Contact: Theo Barrington",
+              "text": "Founder at Hitchpost Mobile Vet. Email theo@hitchpostvet.example.",
+              "score": 0.94
+            },
+            {
+              "id": "account-5866",
+              "title": "Account: Hitchpost Mobile Vet",
+              "text": "4 vans, 12 staff. Deal: New lead. Scheduling today: Paper route sheets each morning.",
+              "score": 0.89
+            },
+            {
+              "id": "activity-5890",
+              "title": "Recent activity",
+              "text": "Sep 1: Cold email sent (Jess). Sep 9: Reply: \"Maybe after our busy season. Vaccine clinics run through mid-October.\"",
+              "score": 0.83
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "follow-up",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: After vaccine season\n\nHi Theo,\n\nThanks for the reply. Vaccine clinics through mid-October sounds like a lot, so I'll keep this short.\n\nCould we pencil in 20 minutes the week of October 19? I'll show you how the route sheets for your four vans could go straight to your team's phones each morning instead of on paper.\n\nIf another week is better, just say which.\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "follow-up",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 63,
+            "notes": "Within 150 words (63). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Jess Moreau <jess.moreau@tidewaterscheduling.example>",
+        "to": "Theo Barrington <theo@hitchpostvet.example>",
+        "subject": "After vaccine season",
+        "body": "Hi Theo,\n\nThanks for the reply. Vaccine clinics through mid-October sounds like a lot, so I'll keep this short.\n\nCould we pencil in 20 minutes the week of October 19? I'll show you how the route sheets for your four vans could go straight to your team's phones each morning instead of on paper.\n\nIf another week is better, just say which.\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 14. Reply on Sep 15: \"Oct 20 works.\""
+    },
+    {
+      "id": "t-0015",
+      "title": "Pre-call note: Marrow Creek School District HR, absence counts",
+      "metadata": {
+        "channel": "email",
+        "persona": "HR director",
+        "industry": "education",
+        "deal stage": "discovery call booked",
+        "email type": "call confirmation",
+        "rep": "Marcus Lindqvist",
+        "rep action": "edited before sending",
+        "drafted": "2026-09-14T17:25:00Z"
+      },
+      "context": {
+        "Brief": "Pre call note for thursday 24th. Keep it SHORT (she reads on phone). Ask her to bring last months absence count for drivers + food service.",
+        "CRM notes": "Contact: Beatriz Nascimento, Director of Human Resources (bnascimento@marrowcreeksd.example). Goes by Bea.\nAccount: Marrow Creek School District, 14 schools, about 1,100 classified staff (bus drivers, food service, custodians)\nDeal: Discovery call booked for Thu Sep 24, 3:30 PM PT\nScheduling today: Absences covered through a phone tree\nActivity:\n- Sep 10: Inbound from the article \"Covering classified staff absences.\"\n- Sep 11 (Marcus): Booked the call. \"Goes by Bea. Reads email on her phone, keep it short.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Beatriz Nascimento, Marrow Creek School District",
+          "documents": [
+            {
+              "id": "contact-6222",
+              "title": "Contact: Beatriz Nascimento",
+              "text": "Director of Human Resources at Marrow Creek School District. Email bnascimento@marrowcreeksd.example. Goes by Bea.",
+              "score": 0.93
+            },
+            {
+              "id": "account-6239",
+              "title": "Account: Marrow Creek School District",
+              "text": "14 schools, about 1,100 classified staff (bus drivers, food service, custodians). Deal: Discovery call booked for Thu Sep 24, 3:30 PM PT. Scheduling today: Absences covered through a phone tree.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-6263",
+              "title": "Recent activity",
+              "text": "Sep 10: Inbound from the article \"Covering classified staff absences.\" Sep 11 (Marcus): Booked the call. \"Goes by Bea. Reads email on her phone, keep it short.\"",
+              "score": 0.82
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "call confirmation",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Before Thursday: absence counts\n\nHi Beatriz,\n\nLooking forward to Thursday, September 24 at 3:30 PM.\n\nTo make it useful, could you bring last month's absence count for bus drivers and food service? I'll show how Tidewater fills those shifts from a qualified list instead of the phone tree.\n\nThanks,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "call confirmation",
+            "limit_words": 200
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 45,
+            "notes": "Within 200 words (45). Recipient matches the CRM contact (Beatriz Nascimento). Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Marcus Lindqvist <marcus.lindqvist@tidewaterscheduling.example>",
+        "to": "Beatriz Nascimento <bnascimento@marrowcreeksd.example>",
+        "subject": "Before Thursday: absence counts",
+        "body": "Hi Beatriz,\n\nLooking forward to Thursday, September 24 at 3:30 PM.\n\nTo make it useful, could you bring last month's absence count for bus drivers and food service? I'll show how Tidewater fills those shifts from a qualified list instead of the phone tree.\n\nThanks,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Rep changed the greeting to \"Hi Bea,\" and sent on Sep 14."
+    },
+    {
+      "id": "t-0016",
+      "title": "Proposal follow-up: Cobblestone Dermatology owner, deposits question",
+      "metadata": {
+        "channel": "email",
+        "persona": "clinic owner",
+        "industry": "healthcare",
+        "deal stage": "proposal sent",
+        "email type": "follow-up",
+        "rep": "Dana Okafor",
+        "rep action": "sent as is",
+        "drafted": "2026-09-14T20:00:00Z"
+      },
+      "context": {
+        "Brief": "answer deposit q: yes, deposits by card on file, set per appointment type, waitlist offers include the deposit step. ask him to sign by sept 30 to keep pricing",
+        "CRM notes": "Contact: Dr. Yusuf Adeyemi, Owner (yadeyemi@cobblestonederm.example)\nAccount: Cobblestone Dermatology, 2 clinics (Bellevue, Redmond), 23 staff\nDeal: Proposal sent Sep 4: Tidewater Appointments, 2 locations, $178 per month. Pricing valid through Sep 30.\nScheduling today: Booking in their practice software; no-shows on cosmetic consults are the main pain\nActivity:\n- Sep 4 (Dana): Proposal sent.\n- Sep 11: Yusuf asked whether waitlist fill works for cosmetic consults that need a deposit."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Yusuf Adeyemi, Cobblestone Dermatology",
+          "documents": [
+            {
+              "id": "contact-6595",
+              "title": "Contact: Dr. Yusuf Adeyemi",
+              "text": "Owner at Cobblestone Dermatology. Email yadeyemi@cobblestonederm.example.",
+              "score": 0.92
+            },
+            {
+              "id": "account-6612",
+              "title": "Account: Cobblestone Dermatology",
+              "text": "2 clinics (Bellevue, Redmond), 23 staff. Deal: Proposal sent Sep 4: Tidewater Appointments, 2 locations, $178 per month. Pricing valid through Sep 30. Scheduling today: Booking in their practice software; no-shows on cosmetic consults are the main pain.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-6636",
+              "title": "Recent activity",
+              "text": "Sep 4 (Dana): Proposal sent. Sep 11: Yusuf asked whether waitlist fill works for cosmetic consults that need a deposit.",
+              "score": 0.86
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "follow-up",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Deposits on cosmetic consults: yes\n\nHi Dr. Adeyemi,\n\nYes, waitlist fill works with deposits. You set a deposit amount per appointment type, so cosmetic consults can require one while medical visits don't. When a consult is cancelled, the next patient on the waitlist gets a text offer and confirms by paying the deposit with a card on file or a new card.\n\nThat should help with the consult no-shows you mentioned.\n\nThe proposal for both clinics at $178 per month holds through September 30. Would you like me to send the order form today so you can sign before then?\n\nBest,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "follow-up",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 96,
+            "notes": "Within 150 words (96). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Dana Okafor <dana.okafor@tidewaterscheduling.example>",
+        "to": "Yusuf Adeyemi <yadeyemi@cobblestonederm.example>",
+        "subject": "Deposits on cosmetic consults: yes",
+        "body": "Hi Dr. Adeyemi,\n\nYes, waitlist fill works with deposits. You set a deposit amount per appointment type, so cosmetic consults can require one while medical visits don't. When a consult is cancelled, the next patient on the waitlist gets a text offer and confirms by paying the deposit with a card on file or a new card.\n\nThat should help with the consult no-shows you mentioned.\n\nThe proposal for both clinics at $178 per month holds through September 30. Would you like me to send the order form today so you can sign before then?\n\nBest,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 14. Order form signed Sep 17."
+    },
+    {
+      "id": "t-0017",
+      "title": "Trial wrap-up: Brackwater Distribution founder, rollout plan",
+      "metadata": {
+        "channel": "email",
+        "persona": "founder",
+        "industry": "logistics",
+        "deal stage": "trial",
+        "email type": "trial check-in",
+        "rep": "Tomás Rivera",
+        "rep action": "sent as is",
+        "drafted": "2026-09-14T22:40:00Z"
+      },
+      "context": {
+        "Brief": "Trial ends tomorrow. Kent fill rate 88 -> 96%. Propose rollout to Fife, ask for a 30 min planning call this week.",
+        "CRM notes": "Contact: Hollis Brenner, Founder and CEO (hbrenner@brackwaterdist.example)\nAccount: Brackwater Distribution, 2 warehouses (Kent: 140 pickers; Fife: 95 pickers)\nDeal: Tidewater Shifts trial at Kent, Sep 1 to Sep 15\nScheduling today: Kent in the trial; Fife still on spreadsheets\nActivity:\n- Sep 1: Trial started at Kent.\n- Sep 11 (Tomás): Kent shift fill rate went from 88% to 96% in week two. Hollis wants a rollout plan for Fife."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Hollis Brenner, Brackwater Distribution",
+          "documents": [
+            {
+              "id": "contact-6968",
+              "title": "Contact: Hollis Brenner",
+              "text": "Founder and CEO at Brackwater Distribution. Email hbrenner@brackwaterdist.example.",
+              "score": 0.95
+            },
+            {
+              "id": "account-6985",
+              "title": "Account: Brackwater Distribution",
+              "text": "2 warehouses (Kent: 140 pickers; Fife: 95 pickers). Deal: Tidewater Shifts trial at Kent, Sep 1 to Sep 15. Scheduling today: Kent in the trial; Fife still on spreadsheets.",
+              "score": 0.89
+            },
+            {
+              "id": "activity-7009",
+              "title": "Recent activity",
+              "text": "Sep 1: Trial started at Kent. Sep 11 (Tomás): Kent shift fill rate went from 88% to 96% in week two. Hollis wants a rollout plan for Fife.",
+              "score": 0.85
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "trial check-in",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Kent results and a rollout plan\n\nHi Hollis,\n\nYour Kent trial wraps up tomorrow, and the numbers are strong: shift fill rate went from 88% to 96% in week two.\n\nFor the next step, I'd suggest rolling out to all 260 pickers across Kent, Fife, and your Tacoma site in one go, so every lead works from the same schedule before peak season. Our onboarding team can have Fife and Tacoma live within two weeks.\n\nCould we hold 30 minutes on Thursday or Friday to build the rollout plan together?\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "trial check-in",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 85,
+            "notes": "Within 150 words (85). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Tomás Rivera <tomas.rivera@tidewaterscheduling.example>",
+        "to": "Hollis Brenner <hbrenner@brackwaterdist.example>",
+        "subject": "Kent results and a rollout plan",
+        "body": "Hi Hollis,\n\nYour Kent trial wraps up tomorrow, and the numbers are strong: shift fill rate went from 88% to 96% in week two.\n\nFor the next step, I'd suggest rolling out to all 260 pickers across Kent, Fife, and your Tacoma site in one go, so every lead works from the same schedule before peak season. Our onboarding team can have Fife and Tacoma live within two weeks.\n\nCould we hold 30 minutes on Thursday or Friday to build the rollout plan together?\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 14. No reply yet."
+    },
+    {
+      "id": "t-0018",
+      "title": "Trial support: Loomis & Pike Packaging IT, SCIM fix is live",
+      "metadata": {
+        "channel": "email",
+        "persona": "IT manager",
+        "industry": "manufacturing",
+        "deal stage": "trial",
+        "email type": "trial check-in",
+        "rep": "Marcus Lindqvist",
+        "rep action": "sent as is",
+        "drafted": "2026-09-15T16:15:00Z"
+      },
+      "context": {
+        "Brief": "tell her the SCIM fix for & in group names is live (ticket 48213). ask her to rerun the sync and confirm it worked",
+        "CRM notes": "Contact: Ingrid Paulsen, IT Manager (ipaulsen@loomispike.example)\nAccount: Loomis & Pike Packaging, 2 plants (Dayton, Springfield), about 330 staff\nDeal: Tidewater Shifts trial, Sep 8 to Sep 22\nScheduling today: Supervisors' spreadsheets\nActivity:\n- Sep 12: SCIM sync failed: group names containing \"&\" were rejected (ticket 48213).\n- Sep 14: Support shipped the fix for ticket 48213."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Ingrid Paulsen, Loomis & Pike Packaging",
+          "documents": [
+            {
+              "id": "contact-7341",
+              "title": "Contact: Ingrid Paulsen",
+              "text": "IT Manager at Loomis & Pike Packaging. Email ipaulsen@loomispike.example.",
+              "score": 0.94
+            },
+            {
+              "id": "account-7358",
+              "title": "Account: Loomis & Pike Packaging",
+              "text": "2 plants (Dayton, Springfield), about 330 staff. Deal: Tidewater Shifts trial, Sep 8 to Sep 22. Scheduling today: Supervisors' spreadsheets.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-7382",
+              "title": "Recent activity",
+              "text": "Sep 12: SCIM sync failed: group names containing \"&\" were rejected (ticket 48213). Sep 14: Support shipped the fix for ticket 48213.",
+              "score": 0.84
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "trial check-in",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Ticket 48213 fixed: please rerun the SCIM sync\n\nHi Ingrid,\n\nGood news: the fix for ticket 48213 is live. Group names that contain an ampersand now sync without errors.\n\nCould you rerun the SCIM sync from your identity provider today and reply to confirm all groups came through? If anything still fails, send me the group name and I'll get support on it right away.\n\nThanks,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "trial check-in",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 58,
+            "notes": "Within 150 words (58). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Marcus Lindqvist <marcus.lindqvist@tidewaterscheduling.example>",
+        "to": "Ingrid Paulsen <ipaulsen@loomispike.example>",
+        "subject": "Ticket 48213 fixed: please rerun the SCIM sync",
+        "body": "Hi Ingrid,\n\nGood news: the fix for ticket 48213 is live. Group names that contain an ampersand now sync without errors.\n\nCould you rerun the SCIM sync from your identity provider today and reply to confirm all groups came through? If anything still fails, send me the group name and I'll get support on it right away.\n\nThanks,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 15. Reply on Sep 15: \"All 14 groups synced.\""
+    },
+    {
+      "id": "t-0019",
+      "title": "Webinar follow-up: Bramble & Birch HR, weekend call-outs",
+      "metadata": {
+        "channel": "email",
+        "persona": "HR director",
+        "industry": "retail",
+        "deal stage": "new lead",
+        "email type": "first touch",
+        "rep": "Jess Moreau",
+        "rep action": "sent as is",
+        "drafted": "2026-09-15T18:50:00Z"
+      },
+      "context": {
+        "Brief": "webinar attendee, said weekend call outs are the big issue. send recording + ask for a call",
+        "CRM notes": "Contact: Delphine Marchetti, HR Director (dmarchetti@bramblebirch.example)\nAccount: Bramble & Birch Outfitters, 22 stores, about 540 staff\nDeal: New lead\nScheduling today: Store managers use a scheduling add-on in their payroll system\nActivity:\n- Sep 9: Attended the webinar \"Shift swaps without the group chat.\"\n- Sep 9: Poll answer: biggest scheduling issue is \"last-minute call-outs on weekends.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Delphine Marchetti, Bramble & Birch Outfitters",
+          "documents": [
+            {
+              "id": "contact-7714",
+              "title": "Contact: Delphine Marchetti",
+              "text": "HR Director at Bramble & Birch Outfitters. Email dmarchetti@bramblebirch.example.",
+              "score": 0.93
+            },
+            {
+              "id": "account-7731",
+              "title": "Account: Bramble & Birch Outfitters",
+              "text": "22 stores, about 540 staff. Deal: New lead. Scheduling today: Store managers use a scheduling add-on in their payroll system.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-7755",
+              "title": "Recent activity",
+              "text": "Sep 9: Attended the webinar \"Shift swaps without the group chat.\" Sep 9: Poll answer: biggest scheduling issue is \"last-minute call-outs on weekends.\"",
+              "score": 0.83
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "first touch",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Weekend call-outs at Bramble & Birch\n\nHi Delphine,\n\nThank you for joining our webinar last week! In the poll, you mentioned that last-minute call-outs on weekends are your biggest scheduling issue, and you're definitely not alone. It was the top answer from retail teams on the call.\n\nHere is the recording in case you'd like to share it with your store managers: tidewaterscheduling.example/webinars/shift-swaps\n\nA few things that tend to help retail teams with weekend call-outs:\n- Open shift alerts that go to every qualified employee at once, so the first person to accept gets the shift\n- Swap requests your managers approve from their phones instead of by text\n- An on-call list for Saturdays and Sundays that fills gaps automatically\n- Blackout dates that stop too many people from booking the same weekend off\n- Reports that show which stores have the most call-outs, so you can plan ahead\n\nEvery store works a little differently, so I'd love to learn more about how your 22 stores handle it today.\n\nWould love to hear your thoughts! I'm also happy to send over a pricing sheet or a customer story, or set up some time with our team, whichever is most helpful.\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "first touch",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "flag",
+            "word_count": 191,
+            "notes": "Over 150 words (191). More than one ask. Final pass shortened the list."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Jess Moreau <jess.moreau@tidewaterscheduling.example>",
+        "to": "Delphine Marchetti <dmarchetti@bramblebirch.example>",
+        "subject": "Weekend call-outs at Bramble & Birch",
+        "body": "Hi Delphine,\n\nThank you for joining our webinar last week! In the poll, you mentioned that last-minute call-outs on weekends are your biggest scheduling issue, and you're definitely not alone. It was the top answer from retail teams on the call.\n\nHere is the recording in case you'd like to share it with your store managers: tidewaterscheduling.example/webinars/shift-swaps\n\nA few things that tend to help retail teams with weekend call-outs:\n- Open shift alerts that go to every qualified employee at once, so the first person to accept gets the shift\n- Swap requests your managers approve from their phones instead of by text\n- An on-call list for Saturdays and Sundays that fills gaps automatically\n- Reports that show which stores have the most call-outs, so you can plan ahead\n\nEvery store works a little differently, so I'd love to learn more about how your 22 stores handle it today.\n\nWould love to hear your thoughts! I'm also happy to send over a pricing sheet or a customer story, or set up some time with our team, whichever is most helpful.\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 15. No reply yet."
+    },
+    {
+      "id": "t-0020",
+      "title": "Confirm call: Driftwood Taqueria Group founder, tip-eligible shifts",
+      "metadata": {
+        "channel": "email",
+        "persona": "founder",
+        "industry": "hospitality",
+        "deal stage": "discovery call booked",
+        "email type": "call confirmation",
+        "rep": "Tomás Rivera",
+        "rep action": "sent as is",
+        "drafted": "2026-09-15T21:35:00Z"
+      },
+      "context": {
+        "Brief": "confirm thurs 24th 2pm. ask her to bring one week of schedules from each spot. she goes by Rafa, casual is fine",
+        "CRM notes": "Contact: Rafaela Quintero, Founder (rafa@driftwoodtaqueria.example). Goes by Rafa.\nAccount: Driftwood Taqueria Group, 3 restaurants (Astoria, Seaside, Cannon Beach), about 70 staff\nDeal: Discovery call booked for Thu Sep 24, 2:00 PM PT\nScheduling today: A paper schedule per restaurant, photographed and posted to a group chat\nActivity:\n- Sep 10: Referred by a customer, Gull Rock Cafe.\n- Sep 14 (Tomás): Tip pooling rules differ by location; wants schedules to show which shifts are tip-eligible."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Rafaela Quintero, Driftwood Taqueria Group",
+          "documents": [
+            {
+              "id": "contact-8087",
+              "title": "Contact: Rafaela Quintero",
+              "text": "Founder at Driftwood Taqueria Group. Email rafa@driftwoodtaqueria.example. Goes by Rafa.",
+              "score": 0.92
+            },
+            {
+              "id": "account-8104",
+              "title": "Account: Driftwood Taqueria Group",
+              "text": "3 restaurants (Astoria, Seaside, Cannon Beach), about 70 staff. Deal: Discovery call booked for Thu Sep 24, 2:00 PM PT. Scheduling today: A paper schedule per restaurant, photographed and posted to a group chat.",
+              "score": 0.89
+            },
+            {
+              "id": "activity-8128",
+              "title": "Recent activity",
+              "text": "Sep 10: Referred by a customer, Gull Rock Cafe. Sep 14 (Tomás): Tip pooling rules differ by location; wants schedules to show which shifts are tip-eligible.",
+              "score": 0.82
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "call confirmation",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Thursday at 2: bring a week of schedules\n\nHi Rafa,\n\nLooking forward to Thursday the 24th at 2:00 PM.\n\nOne ask: could you bring one week of schedules from Astoria, Seaside, and Cannon Beach? Since tip pooling works differently at each spot, I'll set up your real shifts so you can see the tip-eligible ones marked at each location.\n\nSee you Thursday,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "call confirmation",
+            "limit_words": 200
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 54,
+            "notes": "Within 200 words (54). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Tomás Rivera <tomas.rivera@tidewaterscheduling.example>",
+        "to": "Rafaela Quintero <rafa@driftwoodtaqueria.example>",
+        "subject": "Thursday at 2: bring a week of schedules",
+        "body": "Hi Rafa,\n\nLooking forward to Thursday the 24th at 2:00 PM.\n\nOne ask: could you bring one week of schedules from Astoria, Seaside, and Cannon Beach? Since tip pooling works differently at each spot, I'll set up your real shifts so you can see the tip-eligible ones marked at each location.\n\nSee you Thursday,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 15. Reply on Sep 15: \"Will do!\""
+    },
+    {
+      "id": "t-0021",
+      "title": "Win-back: Briarwick Animal Hospital owner, price objection",
+      "metadata": {
+        "channel": "email",
+        "persona": "clinic owner",
+        "industry": "veterinary",
+        "deal stage": "gone quiet",
+        "email type": "re-engage",
+        "rep": "Dana Okafor",
+        "rep action": "edited before sending",
+        "drafted": "2026-09-16T15:55:00Z"
+      },
+      "context": {
+        "Brief": "Win back. She went with a cheaper option at $4/staff. Our angle: overnight coverage alerts they used 19x in trial + we only bill for staff scheduled that month. Ask for 15 min.",
+        "CRM notes": "Contact: Dr. Nkechi Obi, Owner (nobi@briarwickanimal.example)\nAccount: Briarwick Animal Hospital, 1 hospital, 31 staff, open 7 days\nDeal: Gone quiet. Trial ended Aug 29 without converting.\nScheduling today: Kettleshift (month-to-month plan)\nActivity:\n- Aug 29: Trial ended. Nkechi: \"Kettleshift quoted $4 a staff member, you're at $6.\"\n- Aug 29 (Dana): Her team used overnight coverage alerts 19 times during the trial.\n- Sep 15 (Dana): Her Kettleshift plan is month to month, so she can switch any time."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Nkechi Obi, Briarwick Animal Hospital",
+          "documents": [
+            {
+              "id": "contact-8460",
+              "title": "Contact: Dr. Nkechi Obi",
+              "text": "Owner at Briarwick Animal Hospital. Email nobi@briarwickanimal.example.",
+              "score": 0.95
+            },
+            {
+              "id": "account-8477",
+              "title": "Account: Briarwick Animal Hospital",
+              "text": "1 hospital, 31 staff, open 7 days. Deal: Gone quiet. Trial ended Aug 29 without converting. Scheduling today: Kettleshift (month-to-month plan).",
+              "score": 0.88
+            },
+            {
+              "id": "activity-8501",
+              "title": "Recent activity",
+              "text": "Aug 29: Trial ended. Nkechi: \"Kettleshift quoted $4 a staff member, you're at $6.\" Aug 29 (Dana): Her team used overnight coverage alerts 19 times during the trial. Sep 15 (Dana): Her Kettleshift plan is month to month, so she can switch any time.",
+              "score": 0.86
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "re-engage",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Overnight coverage at Briarwick\n\nHi Dr. Obi,\n\nI know Kettleshift came in at $4 per staff member, and price matters for a single hospital. One thing worth comparing: we only bill for staff who are actually scheduled that month, so your part-time and relief techs often cost nothing in slower months.\n\nDuring your trial, your team used overnight coverage alerts 19 times to fill gaps without a phone call. That's the piece I'd hate for you to lose.\n\nWould you be open to 15 minutes next week to compare what you'd actually pay with each?\n\nBest,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "re-engage",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 92,
+            "notes": "Within 150 words (92). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Dana Okafor <dana.okafor@tidewaterscheduling.example>",
+        "to": "Nkechi Obi <nobi@briarwickanimal.example>",
+        "subject": "Overnight coverage at Briarwick",
+        "body": "Hi Dr. Obi,\n\nI know Kettleshift came in at $4 per staff member, and price matters for a single hospital. One thing worth comparing: we only bill for staff who are actually scheduled that month, so your part-time and relief techs often cost nothing in slower months.\n\nDuring your trial, your team used overnight coverage alerts 19 times to fill gaps without a phone call. That's the piece I'd hate for you to lose.\n\nWould you be open to 15 minutes next week to compare what you'd actually pay with each?\n\nBest,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Rep deleted the first sentence and sent on Sep 16."
+    },
+    {
+      "id": "t-0022",
+      "title": "Week one results: Halloran Ridge Foods HR, union steward call",
+      "metadata": {
+        "channel": "email",
+        "persona": "HR director",
+        "industry": "manufacturing",
+        "deal stage": "trial",
+        "email type": "trial check-in",
+        "rep": "Marcus Lindqvist",
+        "rep action": "sent as is",
+        "drafted": "2026-09-16T18:20:00Z"
+      },
+      "context": {
+        "Brief": "share wk1: 57 swaps, zero needed HR. Steward Ray Dominguez asked about seniority visibility. Ask for 20 min w/ Glenn + Ray.",
+        "CRM notes": "Contact: Glenn Oduya, HR Director (goduya@halloranridge.example)\nAccount: Halloran Ridge Foods, 1 plant (Yakima), 4 production lines, about 390 staff\nDeal: Tidewater Shifts trial, Sep 8 to Sep 22 (lines 1 and 2)\nScheduling today: Lines 3 and 4 still on paper\nActivity:\n- Sep 15: Week one: 57 shift swaps made in the app on lines 1 and 2; none needed HR.\n- Sep 15 (Marcus): Union steward Ray Dominguez asked who can see seniority dates."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Glenn Oduya, Halloran Ridge Foods",
+          "documents": [
+            {
+              "id": "contact-8833",
+              "title": "Contact: Glenn Oduya",
+              "text": "HR Director at Halloran Ridge Foods. Email goduya@halloranridge.example.",
+              "score": 0.94
+            },
+            {
+              "id": "account-8850",
+              "title": "Account: Halloran Ridge Foods",
+              "text": "1 plant (Yakima), 4 production lines, about 390 staff. Deal: Tidewater Shifts trial, Sep 8 to Sep 22 (lines 1 and 2). Scheduling today: Lines 3 and 4 still on paper.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-8874",
+              "title": "Recent activity",
+              "text": "Sep 15: Week one: 57 shift swaps made in the app on lines 1 and 2; none needed HR. Sep 15 (Marcus): Union steward Ray Dominguez asked who can see seniority dates.",
+              "score": 0.85
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "trial check-in",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Week one: 57 swaps, none needed HR\n\nHi Glenn,\n\nWeek one on lines 1 and 2 went well: employees made 57 shift swaps in the app, and none of them needed HR to step in.\n\nRay Dominguez asked who can see seniority dates. Short answer: only HR and the steward role you choose, and every view is logged. I'd like to walk you both through it.\n\nCould we set up 20 minutes with you and Ray this week?\n\nThanks,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "trial check-in",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 72,
+            "notes": "Within 150 words (72). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Marcus Lindqvist <marcus.lindqvist@tidewaterscheduling.example>",
+        "to": "Glenn Oduya <goduya@halloranridge.example>",
+        "subject": "Week one: 57 swaps, none needed HR",
+        "body": "Hi Glenn,\n\nWeek one on lines 1 and 2 went well: employees made 57 shift swaps in the app, and none of them needed HR to step in.\n\nRay Dominguez asked who can see seniority dates. Short answer: only HR and the steward role you choose, and every view is logged. I'd like to walk you both through it.\n\nCould we set up 20 minutes with you and Ray this week?\n\nThanks,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 16. Call set for Sep 18."
+    },
+    {
+      "id": "t-0023",
+      "title": "Re-engage: Wendell Park, now VP Ops at Seastack Health Partners",
+      "metadata": {
+        "channel": "email",
+        "persona": "VP Operations",
+        "industry": "healthcare",
+        "deal stage": "gone quiet",
+        "email type": "re-engage",
+        "rep": "Tomás Rivera",
+        "rep action": "sent as is",
+        "drafted": "2026-09-16T21:10:00Z"
+      },
+      "context": {
+        "Brief": "Re-engage Wendell. New role at Seastack, 18 clinics now. Congratulate on new role, ask for 30 min to revisit for the bigger group.",
+        "CRM notes": "Contact: Wendell Park, VP Operations (wpark@seastackhealth.example)\nAccount: Seastack Health Partners, 18 clinics (acquired Harbor Street Physio in July 2026), about 540 staff\nDeal: Gone quiet since June\nScheduling today: A mix of Harbor Street Physio's spreadsheets and Seastack's practice software\nActivity:\n- Jun 10: Demo with Wendell when he was COO at Harbor Street Physio (6 clinics).\n- Jul 22: Harbor Street Physio acquired by Seastack Health Partners. Wendell is now VP Operations for all 18 clinics.\n- Sep 15 (Tomás): Accounts merged; the Harbor Street Physio record is marked old."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Wendell Park",
+          "documents": [
+            {
+              "id": "account-0317",
+              "title": "Account: Harbor Street Physio (old record)",
+              "text": "6 clinics, about 140 staff. Contact: Wendell Park, COO. Demo Jun 10: wants one screen for therapist coverage across all 6 clinics. Status: merged into Seastack Health Partners on Sep 15.",
+              "score": 0.94
+            },
+            {
+              "id": "contact-1206",
+              "title": "Contact: Wendell Park",
+              "text": "VP Operations at Seastack Health Partners. Email wpark@seastackhealth.example.",
+              "score": 0.93
+            },
+            {
+              "id": "activity-1247",
+              "title": "Recent activity",
+              "text": "Jun 10: Demo with Wendell when he was COO at Harbor Street Physio (6 clinics). Jul 22: Harbor Street Physio acquired by Seastack Health Partners. Wendell is now VP Operations for all 18 clinics. Sep 15 (Tomás): Accounts merged; the Harbor Street Physio record is marked old.",
+              "score": 0.84
+            },
+            {
+              "id": "account-1223",
+              "title": "Account: Seastack Health Partners",
+              "text": "18 clinics (acquired Harbor Street Physio in July 2026), about 540 staff. Deal: Gone quiet since June. Scheduling today: A mix of Harbor Street Physio's spreadsheets and Seastack's practice software.",
+              "score": 0.81
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "re-engage",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Revisiting scheduling for Harbor Street Physio\n\nHi Wendell,\n\nIt's been a few months since our demo in June, and I wanted to reconnect.\n\nWhen we last spoke, you were looking for a simpler way to schedule therapists across Harbor Street Physio's 6 clinics. Tidewater Shifts would let you see coverage for all 6 locations on one screen and fill open shifts from your phone.\n\nWould you have 30 minutes in the next two weeks to take another look together?\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "re-engage",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 74,
+            "notes": "Within 150 words (74). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Tomás Rivera <tomas.rivera@tidewaterscheduling.example>",
+        "to": "Wendell Park <wpark@seastackhealth.example>",
+        "subject": "Revisiting scheduling for Harbor Street Physio",
+        "body": "Hi Wendell,\n\nIt's been a few months since our demo in June, and I wanted to reconnect.\n\nWhen we last spoke, you were looking for a simpler way to schedule therapists across Harbor Street Physio's 6 clinics. Tidewater Shifts would let you see coverage for all 6 locations on one screen and fill open shifts from your phone.\n\nWould you have 30 minutes in the next two weeks to take another look together?\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 17. No reply yet."
+    },
+    {
+      "id": "t-0024",
+      "title": "Integrations inbound: Ferncastle Pet Supply IT, time clock API",
+      "metadata": {
+        "channel": "email",
+        "persona": "IT manager",
+        "industry": "retail",
+        "deal stage": "new lead",
+        "email type": "first touch",
+        "rep": "Jess Moreau",
+        "rep action": "sent as is",
+        "drafted": "2026-09-16T23:00:00Z"
+      },
+      "context": {
+        "Brief": "He asked if our API accepts time clock punches. Yes, via the punches endpoint. Point to docs + ask for a 30 min technical call with Imani (SE).",
+        "CRM notes": "Contact: Arjun Mehta, IT Manager (amehta@ferncastlepet.example)\nAccount: Ferncastle Pet Supply, 31 stores, about 450 staff\nDeal: New lead\nScheduling today: Scheduling in their payroll system; badge-in time clocks at every store\nActivity:\n- Sep 15: Inbound from the integrations page: \"Can your API take punches from our badge-in time clocks?\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Arjun Mehta, Ferncastle Pet Supply",
+          "documents": [
+            {
+              "id": "contact-1579",
+              "title": "Contact: Arjun Mehta",
+              "text": "IT Manager at Ferncastle Pet Supply. Email amehta@ferncastlepet.example.",
+              "score": 0.92
+            },
+            {
+              "id": "account-1596",
+              "title": "Account: Ferncastle Pet Supply",
+              "text": "31 stores, about 450 staff. Deal: New lead. Scheduling today: Scheduling in their payroll system; badge-in time clocks at every store.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-1620",
+              "title": "Recent activity",
+              "text": "Sep 15: Inbound from the integrations page: \"Can your API take punches from our badge-in time clocks?\"",
+              "score": 0.83
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "first touch",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Time clock punches through our API\n\nHi Arjun,\n\nYes. Our API accepts punches from badge-in time clocks through the punches endpoint, and each punch is matched to the scheduled shift so late and missed punches show up for store managers. The docs are here: tidewaterscheduling.example/docs/api/punches\n\nWould you be up for a 30-minute technical call with Imani Clarke, our solutions engineer, next week? She can go through your clock setup across the 31 stores.\n\nThanks,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "first touch",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 68,
+            "notes": "Within 150 words (68). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Jess Moreau <jess.moreau@tidewaterscheduling.example>",
+        "to": "Arjun Mehta <amehta@ferncastlepet.example>",
+        "subject": "Time clock punches through our API",
+        "body": "Hi Arjun,\n\nYes. Our API accepts punches from badge-in time clocks through the punches endpoint, and each punch is matched to the scheduled shift so late and missed punches show up for store managers. The docs are here: tidewaterscheduling.example/docs/api/punches\n\nWould you be up for a 30-minute technical call with Imani Clarke, our solutions engineer, next week? She can go through your clock setup across the 31 stores.\n\nThanks,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 17. Call booked for Sep 23."
+    },
+    {
+      "id": "t-0025",
+      "title": "Guide download: Wrenfield Family Medicine owner",
+      "metadata": {
+        "channel": "email",
+        "persona": "clinic owner",
+        "industry": "healthcare",
+        "deal stage": "new lead",
+        "email type": "first touch",
+        "rep": "Marcus Lindqvist",
+        "rep action": "sent as is",
+        "drafted": "2026-09-17T16:30:00Z"
+      },
+      "context": {
+        "Brief": "downloaded front desk staffing guide. first touch, offer 15 min",
+        "CRM notes": "Contact: Dr. Monique Fairbanks, Owner (mfairbanks@wrenfieldfm.example)\nAccount: Wrenfield Family Medicine, 3 clinics, about 60 staff\nDeal: New lead\nScheduling today: Not recorded\nActivity:\n- Sep 15: Downloaded the \"Front desk staffing guide.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Monique Fairbanks, Wrenfield Family Medicine",
+          "documents": [
+            {
+              "id": "contact-1952",
+              "title": "Contact: Dr. Monique Fairbanks",
+              "text": "Owner at Wrenfield Family Medicine. Email mfairbanks@wrenfieldfm.example.",
+              "score": 0.95
+            },
+            {
+              "id": "account-1969",
+              "title": "Account: Wrenfield Family Medicine",
+              "text": "3 clinics, about 60 staff. Deal: New lead. Scheduling today: Not recorded.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-1993",
+              "title": "Recent activity",
+              "text": "Sep 15: Downloaded the \"Front desk staffing guide.\"",
+              "score": 0.82
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "first touch",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Front desk staffing at Wrenfield\n\nHi Dr. Fairbanks,\n\nThanks for downloading our Front desk staffing guide. With Wrenfield's new urgent care wing opening this fall, I imagine keeping the front desk covered through longer hours is on your mind, especially with the turnover you mentioned earlier this year.\n\nTidewater Shifts shows open front desk shifts to qualified staff across all your clinics, and it warns you before anyone crosses into overtime.\n\nWould you be open to a 15-minute call next week to see how it could work across your three clinics?\n\nBest,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "first touch",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 87,
+            "notes": "Within 150 words (87). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Marcus Lindqvist <marcus.lindqvist@tidewaterscheduling.example>",
+        "to": "Monique Fairbanks <mfairbanks@wrenfieldfm.example>",
+        "subject": "Front desk staffing at Wrenfield",
+        "body": "Hi Dr. Fairbanks,\n\nThanks for downloading our Front desk staffing guide. With Wrenfield's new urgent care wing opening this fall, I imagine keeping the front desk covered through longer hours is on your mind, especially with the turnover you mentioned earlier this year.\n\nTidewater Shifts shows open front desk shifts to qualified staff across all your clinics, and it warns you before anyone crosses into overtime.\n\nWould you be open to a 15-minute call next week to see how it could work across your three clinics?\n\nBest,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 17. No reply yet."
+    },
+    {
+      "id": "t-0026",
+      "title": "Newsletter signup: Tern Street Physio owner",
+      "metadata": {
+        "channel": "email",
+        "persona": "clinic owner",
+        "industry": "healthcare",
+        "deal stage": "new lead",
+        "email type": "first touch",
+        "rep": "Jess Moreau",
+        "rep action": "sent as is",
+        "drafted": "2026-09-17T19:05:00Z"
+      },
+      "context": {
+        "Brief": "cold-ish, only a newsletter signup. keep it short. offer the no-show playbook and ask if a chat is worth it",
+        "CRM notes": "Contact: Callum Reyes, Owner (callum@ternstreetphysio.example)\nAccount: Tern Street Physio, 1 clinic\nDeal: New lead\nScheduling today: Not recorded\nActivity:\n- Sep 11: Signed up for the newsletter."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Callum Reyes, Tern Street Physio",
+          "documents": [
+            {
+              "id": "contact-2325",
+              "title": "Contact: Callum Reyes",
+              "text": "Owner at Tern Street Physio. Email callum@ternstreetphysio.example.",
+              "score": 0.94
+            },
+            {
+              "id": "account-2342",
+              "title": "Account: Tern Street Physio",
+              "text": "1 clinic. Deal: New lead. Scheduling today: Not recorded.",
+              "score": 0.89
+            },
+            {
+              "id": "activity-2366",
+              "title": "Recent activity",
+              "text": "Sep 11: Signed up for the newsletter.",
+              "score": 0.86
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "first touch",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: A playbook for no-shows\n\nHi Callum,\n\nThanks for signing up for our newsletter. Since you run a clinic, you might find our No-show playbook useful: it covers the reminder timing and waitlist habits that work best for small practices.\n\ntidewaterscheduling.example/no-show-playbook\n\nIf no-shows are a headache at Tern Street, would a 15-minute call be worth it?\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "first touch",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 52,
+            "notes": "Within 150 words (52). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Jess Moreau <jess.moreau@tidewaterscheduling.example>",
+        "to": "Callum Reyes <callum@ternstreetphysio.example>",
+        "subject": "A playbook for no-shows",
+        "body": "Hi Callum,\n\nThanks for signing up for our newsletter. Since you run a clinic, you might find our No-show playbook useful: it covers the reminder timing and waitlist habits that work best for small practices.\n\ntidewaterscheduling.example/no-show-playbook\n\nIf no-shows are a headache at Tern Street, would a 15-minute call be worth it?\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 17. No reply yet."
+    },
+    {
+      "id": "t-0027",
+      "title": "Pricing call recap: Harborlight Resorts VP Ops",
+      "metadata": {
+        "channel": "email",
+        "persona": "VP Operations",
+        "industry": "hospitality",
+        "deal stage": "proposal sent",
+        "email type": "recap",
+        "rep": "Dana Okafor",
+        "rep action": "sent as is",
+        "drafted": "2026-09-17T22:20:00Z"
+      },
+      "context": {
+        "Brief": "Recap pricing call: we only bill scheduled staff so winter ~600. CFO Mariko Tanabe needs to sign off. Ask for 20 min with Mariko next week.",
+        "CRM notes": "Contact: Lionel Fairweather, VP Operations (lfairweather@harborlightresorts.example)\nAccount: Harborlight Resorts, 3 resorts, about 1,250 staff at the summer peak (about 600 in winter)\nDeal: Proposal sent Sep 10: Tidewater Shifts, annual\nScheduling today: Each resort uses a different tool\nActivity:\n- Sep 10 (Dana): Proposal sent at $6 per staff member per month.\n- Sep 16 (Dana): Pricing call. Lionel worried about paying for 1,250 staff in winter. Agreed: billing only for staff scheduled each month. CFO Mariko Tanabe must sign off."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Lionel Fairweather, Harborlight Resorts",
+          "documents": [
+            {
+              "id": "contact-2698",
+              "title": "Contact: Lionel Fairweather",
+              "text": "VP Operations at Harborlight Resorts. Email lfairweather@harborlightresorts.example.",
+              "score": 0.93
+            },
+            {
+              "id": "account-2715",
+              "title": "Account: Harborlight Resorts",
+              "text": "3 resorts, about 1,250 staff at the summer peak (about 600 in winter). Deal: Proposal sent Sep 10: Tidewater Shifts, annual. Scheduling today: Each resort uses a different tool.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-2739",
+              "title": "Recent activity",
+              "text": "Sep 10 (Dana): Proposal sent at $6 per staff member per month. Sep 16 (Dana): Pricing call. Lionel worried about paying for 1,250 staff in winter. Agreed: billing only for staff scheduled each month. CFO Mariko Tanabe must sign off.",
+              "score": 0.85
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "recap",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Recap: billing only for scheduled staff\n\nHi Lionel,\n\nThank you for your time yesterday. A short recap:\n\n- You pay $6 per staff member per month, but only for staff who are scheduled that month.\n- At your summer peak of about 1,250 staff that is the full amount; in winter, with about 600 scheduled, the bill drops by roughly half.\n- Everything else in the September 10 proposal stays the same.\n\nYou mentioned Mariko Tanabe needs to sign off. Could we set up 20 minutes with the two of you next week so I can walk her through the numbers?\n\nBest regards,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "recap",
+            "limit_words": 200
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 94,
+            "notes": "Within 200 words (94). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Dana Okafor <dana.okafor@tidewaterscheduling.example>",
+        "to": "Lionel Fairweather <lfairweather@harborlightresorts.example>",
+        "subject": "Recap: billing only for scheduled staff",
+        "body": "Hi Lionel,\n\nThank you for your time yesterday. A short recap:\n\n- You pay $6 per staff member per month, but only for staff who are scheduled that month.\n- At your summer peak of about 1,250 staff that is the full amount; in winter, with about 600 scheduled, the bill drops by roughly half.\n- Everything else in the September 10 proposal stays the same.\n\nYou mentioned Mariko Tanabe needs to sign off. Could we set up 20 minutes with the two of you next week so I can walk her through the numbers?\n\nBest regards,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 17. Reply on Sep 18: \"Tuesday 10 AM, Mariko will join.\""
+    },
+    {
+      "id": "t-0028",
+      "title": "Trial ending: Tidy Nest Cleaning founder, 38 of 45 on the app",
+      "metadata": {
+        "channel": "email",
+        "persona": "founder",
+        "industry": "home services",
+        "deal stage": "trial",
+        "email type": "trial check-in",
+        "rep": "Tomás Rivera",
+        "rep action": "sent as is",
+        "drafted": "2026-09-18T15:45:00Z"
+      },
+      "context": {
+        "Brief": "Trial ends 25th. 38/45 on the app, great adoption. Ask her to pick monthly or annual by the 25th, offer to move the last 3 templates for her.",
+        "CRM notes": "Contact: Nora Whitfield, Founder (nora@tidynestcleaning.example)\nAccount: Tidy Nest Cleaning Co., 2 cities (Boise, Nampa), 45 cleaners\nDeal: Tidewater Shifts trial, Sep 11 to Sep 25\nScheduling today: In the trial; 3 recurring job templates still in the old spreadsheet\nActivity:\n- Sep 17: 38 of 45 cleaners have installed the app.\n- Sep 17 (Tomás): 3 recurring job templates still live in the old spreadsheet."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Nora Whitfield, Tidy Nest Cleaning Co.",
+          "documents": [
+            {
+              "id": "contact-3071",
+              "title": "Contact: Nora Whitfield",
+              "text": "Founder at Tidy Nest Cleaning Co.. Email nora@tidynestcleaning.example.",
+              "score": 0.92
+            },
+            {
+              "id": "account-3088",
+              "title": "Account: Tidy Nest Cleaning Co.",
+              "text": "2 cities (Boise, Nampa), 45 cleaners. Deal: Tidewater Shifts trial, Sep 11 to Sep 25. Scheduling today: In the trial; 3 recurring job templates still in the old spreadsheet.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-3112",
+              "title": "Recent activity",
+              "text": "Sep 17: 38 of 45 cleaners have installed the app. Sep 17 (Tomás): 3 recurring job templates still live in the old spreadsheet.",
+              "score": 0.84
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "trial check-in",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: 38 of 45 cleaners are on the app\n\nHi Nora,\n\nNice work: 38 of your 45 cleaners have the app installed after one week. That's one of the fastest starts we've seen.\n\nYour trial ends on September 25. Could you choose monthly or annual billing by then so nothing pauses? I'm happy to move your last 3 recurring job templates over from the spreadsheet for you before the switch.\n\nCheers,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "trial check-in",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 62,
+            "notes": "Within 150 words (62). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Tomás Rivera <tomas.rivera@tidewaterscheduling.example>",
+        "to": "Nora Whitfield <nora@tidynestcleaning.example>",
+        "subject": "38 of 45 cleaners are on the app",
+        "body": "Hi Nora,\n\nNice work: 38 of your 45 cleaners have the app installed after one week. That's one of the fastest starts we've seen.\n\nYour trial ends on September 25. Could you choose monthly or annual billing by then so nothing pauses? I'm happy to move your last 3 recurring job templates over from the spreadsheet for you before the switch.\n\nCheers,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 18. Monthly plan chosen on Sep 22."
+    },
+    {
+      "id": "t-0029",
+      "title": "Proposal nudge: Northpass Freight Lines HR, Oct 6 decision",
+      "metadata": {
+        "channel": "email",
+        "persona": "HR director",
+        "industry": "logistics",
+        "deal stage": "proposal sent",
+        "email type": "follow-up",
+        "rep": "Jess Moreau",
+        "rep action": "discarded",
+        "drafted": "2026-09-18T18:35:00Z"
+      },
+      "context": {
+        "Brief": "nudge on the proposal. decision is at their oct 6 leadership mtg. ask if she needs anything for it",
+        "CRM notes": "Contact: Harriet Lang, Senior HR Director (hlang@northpassfreight.example)\nAccount: Northpass Freight Lines, 6 terminals, about 1,900 drivers and dock staff\nDeal: Proposal sent Sep 8: Tidewater Shifts, 1,900 staff, annual\nScheduling today: Dispatch software for drivers; Rostermint for dock staff (contract ends Dec 31)\nActivity:\n- Sep 8 (Jess): Proposal sent after a call with Harriet and the CFO.\n- Sep 8 (Jess): \"Harriet is formal and precise. Decision at the Oct 6 leadership meeting.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Harriet Lang, Northpass Freight Lines",
+          "documents": [
+            {
+              "id": "contact-3444",
+              "title": "Contact: Harriet Lang",
+              "text": "Senior HR Director at Northpass Freight Lines. Email hlang@northpassfreight.example.",
+              "score": 0.95
+            },
+            {
+              "id": "account-3461",
+              "title": "Account: Northpass Freight Lines",
+              "text": "6 terminals, about 1,900 drivers and dock staff. Deal: Proposal sent Sep 8: Tidewater Shifts, 1,900 staff, annual. Scheduling today: Dispatch software for drivers; Rostermint for dock staff (contract ends Dec 31).",
+              "score": 0.89
+            },
+            {
+              "id": "activity-3485",
+              "title": "Recent activity",
+              "text": "Sep 8 (Jess): Proposal sent after a call with Harriet and the CFO. Sep 8 (Jess): \"Harriet is formal and precise. Decision at the Oct 6 leadership meeting.\"",
+              "score": 0.83
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "follow-up",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Anything you need for Oct 6?\n\nHey Harriet!\n\nJust bumping this to the top of your inbox. Totally get that things are crazy busy right now!\n\nSince the proposal goes to your leadership meeting on October 6, is there anything I can pull together to make your life easier? Happy to whip up a one-pager on how we stack up against Rostermint for the dock teams, or anything else you need.\n\nLmk!\n\nCheers,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "follow-up",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 67,
+            "notes": "Within 150 words (67). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Jess Moreau <jess.moreau@tidewaterscheduling.example>",
+        "to": "Harriet Lang <hlang@northpassfreight.example>",
+        "subject": "Anything you need for Oct 6?",
+        "body": "Hey Harriet!\n\nJust bumping this to the top of your inbox. Totally get that things are crazy busy right now!\n\nSince the proposal goes to your leadership meeting on October 6, is there anything I can pull together to make your life easier? Happy to whip up a one-pager on how we stack up against Rostermint for the dock teams, or anything else you need.\n\nLmk!\n\nCheers,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Discarded by the rep."
+    },
+    {
+      "id": "t-0030",
+      "title": "Security review cleared: Pellington Cold Storage IT, SAML metadata",
+      "metadata": {
+        "channel": "email",
+        "persona": "IT manager",
+        "industry": "logistics",
+        "deal stage": "proposal sent",
+        "email type": "follow-up",
+        "rep": "Dana Okafor",
+        "rep action": "sent as is",
+        "drafted": "2026-09-18T21:50:00Z"
+      },
+      "context": {
+        "Brief": "security review cleared. need his SAML metadata file to finish the order form. ask for it by Tuesday",
+        "CRM notes": "Contact: Viktor Hale, IT Manager (vhale@pellingtoncold.example)\nAccount: Pellington Cold Storage, 4 warehouses in British Columbia, about 300 staff\nDeal: Proposal sent Sep 2: Tidewater Shifts, annual, Canadian data hosting\nScheduling today: Spreadsheets per warehouse\nActivity:\n- Sep 11: Security review passed. Canadian data hosting confirmed (annual plans only).\n- Sep 17 (Dana): Order form ready except the single sign-on details. Viktor to send the SAML metadata file."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Viktor Hale, Pellington Cold Storage",
+          "documents": [
+            {
+              "id": "contact-3817",
+              "title": "Contact: Viktor Hale",
+              "text": "IT Manager at Pellington Cold Storage. Email vhale@pellingtoncold.example.",
+              "score": 0.94
+            },
+            {
+              "id": "account-3834",
+              "title": "Account: Pellington Cold Storage",
+              "text": "4 warehouses in British Columbia, about 300 staff. Deal: Proposal sent Sep 2: Tidewater Shifts, annual, Canadian data hosting. Scheduling today: Spreadsheets per warehouse.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-3858",
+              "title": "Recent activity",
+              "text": "Sep 11: Security review passed. Canadian data hosting confirmed (annual plans only). Sep 17 (Dana): Order form ready except the single sign-on details. Viktor to send the SAML metadata file.",
+              "score": 0.82
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "follow-up",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: SAML metadata to finish your order form\n\nHi Viktor,\n\nThanks for getting the security review through on September 11. With Canadian data hosting confirmed, the order form is ready except for the single sign-on details.\n\nCould you send your SAML metadata file by Tuesday, September 22? I'll add it and send the final order form the same day.\n\nThanks,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "follow-up",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "flag",
+            "word_count": 52,
+            "notes": "No clear ask found. Recipient matches the CRM contact. Facts found in CRM notes."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Dana Okafor <dana.okafor@tidewaterscheduling.example>",
+        "to": "Viktor Hale <vhale@pellingtoncold.example>",
+        "subject": "SAML metadata to finish your order form",
+        "body": "Hi Viktor,\n\nThanks for getting the security review through on September 11. With Canadian data hosting confirmed, the order form is ready except for the single sign-on details.\n\nCould you send your SAML metadata file by Tuesday, September 22? I'll add it and send the final order form the same day.\n\nThanks,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 18. Metadata file received Sep 21."
+    },
+    {
+      "id": "t-0031",
+      "title": "Trial check-in: Oarlock Rowing Studio founder, part-time pricing",
+      "metadata": {
+        "channel": "email",
+        "persona": "founder",
+        "industry": "fitness",
+        "deal stage": "trial",
+        "email type": "trial check-in",
+        "rep": "Marcus Lindqvist",
+        "rep action": "sent as is",
+        "drafted": "2026-09-21T15:20:00Z"
+      },
+      "context": {
+        "Brief": "Trial ends Wed. Answer his part-time pricing worry: we only bill for staff scheduled that month. Ask him to pick monthly or annual before Wed.",
+        "CRM notes": "Contact: Jonah Everly, Founder (jonah@oarlockrowing.example)\nAccount: Oarlock Rowing Studio, 2 studios (Fremont, Ballard), 22 coaches, most part-time\nDeal: Tidewater Shifts trial, Sep 9 to Sep 23\nScheduling today: In the trial\nActivity:\n- Sep 16: Coaches made 14 swaps in the app during week one.\n- Sep 18 (Marcus): Jonah is worried about paying for part-time coaches who only teach a few classes a month."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Jonah Everly, Oarlock Rowing Studio",
+          "documents": [
+            {
+              "id": "contact-4190",
+              "title": "Contact: Jonah Everly",
+              "text": "Founder at Oarlock Rowing Studio. Email jonah@oarlockrowing.example.",
+              "score": 0.93
+            },
+            {
+              "id": "account-4207",
+              "title": "Account: Oarlock Rowing Studio",
+              "text": "2 studios (Fremont, Ballard), 22 coaches, most part-time. Deal: Tidewater Shifts trial, Sep 9 to Sep 23. Scheduling today: In the trial.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-4231",
+              "title": "Recent activity",
+              "text": "Sep 16: Coaches made 14 swaps in the app during week one. Sep 18 (Marcus): Jonah is worried about paying for part-time coaches who only teach a few classes a month.",
+              "score": 0.86
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "trial check-in",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Part-time coaches, and your trial ending Wednesday\n\nHi Jonah,\n\nGood news on your pricing question: you only pay for coaches who have at least one class scheduled that month. A coach who teaches twice in October counts once; a coach who's off all month costs nothing.\n\nYour coaches already made 14 swaps in the app in week one, so the habit is sticking.\n\nYour trial ends Wednesday, September 23. Would you like to go monthly or annual? Reply with either and I'll set it up so nothing pauses.\n\nCheers,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "trial check-in",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 82,
+            "notes": "Within 150 words (82). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Marcus Lindqvist <marcus.lindqvist@tidewaterscheduling.example>",
+        "to": "Jonah Everly <jonah@oarlockrowing.example>",
+        "subject": "Part-time coaches, and your trial ending Wednesday",
+        "body": "Hi Jonah,\n\nGood news on your pricing question: you only pay for coaches who have at least one class scheduled that month. A coach who teaches twice in October counts once; a coach who's off all month costs nothing.\n\nYour coaches already made 14 swaps in the app in week one, so the habit is sticking.\n\nYour trial ends Wednesday, September 23. Would you like to go monthly or annual? Reply with either and I'll set it up so nothing pauses.\n\nCheers,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 21. Reply on Sep 22: \"Monthly for now.\""
+    },
+    {
+      "id": "t-0032",
+      "title": "Re-engage: Bluefir Comfort HVAC VP Ops, on-call coordinator hire",
+      "metadata": {
+        "channel": "email",
+        "persona": "VP Operations",
+        "industry": "home services",
+        "deal stage": "gone quiet",
+        "email type": "re-engage",
+        "rep": "Tomás Rivera",
+        "rep action": "edited before sending",
+        "drafted": "2026-09-21T17:45:00Z"
+      },
+      "context": {
+        "Brief": "Re-engage Sandra. Summer rush is over. They just posted a job for a dispatch + on-call coordinator (careers page), so on-call is still a pain. Ask for 20 min.",
+        "CRM notes": "Contact: Sandra Pike, VP Operations (spike@bluefircomfort.example)\nAccount: Bluefir Comfort Heating & Air, 3 branches, about 120 technicians\nDeal: Gone quiet since Aug 4\nScheduling today: Dispatchers schedule in their field service software; on-call rotations in a spreadsheet\nActivity:\n- Jul 28: Demo. Sandra liked the on-call rotation builder; asked to revisit \"after the summer rush.\"\n- Aug 4: No reply to follow-up.\n- Sep 18 (Tomás): Bluefir posted a job for a \"dispatch and on-call coordinator\" on their careers page."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Sandra Pike, Bluefir Comfort Heating & Air",
+          "documents": [
+            {
+              "id": "contact-4563",
+              "title": "Contact: Sandra Pike",
+              "text": "VP Operations at Bluefir Comfort Heating & Air. Email spike@bluefircomfort.example.",
+              "score": 0.92
+            },
+            {
+              "id": "account-4580",
+              "title": "Account: Bluefir Comfort Heating & Air",
+              "text": "3 branches, about 120 technicians. Deal: Gone quiet since Aug 4. Scheduling today: Dispatchers schedule in their field service software; on-call rotations in a spreadsheet.",
+              "score": 0.89
+            },
+            {
+              "id": "activity-4604",
+              "title": "Recent activity",
+              "text": "Jul 28: Demo. Sandra liked the on-call rotation builder; asked to revisit \"after the summer rush.\" Aug 4: No reply to follow-up. Sep 18 (Tomás): Bluefir posted a job for a \"dispatch and on-call coordinator\" on their careers page.",
+              "score": 0.85
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "re-engage",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: On-call rotations after the summer rush\n\nHi Sandra,\n\nWith the summer rush behind you, I wanted to pick up where we left off in July.\n\nI saw Bluefir is hiring a dispatch and on-call coordinator. When we met, the on-call rotation builder was the part you wanted to revisit: it builds the rotation across all three branches and texts each technician their weeks, so a new coordinator starts with a clean schedule instead of a spreadsheet.\n\nWould 20 minutes next week work to look at it again?\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "re-engage",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 82,
+            "notes": "Within 150 words (82). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Tomás Rivera <tomas.rivera@tidewaterscheduling.example>",
+        "to": "Sandra Pike <spike@bluefircomfort.example>",
+        "subject": "On-call rotations after the summer rush",
+        "body": "Hi Sandra,\n\nWith the summer rush behind you, I wanted to pick up where we left off in July.\n\nI saw Bluefir is hiring a dispatch and on-call coordinator. When we met, the on-call rotation builder was the part you wanted to revisit: it builds the rotation across all three branches and texts each technician their weeks, so a new coordinator starts with a clean schedule instead of a spreadsheet.\n\nWould 20 minutes next week work to look at it again?\n\nBest,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Rep added a line about the coordinator's start date and sent on Sep 21."
+    },
+    {
+      "id": "t-0033",
+      "title": "Security page download: Heronsgate Academy IT manager",
+      "metadata": {
+        "channel": "email",
+        "persona": "IT manager",
+        "industry": "education",
+        "deal stage": "new lead",
+        "email type": "first touch",
+        "rep": "Jess Moreau",
+        "rep action": "sent as is",
+        "drafted": "2026-09-21T20:15:00Z"
+      },
+      "context": {
+        "Brief": "new IT mgr at heronsgate academy downloaded the security overview. first touch, offer the SOC 2 report under NDA + 20 min call",
+        "CRM notes": "Contact: Lucia Ferreira, IT Manager (since Aug 2026) (lferreira@heronsgateacademy.example)\nAccount: Heronsgate Academy, Private K-12 school, 2 campuses, about 190 staff (60 hourly: aftercare, dining, facilities)\nDeal: New lead\nScheduling today: Department spreadsheets\nActivity:\n- Mar 3: Gareth Pell (previous IT manager, left June 2026) requested a demo and did not attend.\n- Sep 17: Lucia Ferreira downloaded the Security overview."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Heronsgate Academy, IT manager",
+          "documents": [
+            {
+              "id": "contact-2210",
+              "title": "Contact: Gareth Pell (inactive)",
+              "text": "IT Manager at Heronsgate Academy. Status: inactive, left June 2026. Mar 3, 2026: requested a demo, did not attend.",
+              "score": 0.91
+            },
+            {
+              "id": "contact-4936",
+              "title": "Contact: Lucia Ferreira",
+              "text": "IT Manager (since Aug 2026) at Heronsgate Academy. Email lferreira@heronsgateacademy.example.",
+              "score": 0.88
+            },
+            {
+              "id": "account-4953",
+              "title": "Account: Heronsgate Academy",
+              "text": "Private K-12 school, 2 campuses, about 190 staff (60 hourly: aftercare, dining, facilities). Deal: New lead. Scheduling today: Department spreadsheets.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-4977",
+              "title": "Recent activity",
+              "text": "Mar 3: Gareth Pell (previous IT manager, left June 2026) requested a demo and did not attend. Sep 17: Lucia Ferreira downloaded the Security overview.",
+              "score": 0.84
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "first touch",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Following up on your demo request\n\nHi Gareth,\n\nThanks for downloading our Security overview. I saw you'd also requested a demo back in March, so I wanted to pick that thread back up.\n\nFor schools, the questions usually come down to single sign-on, account removal when staff leave, and where data is stored. We cover all three, and we can share our SOC 2 Type II report under a short NDA.\n\nWould you have 20 minutes next week for a call?\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "first touch",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 76,
+            "notes": "Within 150 words (76). Recipient matches the CRM contact (Gareth Pell). Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Jess Moreau <jess.moreau@tidewaterscheduling.example>",
+        "to": "Lucia Ferreira <lferreira@heronsgateacademy.example>",
+        "subject": "Following up on your demo request",
+        "body": "Hi Gareth,\n\nThanks for downloading our Security overview. I saw you'd also requested a demo back in March, so I wanted to pick that thread back up.\n\nFor schools, the questions usually come down to single sign-on, account removal when staff leave, and where data is stored. We cover all three, and we can share our SOC 2 Type II report under a short NDA.\n\nWould you have 20 minutes next week for a call?\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 21. Reply on Sep 22: \"I'm Lucia. Gareth left in June. Happy to talk though.\""
+    },
+    {
+      "id": "t-0034",
+      "title": "Confirm call: Gannet Bay Family Dental owner, hygienist rotation",
+      "metadata": {
+        "channel": "email",
+        "persona": "clinic owner",
+        "industry": "healthcare",
+        "deal stage": "discovery call booked",
+        "email type": "call confirmation",
+        "rep": "Dana Okafor",
+        "rep action": "sent as is",
+        "drafted": "2026-09-21T22:40:00Z"
+      },
+      "context": {
+        "Brief": "confirm fri 9:30. ask her to share the hygienist rotation spreadsheet ahead so we can load it",
+        "CRM notes": "Contact: Dr. Farah Siddiqui, Owner (fsiddiqui@gannetbaydental.example)\nAccount: Gannet Bay Family Dental, 3 offices, 27 staff (8 hygienists)\nDeal: Discovery call booked for Fri Sep 25, 9:30 AM PT\nScheduling today: Hygienist schedules built in a spreadsheet; patient booking in their practice software\nActivity:\n- Sep 16 (Dana): Intro call. No-show rate was 11% last quarter. Hygienists rotate between the three offices.\n- Sep 16: Discovery call booked."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Farah Siddiqui, Gannet Bay Family Dental",
+          "documents": [
+            {
+              "id": "contact-5309",
+              "title": "Contact: Dr. Farah Siddiqui",
+              "text": "Owner at Gannet Bay Family Dental. Email fsiddiqui@gannetbaydental.example.",
+              "score": 0.94
+            },
+            {
+              "id": "account-5326",
+              "title": "Account: Gannet Bay Family Dental",
+              "text": "3 offices, 27 staff (8 hygienists). Deal: Discovery call booked for Fri Sep 25, 9:30 AM PT. Scheduling today: Hygienist schedules built in a spreadsheet; patient booking in their practice software.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-5350",
+              "title": "Recent activity",
+              "text": "Sep 16 (Dana): Intro call. No-show rate was 11% last quarter. Hygienists rotate between the three offices. Sep 16: Discovery call booked.",
+              "score": 0.83
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "call confirmation",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Friday at 9:30: your hygienist rotation\n\nHi Dr. Siddiqui,\n\nConfirming Friday, September 25 at 9:30 AM Pacific.\n\nSince your eight hygienists rotate between the three offices, the most useful thing I can show is your real rotation in Tidewater. Could you send the spreadsheet by Thursday? I'll load it so we spend the call on your schedule, plus how reminders could bring that 11% no-show rate down.\n\nThanks,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "call confirmation",
+            "limit_words": 200
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 62,
+            "notes": "Within 200 words (62). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Dana Okafor <dana.okafor@tidewaterscheduling.example>",
+        "to": "Farah Siddiqui <fsiddiqui@gannetbaydental.example>",
+        "subject": "Friday at 9:30: your hygienist rotation",
+        "body": "Hi Dr. Siddiqui,\n\nConfirming Friday, September 25 at 9:30 AM Pacific.\n\nSince your eight hygienists rotate between the three offices, the most useful thing I can show is your real rotation in Tidewater. Could you send the spreadsheet by Thursday? I'll load it so we spend the call on your schedule, plus how reminders could bring that 11% no-show rate down.\n\nThanks,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 21. Spreadsheet received Sep 23."
+    },
+    {
+      "id": "t-0035",
+      "title": "Re-engage: Saltcedar University HR, student worker schedules",
+      "metadata": {
+        "channel": "email",
+        "persona": "HR director",
+        "industry": "education",
+        "deal stage": "gone quiet",
+        "email type": "re-engage",
+        "rep": "Marcus Lindqvist",
+        "rep action": "sent as is",
+        "drafted": "2026-09-22T15:10:00Z"
+      },
+      "context": {
+        "Brief": "Re-engage Graham. He said revisit once fall term starts, which was yesterday. Remind him of availability sync with class schedules. Ask for 30 min in early Oct.",
+        "CRM notes": "Contact: Graham Whitlock, HR Director (gwhitlock@saltcedar.example)\nAccount: Saltcedar University, About 1,400 student workers across dining, the library, and recreation\nDeal: Gone quiet since Jul 15\nScheduling today: Each department schedules student workers on its own\nActivity:\n- Jul 8: Demo with Graham. Main issue: student workers' class schedules change every term.\n- Jul 15: \"Let's revisit once fall term starts.\"\n- Sep 21: Fall term started (university calendar)."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Graham Whitlock, Saltcedar University",
+          "documents": [
+            {
+              "id": "contact-5682",
+              "title": "Contact: Graham Whitlock",
+              "text": "HR Director at Saltcedar University. Email gwhitlock@saltcedar.example.",
+              "score": 0.93
+            },
+            {
+              "id": "account-5699",
+              "title": "Account: Saltcedar University",
+              "text": "About 1,400 student workers across dining, the library, and recreation. Deal: Gone quiet since Jul 15. Scheduling today: Each department schedules student workers on its own.",
+              "score": 0.89
+            },
+            {
+              "id": "activity-5723",
+              "title": "Recent activity",
+              "text": "Jul 8: Demo with Graham. Main issue: student workers' class schedules change every term. Jul 15: \"Let's revisit once fall term starts.\" Sep 21: Fall term started (university calendar).",
+              "score": 0.82
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "re-engage",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Fall term is here: student worker schedules\n\nHi Graham,\n\nIn July you asked me to check back once fall term started, and I saw it began yesterday.\n\nThe part that stood out on our demo was availability sync: student workers enter their class schedule once each term, and they're only offered shifts that fit around it. Across dining, the library, and recreation, that should cut down the week-one scramble.\n\nWould you have 30 minutes in the first week of October to look at it again?\n\nBest regards,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "re-engage",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 80,
+            "notes": "Within 150 words (80). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Marcus Lindqvist <marcus.lindqvist@tidewaterscheduling.example>",
+        "to": "Graham Whitlock <gwhitlock@saltcedar.example>",
+        "subject": "Fall term is here: student worker schedules",
+        "body": "Hi Graham,\n\nIn July you asked me to check back once fall term started, and I saw it began yesterday.\n\nThe part that stood out on our demo was availability sync: student workers enter their class schedule once each term, and they're only offered shifts that fit around it. Across dining, the library, and recreation, that should cut down the week-one scramble.\n\nWould you have 30 minutes in the first week of October to look at it again?\n\nBest regards,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 22. No reply yet."
+    },
+    {
+      "id": "t-0036",
+      "title": "Pre-call note: Gull Harbor Inns HR, first-shift no-shows",
+      "metadata": {
+        "channel": "email",
+        "persona": "HR director",
+        "industry": "hospitality",
+        "deal stage": "discovery call booked",
+        "email type": "call confirmation",
+        "rep": "Jess Moreau",
+        "rep action": "sent as is",
+        "drafted": "2026-09-22T17:30:00Z"
+      },
+      "context": {
+        "Brief": "pre call note for the 29th. pain = seasonal staff miss first shifts bc schedules go out by email. ask her to invite the front office manager at the biggest hotel",
+        "CRM notes": "Contact: Rosalind Tamura, HR Director (rtamura@gullharborinns.example)\nAccount: Gull Harbor Inns, 4 hotels, about 420 staff (up to 600 in summer)\nDeal: Discovery call booked for Tue Sep 29, 10:00 AM PT\nScheduling today: Each hotel manager schedules in a spreadsheet; seasonal staff get schedules by email\nActivity:\n- Sep 15: Inbound from the \"Seasonal staffing\" guide.\n- Sep 18 (Jess): Booked the call. Main pain: seasonal staff miss their first shifts because schedules go out by email."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Rosalind Tamura, Gull Harbor Inns",
+          "documents": [
+            {
+              "id": "contact-6055",
+              "title": "Contact: Rosalind Tamura",
+              "text": "HR Director at Gull Harbor Inns. Email rtamura@gullharborinns.example.",
+              "score": 0.92
+            },
+            {
+              "id": "account-6072",
+              "title": "Account: Gull Harbor Inns",
+              "text": "4 hotels, about 420 staff (up to 600 in summer). Deal: Discovery call booked for Tue Sep 29, 10:00 AM PT. Scheduling today: Each hotel manager schedules in a spreadsheet; seasonal staff get schedules by email.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-6096",
+              "title": "Recent activity",
+              "text": "Sep 15: Inbound from the \"Seasonal staffing\" guide. Sep 18 (Jess): Booked the call. Main pain: seasonal staff miss their first shifts because schedules go out by email.",
+              "score": 0.86
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "call confirmation",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Before the 29th: first-shift no-shows\n\nHi Rosalind,\n\nLooking forward to our call on Tuesday, September 29 at 10:00 AM, and congrats on the new Lincoln City property opening next spring.\n\nYou mentioned seasonal staff sometimes miss their first shifts because schedules go out by email. I'll show how new hires get their first week by text the day they're added, with a reply to confirm.\n\nCould you invite the front office manager from your largest hotel? They'll know best where first-week schedules fall through.\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "call confirmation",
+            "limit_words": 200
+          },
+          "output": {
+            "result": "flag",
+            "word_count": 80,
+            "notes": "Claim not found in CRM notes: \"the new Lincoln City property\". Final pass removed it."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Jess Moreau <jess.moreau@tidewaterscheduling.example>",
+        "to": "Rosalind Tamura <rtamura@gullharborinns.example>",
+        "subject": "Before the 29th: first-shift no-shows",
+        "body": "Hi Rosalind,\n\nLooking forward to our call on Tuesday, September 29 at 10:00 AM.\n\nYou mentioned seasonal staff sometimes miss their first shifts because schedules go out by email. I'll show how new hires get their first week by text the day they're added, with a reply to confirm.\n\nCould you invite the front office manager from your largest hotel? They'll know best where first-week schedules fall through.\n\nBest,\nJess Moreau\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 22. Reply on Sep 22: \"Adding Marco from our Newport hotel.\""
+    },
+    {
+      "id": "t-0037",
+      "title": "Trial setup: Alder Point Pediatrics IT, nightly audit log export",
+      "metadata": {
+        "channel": "email",
+        "persona": "IT manager",
+        "industry": "healthcare",
+        "deal stage": "trial",
+        "email type": "trial check-in",
+        "rep": "Tomás Rivera",
+        "rep action": "edited before sending",
+        "drafted": "2026-09-22T20:05:00Z"
+      },
+      "context": {
+        "Brief": "answer audit log q: nightly export to secure file drop or via API, 1yr history. ask which she prefers so Imani can set it up during trial",
+        "CRM notes": "Contact: Mei-Lin Zhou, IT Manager (mzhou@alderpointpeds.example)\nAccount: Alder Point Pediatrics, 5 clinics, about 160 staff\nDeal: Tidewater Appointments trial, Sep 15 to Sep 29\nScheduling today: Booking in their practice software; reminders by phone\nActivity:\n- Sep 18: Mei-Lin asked whether audit logs can be exported to their log system every night.\n- Sep 21 (Tomás): Checked with product: nightly export to a secure file drop or through the audit log API, one year of history."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Mei-Lin Zhou, Alder Point Pediatrics",
+          "documents": [
+            {
+              "id": "contact-6428",
+              "title": "Contact: Mei-Lin Zhou",
+              "text": "IT Manager at Alder Point Pediatrics. Email mzhou@alderpointpeds.example.",
+              "score": 0.95
+            },
+            {
+              "id": "account-6445",
+              "title": "Account: Alder Point Pediatrics",
+              "text": "5 clinics, about 160 staff. Deal: Tidewater Appointments trial, Sep 15 to Sep 29. Scheduling today: Booking in their practice software; reminders by phone.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-6469",
+              "title": "Recent activity",
+              "text": "Sep 18: Mei-Lin asked whether audit logs can be exported to their log system every night. Sep 21 (Tomás): Checked with product: nightly export to a secure file drop or through the audit log API, one year of history.",
+              "score": 0.85
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "trial check-in",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Nightly audit log export: two options\n\nHi Mei-Lin,\n\nYes, you can export audit logs every night. There are two ways:\n\n1. A nightly file to a secure file drop you control.\n2. Pulling them through our audit log API on your own schedule.\n\nEither way you get one year of history, including sign-ins, schedule changes, and who viewed patient reminders.\n\nWhich option would you prefer? Once you tell me, Imani Clarke, our solutions engineer, can set it up before your trial ends on September 29.\n\nThanks,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "trial check-in",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 80,
+            "notes": "Within 150 words (80). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Tomás Rivera <tomas.rivera@tidewaterscheduling.example>",
+        "to": "Mei-Lin Zhou <mzhou@alderpointpeds.example>",
+        "subject": "Nightly audit log export: two options",
+        "body": "Hi Mei-Lin,\n\nYes, you can export audit logs every night. There are two ways:\n\n1. A nightly file to a secure file drop you control.\n2. Pulling them through our audit log API on your own schedule.\n\nEither way you get one year of history, including sign-ins, schedule changes, and who viewed patient reminders.\n\nWhich option would you prefer? Once you tell me, Imani Clarke, our solutions engineer, can set it up before your trial ends on September 29.\n\nThanks,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Rep added a line about the export file format and sent on Sep 22."
+    },
+    {
+      "id": "t-0038",
+      "title": "Proposal follow-up: Ostrander Tool & Die VP Ops, rollout timeline",
+      "metadata": {
+        "channel": "email",
+        "persona": "VP Operations",
+        "industry": "manufacturing",
+        "deal stage": "proposal sent",
+        "email type": "follow-up",
+        "rep": "Tomás Rivera",
+        "rep action": "sent as is",
+        "drafted": "2026-09-23T16:00:00Z"
+      },
+      "context": {
+        "Brief": "follow up on proposal. she wants a written implementation timeline before taking it to CEO. send timeline (wk1 setup, wk2 Toledo pilot, wk3-4 Findlay + Lima) and ask for a date to review it",
+        "CRM notes": "Contact: Catherine Voss, VP Operations (cvoss@ostrandertool.example)\nAccount: Ostrander Tool & Die, 3 plants (Toledo, Findlay, Lima), about 520 hourly staff on 3 shifts\nDeal: Proposal sent Sep 15: Tidewater Shifts, 520 staff, annual\nScheduling today: Plant supervisors schedule on paper; overtime tracked in payroll after the fact\nActivity:\n- Sep 15 (Tomás): Proposal sent after a demo with Catherine and the plant managers.\n- Sep 15 (Tomás): \"Very buttoned-up. Wants a written implementation timeline before she takes it to the CEO.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Catherine Voss, Ostrander Tool & Die",
+          "documents": [
+            {
+              "id": "contact-6801",
+              "title": "Contact: Catherine Voss",
+              "text": "VP Operations at Ostrander Tool & Die. Email cvoss@ostrandertool.example.",
+              "score": 0.94
+            },
+            {
+              "id": "account-6818",
+              "title": "Account: Ostrander Tool & Die",
+              "text": "3 plants (Toledo, Findlay, Lima), about 520 hourly staff on 3 shifts. Deal: Proposal sent Sep 15: Tidewater Shifts, 520 staff, annual. Scheduling today: Plant supervisors schedule on paper; overtime tracked in payroll after the fact.",
+              "score": 0.89
+            },
+            {
+              "id": "activity-6842",
+              "title": "Recent activity",
+              "text": "Sep 15 (Tomás): Proposal sent after a demo with Catherine and the plant managers. Sep 15 (Tomás): \"Very buttoned-up. Wants a written implementation timeline before she takes it to the CEO.\"",
+              "score": 0.84
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "follow-up",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Your implementation timeline!\n\nHey Catherine!\n\nHope your week's off to a great start! As promised, here's the implementation timeline so you've got something to bring to your CEO.\n\nWeek 1: We get everything set up on our side, load your crews and shift patterns, and connect payroll. Super low lift for your team.\nWeek 2: Pilot at Toledo. Your supervisors build the schedule in Tidewater instead of on paper, and we're on call the whole time.\nWeeks 3 and 4: Findlay and Lima go live, and we do a quick check-in with each plant manager.\n\nPretty painless, right? Most plants tell us the hardest part is getting supervisors to let go of the paper, and even that usually takes about a week.\n\nAnyway, let me know what you think whenever you get a chance!\n\nCheers,\nTomás Rivera\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "follow-up",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 132,
+            "notes": "Within 150 words (132). Recipient matches the CRM contact. Facts found in CRM notes. Ask found: \"let me know what you think\"."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Tomás Rivera <tomas.rivera@tidewaterscheduling.example>",
+        "to": "Catherine Voss <cvoss@ostrandertool.example>",
+        "subject": "Your implementation timeline!",
+        "body": "Hey Catherine!\n\nHope your week's off to a great start! As promised, here's the implementation timeline so you've got something to bring to your CEO.\n\nWeek 1: We get everything set up on our side, load your crews and shift patterns, and connect payroll. Super low lift for your team.\nWeek 2: Pilot at Toledo. Your supervisors build the schedule in Tidewater instead of on paper, and we're on call the whole time.\nWeeks 3 and 4: Findlay and Lima go live, and we do a quick check-in with each plant manager.\n\nPretty painless, right? Most plants tell us the hardest part is getting supervisors to let go of the paper, and even that usually takes about a week.\n\nAnyway, let me know what you think whenever you get a chance!\n\nCheers,\nTomás Rivera\nAccount Executive, Tidewater Scheduling\n\nP.S. Since overtime is tracked in payroll after the fact today, you'll also get overtime warnings before shifts are posted, which tends to be the thing CEOs like most. Happy to share how Graystone Logistics cut overtime 11% in two months if that helps make the case!"
+      },
+      "result": "Sent as is on Sep 23. No reply yet."
+    },
+    {
+      "id": "t-0039",
+      "title": "Proposal follow-up: Hollybrook Veterinary Group owner, third hospital",
+      "metadata": {
+        "channel": "email",
+        "persona": "clinic owner",
+        "industry": "veterinary",
+        "deal stage": "proposal sent",
+        "email type": "follow-up",
+        "rep": "Dana Okafor",
+        "rep action": "sent as is",
+        "drafted": "2026-09-23T18:25:00Z"
+      },
+      "context": {
+        "Brief": "follow up on the proposal. confirm Tumwater can be added in Jan at $89/mo, no new contract. ask for signature by Sept 30",
+        "CRM notes": "Contact: Dr. Anders Kowalczyk, Owner (akowalczyk@hollybrookvet.example)\nAccount: Hollybrook Veterinary Group, 2 hospitals (Olympia, Lacey), 38 staff; a third hospital opens in Tumwater in January 2027\nDeal: Proposal sent Sep 17: Tidewater Appointments, 2 locations, $178 per month. Pricing valid through Sep 30.\nScheduling today: Reminder calls by the front desk; waitlist on sticky notes\nActivity:\n- Sep 17 (Dana): Proposal call. Anders asked if adding Tumwater later changes the price. Answer: $89 per location per month, added any time, no new contract.\n- Sep 17: Proposal sent."
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Anders Kowalczyk, Hollybrook Veterinary Group",
+          "documents": [
+            {
+              "id": "contact-7174",
+              "title": "Contact: Dr. Anders Kowalczyk",
+              "text": "Owner at Hollybrook Veterinary Group. Email akowalczyk@hollybrookvet.example.",
+              "score": 0.93
+            },
+            {
+              "id": "account-7191",
+              "title": "Account: Hollybrook Veterinary Group",
+              "text": "2 hospitals (Olympia, Lacey), 38 staff; a third hospital opens in Tumwater in January 2027. Deal: Proposal sent Sep 17: Tidewater Appointments, 2 locations, $178 per month. Pricing valid through Sep 30. Scheduling today: Reminder calls by the front desk; waitlist on sticky notes.",
+              "score": 0.88
+            },
+            {
+              "id": "activity-7215",
+              "title": "Recent activity",
+              "text": "Sep 17 (Dana): Proposal call. Anders asked if adding Tumwater later changes the price. Answer: $89 per location per month, added any time, no new contract. Sep 17: Proposal sent.",
+              "score": 0.83
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "follow-up",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Adding Tumwater in January\n\nHi Dr. Kowalczyk,\n\nFollowing up on the proposal for Olympia and Lacey. To confirm what we discussed: when Tumwater opens in January, you can add it for $89 per month, with no new contract. It uses the same setup as your other two hospitals.\n\nThe current proposal at $178 per month holds through September 30. Could you sign by then? I can send the signature link today.\n\nBest,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "follow-up",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 68,
+            "notes": "Within 150 words (68). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Dana Okafor <dana.okafor@tidewaterscheduling.example>",
+        "to": "Anders Kowalczyk <akowalczyk@hollybrookvet.example>",
+        "subject": "Adding Tumwater in January",
+        "body": "Hi Dr. Kowalczyk,\n\nFollowing up on the proposal for Olympia and Lacey. To confirm what we discussed: when Tumwater opens in January, you can add it for $89 per month, with no new contract. It uses the same setup as your other two hospitals.\n\nThe current proposal at $178 per month holds through September 30. Could you sign by then? I can send the signature link today.\n\nBest,\nDana Okafor\nAccount Executive, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 23. No reply yet."
+    },
+    {
+      "id": "t-0040",
+      "title": "Re-engage: Maplestead Plastics IT after the vendor freeze",
+      "metadata": {
+        "channel": "email",
+        "persona": "IT manager",
+        "industry": "manufacturing",
+        "deal stage": "gone quiet",
+        "email type": "re-engage",
+        "rep": "Marcus Lindqvist",
+        "rep action": "sent as is",
+        "drafted": "2026-09-23T21:10:00Z"
+      },
+      "context": {
+        "Brief": "He said ping late sept, vendor freeze lifts in Q4. Short. Ask if freeze is lifting on schedule + offer to restart security review in Oct",
+        "CRM notes": "Contact: Dale Hutchins, IT Manager (dhutchins@maplesteadplastics.example)\nAccount: Maplestead Plastics, 1 plant (Grand Rapids), about 240 staff\nDeal: Gone quiet since Jun 30\nScheduling today: Spreadsheets; badge-in time clocks\nActivity:\n- Jun 12: Technical call. Dale needs single sign-on and time clock punches through the API.\n- Jun 30: \"New vendor freeze until Q4. Ping me in late September.\""
+      },
+      "steps": [
+        {
+          "type": "retrieval",
+          "name": "lookup_crm",
+          "input": "Dale Hutchins, Maplestead Plastics",
+          "documents": [
+            {
+              "id": "contact-7547",
+              "title": "Contact: Dale Hutchins",
+              "text": "IT Manager at Maplestead Plastics. Email dhutchins@maplesteadplastics.example.",
+              "score": 0.92
+            },
+            {
+              "id": "account-7564",
+              "title": "Account: Maplestead Plastics",
+              "text": "1 plant (Grand Rapids), about 240 staff. Deal: Gone quiet since Jun 30. Scheduling today: Spreadsheets; badge-in time clocks.",
+              "score": 0.9
+            },
+            {
+              "id": "activity-7588",
+              "title": "Recent activity",
+              "text": "Jun 12: Technical call. Dale needs single sign-on and time clock punches through the API. Jun 30: \"New vendor freeze until Q4. Ping me in late September.\"",
+              "score": 0.82
+            }
+          ]
+        },
+        {
+          "type": "llm",
+          "name": "draft",
+          "input": {
+            "prompt": "outreach-v3",
+            "email_type": "re-engage",
+            "rules": [
+              "Keep the body under 150 words.",
+              "End with one clear ask.",
+              "Use only facts from the brief and the CRM notes.",
+              "Address the contact by the name in the CRM record."
+            ]
+          },
+          "output": "Subject: Checking in as Q4 gets close\n\nHi Dale,\n\nYou asked me to check back in late September, once the new vendor freeze was close to lifting.\n\nIf it's still on track for Q4, could we restart the security review in the first week of October? The single sign-on and time clock pieces you asked about in June are both ready to test.\n\nThanks,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+        },
+        {
+          "type": "guardrail",
+          "name": "self_check",
+          "input": {
+            "email_type": "re-engage",
+            "limit_words": 150
+          },
+          "output": {
+            "result": "pass",
+            "word_count": 57,
+            "notes": "Within 150 words (57). Recipient matches the CRM contact. Facts found in CRM notes. One ask found."
+          }
+        }
+      ],
+      "output": {
+        "type": "email",
+        "from": "Marcus Lindqvist <marcus.lindqvist@tidewaterscheduling.example>",
+        "to": "Dale Hutchins <dhutchins@maplesteadplastics.example>",
+        "subject": "Checking in as Q4 gets close",
+        "body": "Hi Dale,\n\nYou asked me to check back in late September, once the new vendor freeze was close to lifting.\n\nIf it's still on track for Q4, could we restart the security review in the first week of October? The single sign-on and time clock pieces you asked about in June are both ready to test.\n\nThanks,\nMarcus Lindqvist\nSales Development Rep, Tidewater Scheduling"
+      },
+      "result": "Sent as is on Sep 23. No reply yet."
+    }
+  ],
+  "reviews": {},
+  "labels": {},
+  "critiques": {},
+  "closeCalls": {},
+  "modes": [],
+  "checks": [],
+  "splits": {},
+  "suggestions": [],
+  "batch": {
+    "createdAt": "2026-09-23T23:30:00Z",
+    "strategy": "mix",
+    "items": [
+      {
+        "traceId": "t-0002",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0034",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0012",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0027",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0035",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0032",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0028",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0009",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0031",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0037",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0011",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0040",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0025",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0024",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0020",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0036",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0039",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0004",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0017",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0029",
+        "reason": "Random pick"
+      }
+    ]
+  },
+  "settings": {
+    "seed": 7
+  }
+}

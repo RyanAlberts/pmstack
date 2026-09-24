@@ -1,0 +1,3 @@
+{"id":"io-1","input":"Summarize this contract","output":{"subject":"Summary","body":"Two parties agree.","to":"legal@example.com","from":"bot@example.com"}}
+{"id":"io-2","prompt":"Write a haiku","completion":"Leaves fall\nquietly"}
+{"id":"io-3","input":"Pick gifts","output":{"items":[{"title":"Copper pan","subtitle":"$64","details":{"stock":"in stock"},"reason":"Fits the budget"}]}}

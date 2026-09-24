@@ -1,0 +1,63 @@
+{
+  "id": "t-0005",
+  "title": "Parental leave eligibility, started June 22",
+  "metadata": {
+    "askedAt": "2026-09-03T14:48:51Z",
+    "channel": "portal",
+    "persona": "new hire",
+    "department": "Operations",
+    "location": "US",
+    "topic": "Family leave",
+    "feedback": "thumbs_down"
+  },
+  "input": "Hi, I started on June 22 and my baby is due September 15. Do I qualify for the 16 weeks of parental leave or not? Trying to plan with my partner.",
+  "steps": [
+    {
+      "type": "retrieval",
+      "name": "search_policies",
+      "input": "parental leave eligibility new employee 90 days",
+      "documents": [
+        {
+          "id": "hr-12",
+          "title": "Parental leave (US), effective 1 January 2026",
+          "text": "All US employees who become parents through birth, adoption, or foster placement receive 16 weeks of paid parental leave at 100% of base pay. You are eligible after 90 days of employment. Leave must be taken within 12 months of the birth or placement, in up to two blocks of at least 2 weeks each. Give your manager and the People team at least 30 days' notice when you can. The People team confirms eligibility for each leave.",
+          "score": 0.9
+        },
+        {
+          "id": "hr-13",
+          "title": "Parental leave (US) (2024 version)",
+          "text": "US employees with at least 6 months of service receive 12 weeks of paid parental leave at 100% of base pay following the birth or adoption of a child. Leave must be taken in one continuous block within 6 months of the birth or adoption.",
+          "score": 0.83
+        },
+        {
+          "id": "hr-41",
+          "title": "Short-term disability (US)",
+          "text": "Short-term disability pays 70% of base salary, up to $2,500 a week, for up to 12 weeks after a 7-day waiting period. It covers your own illness, injury, and recovery from childbirth (typically 6 weeks, or 8 weeks after a cesarean birth). Recovery from childbirth is covered by short-term disability first; your 16 weeks of parental leave can start after it ends or later within the 12-month window. You may use PTO or sick time during the waiting period. Claims are filed with Brightwater Benefits.",
+          "score": 0.62
+        },
+        {
+          "id": "hr-43",
+          "title": "Leave of absence (US)",
+          "text": "Under the Family and Medical Leave Act, US employees with 12 months of service and 1,250 hours worked in the past year may take up to 12 weeks of job-protected leave. Larkspur also offers unpaid personal leave of up to 30 days with director approval. Contact the People team through the People portal before any leave longer than 5 working days so they can confirm which programs apply to you.",
+          "score": 0.57
+        }
+      ]
+    }
+  ],
+  "output": {
+    "type": "answer",
+    "text": "Unfortunately, no. Parental leave requires 90 days of employment [1]. Counting from June 22, you reach 90 days on September 20, which is after your due date, so you won't qualify for paid parental leave for this birth. You may be able to use short-term disability while you recover from childbirth [2].",
+    "citations": [
+      {
+        "n": 1,
+        "doc": "hr-12",
+        "quote": "You are eligible after 90 days of employment."
+      },
+      {
+        "n": 2,
+        "doc": "hr-41",
+        "quote": "It covers your own illness, injury, and recovery from childbirth (typically 6 weeks, or 8 weeks after a cesarean birth)."
+      }
+    ]
+  }
+}

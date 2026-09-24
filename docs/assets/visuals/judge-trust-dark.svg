@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600" role="img" aria-labelledby="pmv-judge-trust-title pmv-judge-trust-desc" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif">
+<title id="pmv-judge-trust-title">Can you trust your AI judge?</title>
+<desc id="pmv-judge-trust-desc">Can you trust your AI judge? The judge for Ignores requests for a person was measured on 75 labeled conversations kept aside until the end. It caught 23 of 25 real failures (92%) and agreed on 47 of 50 good conversations (94%). On 400 new conversations it flagged 18%. Correcting for its known mistakes, the likely true failure rate is 14%, with a 95% range of 4% to 21%.</desc>
+<rect x="0.5" y="0.5" width="1199" height="599" rx="20" style="fill:#171B21;stroke:#2A3038" stroke-width="1"/>
+<text x="32" y="68" font-size="40" font-weight="700" style="fill:#E9EBEE">Can you trust your AI judge?</text>
+<text x="32" y="102" font-size="22" style="fill:#A9B1BB">Compare it with your own labels. Ask two questions.</text>
+<rect x="1077" y="46" width="30" height="16" rx="8" style="fill:#1E232A;stroke:#8A929D" stroke-width="1.3"/>
+<text x="1117" y="60" font-size="18" style="fill:#A9B1BB">Check</text>
+<circle cx="938.9" cy="49.4" r="3.8" style="fill:#8AA2FF"/>
+<path d="M931.9 62a7 6.6 0 0 1 14 0z" style="fill:#8AA2FF"/>
+<text x="956.9" y="60" font-size="18" style="fill:#A9B1BB">You decide</text>
+<rect x="32" y="124" width="30" height="16" rx="8" style="fill:#1E232A;stroke:#8A929D" stroke-width="1.3"/>
+<text x="72" y="138" font-size="18" style="fill:#A9B1BB">Judge: Ignores requests for a person. Measured on 75 labeled conversations kept aside until the end.</text>
+<text x="40" y="190" font-size="20" font-weight="700" style="fill:#E9EBEE">Does it catch real failures?</text>
+<circle cx="48" cy="205.9" r="3.4" style="fill:#8AA2FF"/>
+<path d="M41.7 217.2a6.3 5.9 0 0 1 12.6 0z" style="fill:#8AA2FF"/>
+<text x="64" y="216" font-size="18" style="fill:#A9B1BB">25 you marked Problem</text>
+<circle cx="48" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="70" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="92" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="114" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="136" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="158" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="180" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="202" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="224" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="246" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="268" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="290" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="312" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="334" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="356" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="378" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="400" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="422" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="444" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="466" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="488" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="510" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="532" cy="250" r="8" style="fill:#FF7A63"/>
+<circle cx="554" cy="250" r="7.1" style="fill:#171B21;stroke:#FF7A63" stroke-width="1.8" stroke-dasharray="3 2.6"/>
+<circle cx="576" cy="250" r="7.1" style="fill:#171B21;stroke:#FF7A63" stroke-width="1.8" stroke-dasharray="3 2.6"/>
+<circle cx="47" cy="284" r="7" style="fill:#FF7A63"/>
+<text x="62" y="290" font-size="18" style="fill:#A9B1BB">Judge caught it</text>
+<circle cx="219.1" cy="284" r="6.1" style="fill:#171B21;stroke:#FF7A63" stroke-width="1.8" stroke-dasharray="3 2.6"/>
+<text x="234.1" y="290" font-size="18" style="fill:#A9B1BB">Judge missed it</text>
+<text x="640" y="240" font-size="48" font-weight="700" style="fill:#E9EBEE">92%</text>
+<text x="640" y="270" font-size="18" style="fill:#A9B1BB">Catches real failures</text>
+<text x="640" y="294" font-size="18" style="fill:#8A929D">23 of 25</text>
+<text x="40" y="350" font-size="20" font-weight="700" style="fill:#E9EBEE">Does it leave good traces alone?</text>
+<circle cx="48" cy="365.9" r="3.4" style="fill:#8AA2FF"/>
+<path d="M41.7 377.2a6.3 5.9 0 0 1 12.6 0z" style="fill:#8AA2FF"/>
+<text x="64" y="376" font-size="18" style="fill:#A9B1BB">50 you marked Good</text>
+<circle cx="48" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="70" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="92" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="114" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="136" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="158" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="180" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="202" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="224" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="246" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="268" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="290" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="312" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="334" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="356" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="378" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="400" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="422" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="444" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="466" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="488" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="510" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="532" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="554" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="576" cy="410" r="8" style="fill:#4CC38A"/>
+<circle cx="48" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="70" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="92" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="114" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="136" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="158" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="180" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="202" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="224" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="246" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="268" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="290" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="312" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="334" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="356" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="378" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="400" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="422" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="444" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="466" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="488" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="510" cy="436" r="8" style="fill:#4CC38A"/>
+<circle cx="532" cy="436" r="7.1" style="fill:#171B21;stroke:#FF7A63" stroke-width="1.8"/>
+<circle cx="554" cy="436" r="7.1" style="fill:#171B21;stroke:#FF7A63" stroke-width="1.8"/>
+<circle cx="576" cy="436" r="7.1" style="fill:#171B21;stroke:#FF7A63" stroke-width="1.8"/>
+<circle cx="47" cy="470" r="7" style="fill:#4CC38A"/>
+<text x="62" y="476" font-size="18" style="fill:#A9B1BB">Judge said Good</text>
+<circle cx="233.1" cy="470" r="6.1" style="fill:#171B21;stroke:#FF7A63" stroke-width="1.8"/>
+<text x="248.1" y="476" font-size="18" style="fill:#A9B1BB">Judge flagged it</text>
+<text x="640" y="400" font-size="48" font-weight="700" style="fill:#E9EBEE">94%</text>
+<text x="640" y="430" font-size="18" style="fill:#A9B1BB">Agrees on good traces</text>
+<text x="640" y="454" font-size="18" style="fill:#8A929D">47 of 50</text>
+<path d="M836 168L836 512" style="fill:none;stroke:#2A3038" stroke-width="1.5" stroke-linecap="round"/>
+<text x="866" y="190" font-size="20" font-weight="700" style="fill:#E9EBEE">On 400 new conversations</text>
+<text x="866" y="232" font-size="18" style="fill:#E9EBEE"><tspan style="fill:#A9B1BB">Judge flagged </tspan><tspan font-weight="700">18%</tspan></text>
+<path d="M874 256L1154 256" style="fill:none;stroke:#2A3038" stroke-width="2" stroke-linecap="round"/>
+<circle cx="1042" cy="256" r="8" style="fill:#171B21;stroke:#FF7A63" stroke-width="2.5"/>
+<text x="866" y="298" font-size="18" style="fill:#E9EBEE"><tspan font-weight="600">Likely true rate </tspan><tspan font-weight="700">14%</tspan></text>
+<path d="M874 322L1154 322" style="fill:none;stroke:#2A3038" stroke-width="2" stroke-linecap="round"/>
+<rect x="915.6" y="316" width="157.5" height="12" rx="6" style="fill:#FF7A63;fill-opacity:0.28"/>
+<circle cx="1004.2" cy="322" r="8" style="fill:#FF7A63"/>
+<path d="M874 262L874 268" style="fill:none;stroke:#8A929D" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M874 340L874 347" style="fill:none;stroke:#8A929D" stroke-width="1.5" stroke-linecap="round"/>
+<text x="874" y="370" font-size="18" text-anchor="middle" style="fill:#8A929D">0%</text>
+<path d="M967.3 262L967.3 268" style="fill:none;stroke:#8A929D" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M967.3 340L967.3 347" style="fill:none;stroke:#8A929D" stroke-width="1.5" stroke-linecap="round"/>
+<text x="967.3" y="370" font-size="18" text-anchor="middle" style="fill:#8A929D">10%</text>
+<path d="M1060.7 262L1060.7 268" style="fill:none;stroke:#8A929D" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M1060.7 340L1060.7 347" style="fill:none;stroke:#8A929D" stroke-width="1.5" stroke-linecap="round"/>
+<text x="1060.7" y="370" font-size="18" text-anchor="middle" style="fill:#8A929D">20%</text>
+<path d="M1154 262L1154 268" style="fill:none;stroke:#8A929D" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M1154 340L1154 347" style="fill:none;stroke:#8A929D" stroke-width="1.5" stroke-linecap="round"/>
+<text x="1154" y="370" font-size="18" text-anchor="middle" style="fill:#8A929D">30%</text>
+<text x="866" y="406" font-size="18" style="fill:#A9B1BB">95% range: 4% to 21%</text>
+<text x="866" y="446" font-size="18" style="fill:#E9EBEE"><tspan x="866">The judge misses some failures and</tspan><tspan x="866" dy="24">flags some good ones. Correcting</tspan><tspan x="866" dy="24">for both gives the likely true rate.</tspan></text>
+<text x="40" y="558" font-size="18" style="fill:#A9B1BB">A judge that always says Good would score 100% on the second question and 0% on the first. You need both numbers.</text>
+</svg>

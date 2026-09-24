@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600" role="img" aria-labelledby="pmv-notes-to-modes-title pmv-notes-to-modes-desc" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif">
+<title id="pmv-notes-to-modes-title">From notes to failure modes</title>
+<desc id="pmv-notes-to-modes-desc">Ten review notes sorted into three failure modes, one success mode, and a Not a product problem pile, then ranked by how often and how badly each hurts. Ignoring requests for a person ranks first even though stray symbols in texts is more common.</desc>
+<rect x="0.5" y="0.5" width="1199" height="599" rx="20" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1"/>
+<text x="32" y="68" font-size="40" font-weight="700" style="fill:#16191D">From notes to failure modes</text>
+<text x="32" y="102" font-size="22" style="fill:#4A525C">Sort what you wrote. Then rank by how often and how badly it hurts.</text>
+<path d="M1035 45H1036A11.5 11.5 0 0 1 1047.5 56.5V61a2.8 2.8 0 0 1 -5.5 0V56.5A6 6 0 0 0 1036 50.5H1035Z" style="fill:#BE3E29"/>
+<text x="1063" y="60" font-size="18" style="fill:#4A525C">Failure mode</text>
+<rect x="848.9" y="46" width="28" height="16" rx="8" style="fill:#E3F2EA;stroke:#1B7851" stroke-width="1.5"/>
+<text x="886.9" y="60" font-size="18" style="fill:#4A525C">Success mode</text>
+<text x="40" y="152" font-size="20" font-weight="700" style="fill:#16191D">1. Your notes</text>
+<text x="440" y="152" font-size="20" font-weight="700" style="fill:#16191D">2. Grouped and named</text>
+<text x="796" y="152" font-size="20" font-weight="700" style="fill:#16191D">3. What to fix first</text>
+<text x="796" y="176" font-size="18" style="fill:#646B73">all 100 conversations</text>
+<rect x="40" y="188" width="346" height="30" rx="7" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="47" y="194" width="4" height="18" rx="2" style="fill:#BE3E29"/>
+<text x="62" y="209" font-size="18" style="fill:#16191D">Asked for a person twice. Ignored.</text>
+<rect x="40" y="223" width="346" height="30" rx="7" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="47" y="229" width="4" height="18" rx="2" style="fill:#BE3E29"/>
+<text x="62" y="244" font-size="18" style="fill:#16191D">Text shows **Friday** with stars</text>
+<rect x="40" y="258" width="346" height="30" rx="7" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="47" y="264" width="4" height="18" rx="2" style="fill:#BE3E29"/>
+<text x="62" y="279" font-size="18" style="fill:#16191D">Booked 9:30 before she chose a time</text>
+<rect x="40" y="293" width="346" height="30" rx="7" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="47" y="299" width="4" height="18" rx="2" style="fill:#1B7851"/>
+<text x="62" y="314" font-size="18" style="fill:#16191D">Read back day, time, and dentist</text>
+<rect x="40" y="328" width="346" height="30" rx="7" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="47" y="334" width="4" height="18" rx="2" style="fill:#BE3E29"/>
+<text x="62" y="349" font-size="18" style="fill:#16191D">Wanted the front desk, got slots</text>
+<rect x="40" y="363" width="346" height="30" rx="7" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="47" y="369" width="4" height="18" rx="2" style="fill:#BE3E29"/>
+<text x="62" y="384" font-size="18" style="fill:#16191D">Dash bullets in a text reply</text>
+<rect x="40" y="398" width="346" height="30" rx="7" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="47" y="404" width="4" height="18" rx="2" style="fill:#646B73"/>
+<text x="62" y="419" font-size="18" style="fill:#16191D">Test session from our team</text>
+<rect x="40" y="433" width="346" height="30" rx="7" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="47" y="439" width="4" height="18" rx="2" style="fill:#BE3E29"/>
+<text x="62" y="454" font-size="18" style="fill:#16191D">Moved the cleaning without asking</text>
+<rect x="40" y="468" width="346" height="30" rx="7" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="47" y="474" width="4" height="18" rx="2" style="fill:#BE3E29"/>
+<text x="62" y="489" font-size="18" style="fill:#16191D">Said call me, it kept texting</text>
+<rect x="40" y="503" width="346" height="30" rx="7" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="47" y="509" width="4" height="18" rx="2" style="fill:#BE3E29"/>
+<text x="62" y="524" font-size="18" style="fill:#16191D">Asterisks around the address</text>
+<path d="M386 203C416 203 410 204.5 440 204.5" style="fill:none;stroke:#BE3E29;stroke-opacity:0.7" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="386" cy="203" r="3" style="fill:#BE3E29"/>
+<path d="M386 343C416 343 410 221 440 221" style="fill:none;stroke:#BE3E29;stroke-opacity:0.7" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="386" cy="343" r="3" style="fill:#BE3E29"/>
+<path d="M386 483C416 483 410 237.5 440 237.5" style="fill:none;stroke:#BE3E29;stroke-opacity:0.7" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="386" cy="483" r="3" style="fill:#BE3E29"/>
+<path d="M386 238C416 238 410 283.5 440 283.5" style="fill:none;stroke:#BE3E29;stroke-opacity:0.7" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="386" cy="238" r="3" style="fill:#BE3E29"/>
+<path d="M386 378C416 378 410 294.5 440 294.5" style="fill:none;stroke:#BE3E29;stroke-opacity:0.7" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="386" cy="378" r="3" style="fill:#BE3E29"/>
+<path d="M386 518C416 518 410 305.5 440 305.5" style="fill:none;stroke:#BE3E29;stroke-opacity:0.7" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="386" cy="518" r="3" style="fill:#BE3E29"/>
+<path d="M386 273C416 273 410 357 440 357" style="fill:none;stroke:#BE3E29;stroke-opacity:0.7" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="386" cy="273" r="3" style="fill:#BE3E29"/>
+<path d="M386 448C416 448 410 379 440 379" style="fill:none;stroke:#BE3E29;stroke-opacity:0.7" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="386" cy="448" r="3" style="fill:#BE3E29"/>
+<path d="M386 308C416 308 410 447.5 440 447.5" style="fill:none;stroke:#1B7851;stroke-opacity:0.7" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="386" cy="308" r="3" style="fill:#1B7851"/>
+<path d="M386 413C416 413 410 511 440 511" style="fill:none;stroke:#646B73;stroke-opacity:0.7" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="386" cy="413" r="3" style="fill:#646B73"/>
+<rect x="450" y="198" width="310" height="66" rx="10" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="445" y="193" width="310" height="66" rx="10" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="440" y="188" width="310" height="66" rx="10" style="fill:#FBE7E2"/>
+<path d="M454 213H455A11.5 11.5 0 0 1 466.5 224.5V229a2.8 2.8 0 0 1 -5.5 0V224.5A6 6 0 0 0 455 218.5H454Z" style="fill:#BE3E29"/>
+<text x="486" y="216.3" font-size="18" font-weight="600" style="fill:#16191D"><tspan x="486">Ignores requests</tspan><tspan x="486" dy="22">for a person</tspan></text>
+<text x="736" y="227.3" font-size="18" font-weight="700" text-anchor="end" style="fill:#BE3E29">3</text>
+<rect x="450" y="282.5" width="310" height="44" rx="10" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="445" y="277.5" width="310" height="44" rx="10" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="440" y="272.5" width="310" height="44" rx="10" style="fill:#FBE7E2"/>
+<path d="M454 286.5H455A11.5 11.5 0 0 1 466.5 298V302.5a2.8 2.8 0 0 1 -5.5 0V298A6 6 0 0 0 455 292H454Z" style="fill:#BE3E29"/>
+<text x="486" y="300.8" font-size="18" font-weight="600" style="fill:#16191D">Stray ** symbols in texts</text>
+<text x="736" y="300.8" font-size="18" font-weight="700" text-anchor="end" style="fill:#BE3E29">3</text>
+<rect x="445" y="340" width="310" height="66" rx="10" style="fill:#FFFFFF;stroke:#E2DFD8" stroke-width="1.2"/>
+<rect x="440" y="335" width="310" height="66" rx="10" style="fill:#FBE7E2"/>
+<path d="M454 360H455A11.5 11.5 0 0 1 466.5 371.5V376a2.8 2.8 0 0 1 -5.5 0V371.5A6 6 0 0 0 455 365.5H454Z" style="fill:#BE3E29"/>
+<text x="486" y="363.3" font-size="18" font-weight="600" style="fill:#16191D"><tspan x="486">Books before the</tspan><tspan x="486" dy="22">patient confirms</tspan></text>
+<text x="736" y="374.3" font-size="18" font-weight="700" text-anchor="end" style="fill:#BE3E29">2</text>
+<rect x="440" y="414.5" width="310" height="66" rx="33" style="fill:#E3F2EA;stroke:#1B7851;stroke-opacity:0.6" stroke-width="1.4"/>
+<rect x="450" y="439.5" width="28" height="16" rx="8" style="fill:#E3F2EA;stroke:#1B7851" stroke-width="1.5"/>
+<text x="486" y="442.8" font-size="18" font-weight="600" style="fill:#16191D"><tspan x="486">Repeats the</tspan><tspan x="486" dy="22">booking back</tspan></text>
+<text x="736" y="453.8" font-size="18" font-weight="700" text-anchor="end" style="fill:#1B7851">1</text>
+<rect x="440" y="489" width="310" height="44" rx="10" style="fill:#FFFFFF;stroke:#646B73" stroke-width="1.4" stroke-dasharray="5 4"/>
+<rect x="454" y="503" width="16" height="16" rx="4" style="fill:none;stroke:#646B73" stroke-width="1.4" stroke-dasharray="3 3"/>
+<text x="486" y="517.3" font-size="18" font-weight="600" style="fill:#4A525C">Not a product problem</text>
+<text x="736" y="517.3" font-size="18" font-weight="700" text-anchor="end" style="fill:#4A525C">1</text>
+<text x="796" y="206" font-size="18" font-weight="600" style="fill:#16191D">Ignores requests for a person</text>
+<rect x="796" y="213" width="372" height="6" rx="3" style="fill:#F0EEE8"/>
+<rect x="796" y="213" width="372" height="6" rx="3" style="fill:#BE3E29"/>
+<text x="796" y="237" font-size="18" style="fill:#16191D"><tspan style="fill:#4A525C">7 conversations</tspan><tspan style="fill:#646B73"> · </tspan><tspan font-weight="600" style="fill:#BE3E29">Blocks</tspan></text>
+<text x="796" y="267" font-size="18" font-weight="600" style="fill:#16191D">Offers a time that is taken</text>
+<rect x="796" y="274" width="372" height="6" rx="3" style="fill:#F0EEE8"/>
+<rect x="796" y="274" width="265.7" height="6" rx="3" style="fill:#BE3E29"/>
+<text x="796" y="298" font-size="18" style="fill:#16191D"><tspan style="fill:#4A525C">5 conversations</tspan><tspan style="fill:#646B73"> · </tspan><tspan font-weight="600" style="fill:#BE3E29">Blocks</tspan></text>
+<text x="796" y="328" font-size="18" font-weight="600" style="fill:#16191D">Books before the patient confirms</text>
+<rect x="796" y="335" width="372" height="6" rx="3" style="fill:#F0EEE8"/>
+<rect x="796" y="335" width="212.6" height="6" rx="3" style="fill:#BE3E29"/>
+<text x="796" y="359" font-size="18" style="fill:#16191D"><tspan style="fill:#4A525C">6 conversations</tspan><tspan style="fill:#646B73"> · </tspan><tspan font-weight="600" style="fill:#965F00">Hurts</tspan></text>
+<text x="796" y="389" font-size="18" font-weight="600" style="fill:#16191D">Answers billing questions itself</text>
+<rect x="796" y="396" width="372" height="6" rx="3" style="fill:#F0EEE8"/>
+<rect x="796" y="396" width="177.1" height="6" rx="3" style="fill:#BE3E29"/>
+<text x="796" y="420" font-size="18" style="fill:#16191D"><tspan style="fill:#4A525C">5 conversations</tspan><tspan style="fill:#646B73"> · </tspan><tspan font-weight="600" style="fill:#965F00">Hurts</tspan></text>
+<text x="796" y="450" font-size="18" font-weight="600" style="fill:#16191D">Stray ** symbols in texts</text>
+<rect x="796" y="457" width="372" height="6" rx="3" style="fill:#F0EEE8"/>
+<rect x="796" y="457" width="159.4" height="6" rx="3" style="fill:#BE3E29"/>
+<text x="796" y="481" font-size="18" style="fill:#16191D"><tspan style="fill:#4A525C">9 conversations</tspan><tspan style="fill:#646B73"> · </tspan><tspan font-weight="600" style="fill:#4A525C">Annoys</tspan><tspan style="fill:#646B73"> · </tspan><tspan font-weight="700" style="fill:#16191D">Most common</tspan></text>
+<text x="796" y="511" font-size="18" font-weight="600" style="fill:#16191D">Asks again for details given</text>
+<rect x="796" y="518" width="372" height="6" rx="3" style="fill:#F0EEE8"/>
+<rect x="796" y="518" width="70.9" height="6" rx="3" style="fill:#BE3E29"/>
+<text x="796" y="542" font-size="18" style="fill:#16191D"><tspan style="fill:#4A525C">4 conversations</tspan><tspan style="fill:#646B73"> · </tspan><tspan font-weight="600" style="fill:#4A525C">Annoys</tspan></text>
+<path d="M763 221C781 221 776 200 788 200" style="fill:none;stroke:#646B73" stroke-width="1.4" stroke-dasharray="2 4" stroke-linecap="round"/>
+<path d="M763 294.5C781 294.5 776 444 788 444" style="fill:none;stroke:#646B73" stroke-width="1.4" stroke-dasharray="2 4" stroke-linecap="round"/>
+<path d="M758 368C776 368 776 322 788 322" style="fill:none;stroke:#646B73" stroke-width="1.4" stroke-dasharray="2 4" stroke-linecap="round"/>
+<text x="40" y="574" font-size="18" style="fill:#4A525C">The most common failure mode is not always the one to fix first.</text>
+</svg>

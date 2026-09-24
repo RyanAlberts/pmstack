@@ -1,16 +1,16 @@
 {
   "name": "pmstack",
-  "displayName": "pmstack — PM Toolkit for the AI Era",
-  "version": "1.2.0",
-  "description": "The eval lifecycle as PM-runnable commands (/pmstack:eval, /pmstack:run-eval, /pmstack:eval-drift), plus PRDs, voice-of-customer synthesis, launch-readiness gates, and the Monday memo.",
+  "displayName": "pmstack: Eval Studio for product managers",
+  "version": "2.0.0",
+  "description": "Find how your AI product fails. Then prove it's fixed. Error discovery skills that read real traces, name failure modes and success modes by stage, and turn the ones that matter into code checks and AI judges you can trust, with Eval Studio and a zero-dependency command-line tool.",
   "author": {
     "name": "Ryan Alberts",
     "url": "https://github.com/RyanAlberts"
   },
-  "homepage": "https://ryanalberts.github.io/pmstack/eval-readiness/",
+  "homepage": "https://ryanalberts.github.io/pmstack/",
   "repository": "https://github.com/RyanAlberts/pmstack",
   "license": "MIT",
-  "keywords": ["product-management", "evals", "ai-pm", "prd", "claude"],
-  "skills": "./claude-skills",
-  "commands": "./plugin-commands"
+  "keywords": ["evals", "ai-evals", "error-analysis", "llm-as-judge", "product-management", "claude-code", "agent-skills"],
+  "skills": "./skills",
+  "commands": "./commands"
 }

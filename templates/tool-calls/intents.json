@@ -1,0 +1,62 @@
+{
+  "format": "pmstack.intents/1",
+  "note": [
+    "Intent map for the Northstar support agent (Northstar Internet is a made-up internet provider). Each intent is one kind of request.",
+    "intentFrom is the trace detail that says which intent a trace is, for example a label from your router or classifier, or one your reviewer added. Traces without it are skipped; use relevance-judge.md for those.",
+    "expect: tools the agent must call for this request. Missing one shows as Skipped a needed tool.",
+    "allow: tools that are fine but not required. A call outside expect and allow shows as Called a tool the request didn't need.",
+    "never: tools this request must never use. Calling one shows as Called a tool this request must never use.",
+    "example is a typical request, to help people label traces. The check does not read it."
+  ],
+  "intentFrom": "metadata.intent",
+  "intents": [
+    {
+      "id": "billing-question",
+      "label": "Question about a bill",
+      "example": "Why is my bill $20 higher this month?",
+      "expect": ["get_bill"],
+      "allow": ["verify_identity", "lookup_account", "search_help_center"],
+      "never": ["issue_credit", "cancel_service"]
+    },
+    {
+      "id": "outage-credit",
+      "label": "Asks for a credit after an outage",
+      "example": "The outage took us down for two days. Can I get a credit?",
+      "expect": ["issue_credit"],
+      "allow": ["verify_identity", "lookup_account", "get_bill", "request_supervisor_approval"],
+      "never": ["cancel_service", "change_plan"]
+    },
+    {
+      "id": "plan-change",
+      "label": "Wants a different plan",
+      "example": "The gig plan is too much for us now. Can I go down to basic?",
+      "expect": ["change_plan"],
+      "allow": ["verify_identity", "lookup_account", "get_bill", "search_help_center"],
+      "never": ["cancel_service"]
+    },
+    {
+      "id": "cancel-service",
+      "label": "Wants to cancel service",
+      "example": "We're moving out of state. Please cancel our internet at the end of the month.",
+      "expect": ["cancel_service"],
+      "allow": ["verify_identity", "lookup_account", "get_bill", "change_plan"],
+      "never": ["schedule_technician"]
+    },
+    {
+      "id": "technician-visit",
+      "label": "Needs a technician visit",
+      "example": "My connection drops every evening. Can someone come look at it?",
+      "expect": ["schedule_technician"],
+      "allow": ["verify_identity", "lookup_account", "search_help_center", "find_technician_slots"],
+      "never": ["cancel_service", "change_plan"]
+    },
+    {
+      "id": "how-to",
+      "label": "How-to question",
+      "example": "How do I change my Wi-Fi password?",
+      "expect": ["search_help_center"],
+      "allow": ["verify_identity", "lookup_account"],
+      "never": ["issue_credit", "change_plan", "cancel_service", "schedule_technician"]
+    }
+  ]
+}

@@ -1,0 +1,5054 @@
+{
+  "format": "pmstack.project/1",
+  "revision": 1,
+  "id": "gift-finder",
+  "name": "Copper & Clay Kitchen gift finder",
+  "sample": true,
+  "createdAt": "2026-09-22T16:00:00Z",
+  "updatedAt": "2026-09-22T16:00:00Z",
+  "experience": {
+    "product": "Copper & Clay Kitchen gift finder",
+    "userLabel": "shopper",
+    "customerGoal": "Find a gift that suits the person, the occasion, and the budget, and that can ship in time.",
+    "renderer": "list",
+    "rendererBy": null,
+    "pattern": "routing",
+    "stages": [
+      {
+        "id": "classify",
+        "label": "Understand the gift request",
+        "column": "understand",
+        "match": {}
+      },
+      {
+        "id": "route",
+        "label": "Pick the category",
+        "column": "plan",
+        "match": {
+          "kinds": [
+            "handoff"
+          ],
+          "tools": [
+            "route_request"
+          ]
+        }
+      },
+      {
+        "id": "handle",
+        "label": "Search the catalog",
+        "column": "act",
+        "match": {
+          "kinds": [
+            "tool_call",
+            "tool_result",
+            "tool",
+            "retrieval",
+            "llm"
+          ],
+          "tools": [
+            "search_catalog"
+          ]
+        }
+      },
+      {
+        "id": "answer",
+        "label": "Show the picks",
+        "column": "answer",
+        "match": {
+          "last": "assistant"
+        }
+      }
+    ],
+    "fieldMap": null,
+    "layout": null,
+    "filters": [
+      "occasion",
+      "budget",
+      "recipient"
+    ],
+    "reviewer": "",
+    "gate": 10,
+    "groupGate": 30
+  },
+  "tracesFile": null,
+  "traces": [
+    {
+      "id": "t-0001",
+      "title": "Housewarming gift for a sourdough baker, around $75",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "returning customer",
+        "occasion": "housewarming",
+        "budget": "$50 to $100",
+        "recipient": "friend",
+        "feedback": "thumbs_up"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Hi! My friend just closed on her first house and she's obsessed with sourdough (she named her starter lol). Looking for something around $75.",
+          "time": "2026-09-08T09:14:22Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "bakeware"
+          },
+          "time": "2026-09-08T09:14:24Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "bakeware",
+            "query": "sourdough bread",
+            "max_price": 75
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Stoneware Bread Cloche",
+                "price": 72,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sourdough",
+                  "clay"
+                ]
+              },
+              {
+                "name": "Banneton Proofing Baskets, set of 2",
+                "price": 34,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sourdough",
+                  "proofing"
+                ]
+              },
+              {
+                "name": "Bread Lame and Bench Scraper Set",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sourdough",
+                  "scoring"
+                ]
+              },
+              {
+                "name": "Pullman Loaf Pan with Lid",
+                "price": 32,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sandwich loaf",
+                  "aluminized steel"
+                ]
+              },
+              {
+                "name": "Half Sheet Pans, set of 2",
+                "price": 36,
+                "in_stock": true,
+                "tags": [
+                  "cookies",
+                  "roasting",
+                  "aluminum"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-08T09:14:25Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Congrats to your friend! Here are three gifts a sourdough baker will reach for every week, all under $75.",
+        "items": [
+          {
+            "title": "Stoneware Bread Cloche",
+            "subtitle": "$72.00 · In stock",
+            "details": {
+              "Price": "$72.00",
+              "Why": "For a sourdough baker"
+            },
+            "reason": "The clay lid traps steam, so her loaves come out with a crackly crust."
+          },
+          {
+            "title": "Banneton Proofing Baskets, set of 2",
+            "subtitle": "$34.00 · In stock",
+            "details": {
+              "Price": "$34.00",
+              "Why": "Round and oval shapes"
+            },
+            "reason": "Gives her loaves that classic spiral flour pattern."
+          },
+          {
+            "title": "Bread Lame and Bench Scraper Set",
+            "subtitle": "$22.00 · In stock",
+            "details": {
+              "Price": "$22.00",
+              "Why": "A small add-on"
+            },
+            "reason": "For scoring the dough and cleaning up the counter after."
+          }
+        ]
+      },
+      "result": "Added Stoneware Bread Cloche to cart ($72.00)"
+    },
+    {
+      "id": "t-0002",
+      "title": "Dad's birthday, grills every weekend",
+      "metadata": {
+        "channel": "gift quiz",
+        "persona": "first visit",
+        "occasion": "birthday",
+        "budget": "$50 to $100",
+        "recipient": "parent"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Occasion: Birthday\nBudget: $50 to $100\nFor: My dad\nAnything else? He grills every weekend and already has all the basic gear.",
+          "time": "2026-09-08T12:40:05Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "tools"
+          },
+          "time": "2026-09-08T12:40:07Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "tools",
+            "query": "grilling meat",
+            "max_price": 100
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Instant-Read Thermometer",
+                "price": 34,
+                "in_stock": true,
+                "tags": [
+                  "thermometer",
+                  "grilling",
+                  "meat"
+                ]
+              },
+              {
+                "name": "Beechwood Salt and Pepper Mills",
+                "price": 48,
+                "in_stock": true,
+                "tags": [
+                  "salt",
+                  "pepper",
+                  "grinder"
+                ]
+              },
+              {
+                "name": "Granite Mortar and Pestle",
+                "price": 44,
+                "in_stock": true,
+                "tags": [
+                  "spices",
+                  "pesto"
+                ]
+              },
+              {
+                "name": "Cast Iron Care Kit",
+                "price": 28,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "care",
+                  "seasoning"
+                ]
+              },
+              {
+                "name": "Hand-Crank Pasta Machine",
+                "price": 79,
+                "in_stock": true,
+                "tags": [
+                  "pasta",
+                  "fresh pasta"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-08T12:40:08Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "For a weekend griller who already has the basics, these add a little precision and flavor.",
+        "items": [
+          {
+            "title": "Instant-Read Thermometer",
+            "subtitle": "$34.00 · In stock",
+            "details": {
+              "Price": "$34.00",
+              "Why": "Perfect steaks every time"
+            },
+            "reason": "Reads in two seconds, so he can stop cutting into the meat to check."
+          },
+          {
+            "title": "Beechwood Salt and Pepper Mills",
+            "subtitle": "$48.00 · In stock",
+            "details": {
+              "Price": "$48.00",
+              "Why": "For seasoning at the grill"
+            },
+            "reason": "Adjustable grind, from coarse for steak to fine for the table."
+          },
+          {
+            "title": "Granite Mortar and Pestle",
+            "subtitle": "$44.00 · In stock",
+            "details": {
+              "Price": "$44.00",
+              "Why": "For homemade rubs"
+            },
+            "reason": "Crushes whole spices and garlic for dry rubs and marinades."
+          }
+        ]
+      },
+      "result": "Added Instant-Read Thermometer and Beechwood Salt and Pepper Mills to cart ($82.00)"
+    },
+    {
+      "id": "t-0003",
+      "title": "Birthday gift, no details at first",
+      "metadata": {
+        "channel": "mobile app",
+        "persona": "returning customer",
+        "occasion": "birthday",
+        "budget": "$25 to $50",
+        "recipient": "sibling"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "need a bday gift",
+          "time": "2026-09-08T19:05:41Z"
+        },
+        {
+          "role": "assistant",
+          "content": "Happy to help! Who's the birthday for, and what do they like to cook or drink?",
+          "time": "2026-09-08T19:05:49Z"
+        },
+        {
+          "role": "user",
+          "content": "my little brother, he's a junior in college and basically lives on coffee. 30 to 40 bucks",
+          "time": "2026-09-08T19:07:18Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "coffee-and-tea"
+          },
+          "time": "2026-09-08T19:07:20Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "coffee-and-tea",
+            "query": "coffee",
+            "max_price": 40
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Glass Cold Brew Pitcher",
+                "price": 32,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "cold brew",
+                  "iced tea"
+                ]
+              },
+              {
+                "name": "Ceramic Pour-Over Dripper with 100 Filters",
+                "price": 26,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "pour-over"
+                ]
+              },
+              {
+                "name": "Handheld Milk Frother",
+                "price": 19,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "latte"
+                ]
+              },
+              {
+                "name": "Loose Leaf Tea Infuser Mug",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "tea",
+                  "mug"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-08T19:07:21Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "A coffee-powered college junior, got it. Here are three picks under $40 that work in a dorm kitchen.",
+        "items": [
+          {
+            "title": "Glass Cold Brew Pitcher",
+            "subtitle": "$32.00 · In stock",
+            "details": {
+              "Price": "$32.00",
+              "Why": "No machine needed"
+            },
+            "reason": "He makes a big batch overnight and has iced coffee ready all week."
+          },
+          {
+            "title": "Ceramic Pour-Over Dripper with 100 Filters",
+            "subtitle": "$26.00 · In stock",
+            "details": {
+              "Price": "$26.00",
+              "Why": "A cheap, great cup"
+            },
+            "reason": "Sits right on a mug, and the filters last him most of a semester."
+          },
+          {
+            "title": "Handheld Milk Frother",
+            "subtitle": "$19.00 · In stock",
+            "details": {
+              "Price": "$19.00",
+              "Why": "For latte fans"
+            },
+            "reason": "Turns any cup into a cafe-style latte."
+          }
+        ]
+      },
+      "result": "Added Glass Cold Brew Pitcher to cart ($32.00)"
+    },
+    {
+      "id": "t-0004",
+      "title": "Cast iron care gift for dad, under $40",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "first visit",
+        "occasion": "birthday",
+        "budget": "$25 to $50",
+        "recipient": "parent",
+        "feedback": "thumbs_down"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "my dad has 3 cast iron pans and he babies them like they're his kids. is there anything to help him take care of them? for his birthday, under 40 please",
+          "time": "2026-09-09T08:22:10Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "cookware"
+          },
+          "time": "2026-09-09T08:22:12Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "cookware",
+            "query": "cast iron"
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Cast Iron Skillet, 12 in",
+                "price": 54,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "searing",
+                  "everyday"
+                ]
+              },
+              {
+                "name": "Cast Iron Grill Pan, 11 in",
+                "price": 58,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "grilling"
+                ]
+              },
+              {
+                "name": "Cast Iron Griddle, reversible",
+                "price": 49,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "pancakes",
+                  "breakfast"
+                ]
+              },
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Slate",
+                "price": 148,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "soups",
+                  "braising"
+                ]
+              },
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Sage",
+                "price": 148,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "soups",
+                  "braising"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-09T08:22:13Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "A cast iron fan always has room for one more pan! Here are two he'd love to add to the collection.",
+        "items": [
+          {
+            "title": "Cast Iron Grill Pan, 11 in",
+            "subtitle": "$58.00 · In stock",
+            "details": {
+              "Price": "$58.00",
+              "Why": "Rounds out his collection"
+            },
+            "reason": "Raised ridges give him grill marks on the stovetop, all year long."
+          },
+          {
+            "title": "Cast Iron Griddle, reversible",
+            "subtitle": "$49.00 · In stock",
+            "details": {
+              "Price": "$49.00",
+              "Why": "A new shape to season"
+            },
+            "reason": "Flat on one side for pancakes and ridged on the other for burgers."
+          }
+        ]
+      },
+      "result": "Left without adding anything"
+    },
+    {
+      "id": "t-0005",
+      "title": "Thank you gifts for two neighbors, $40 total",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "returning customer",
+        "occasion": "thank you",
+        "budget": "$25 to $50",
+        "recipient": "neighbor"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Two of my neighbors watered my garden the whole month I was away. I want to get them each a little thank you, about $40 total for both.",
+          "time": "2026-09-09T11:47:33Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "serveware"
+          },
+          "time": "2026-09-09T11:47:35Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "serveware",
+            "query": "small thank you gift",
+            "max_price": 40
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Ceramic Butter Crock",
+                "price": 28,
+                "in_stock": true,
+                "tags": [
+                  "butter",
+                  "ceramic"
+                ]
+              },
+              {
+                "name": "Olivewood Salad Servers",
+                "price": 26,
+                "in_stock": true,
+                "tags": [
+                  "salad",
+                  "olivewood"
+                ]
+              },
+              {
+                "name": "Marble Salt Cellar",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "salt",
+                  "marble"
+                ]
+              },
+              {
+                "name": "Ceramic Olive Dish",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "olives",
+                  "small plates"
+                ]
+              },
+              {
+                "name": "Linen-Lined Bread Basket",
+                "price": 30,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "serving",
+                  "brunch"
+                ]
+              },
+              {
+                "name": "Hand-Thrown Small Bowls, set of 4",
+                "price": 38,
+                "in_stock": true,
+                "tags": [
+                  "ceramic",
+                  "handmade",
+                  "small bowls"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-09T11:47:36Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "What kind neighbors! Each of these is under $40, so you can pick any two.",
+        "items": [
+          {
+            "title": "Ceramic Butter Crock",
+            "subtitle": "$28.00 · In stock",
+            "details": {
+              "Price": "$28.00",
+              "Why": "Small and useful"
+            },
+            "reason": "Keeps butter soft on the counter without it going bad."
+          },
+          {
+            "title": "Olivewood Salad Servers",
+            "subtitle": "$26.00 · In stock",
+            "details": {
+              "Price": "$26.00",
+              "Why": "For garden salads"
+            },
+            "reason": "A nice nod to the garden they kept alive for you."
+          },
+          {
+            "title": "Marble Salt Cellar",
+            "subtitle": "$24.00 · In stock",
+            "details": {
+              "Price": "$24.00",
+              "Why": "Looks nice on any counter"
+            },
+            "reason": "A small luxury they'll use every day."
+          }
+        ]
+      },
+      "result": "Added 2 x Marble Salt Cellar to cart ($48.00)"
+    },
+    {
+      "id": "t-0006",
+      "title": "Off-registry wedding gift for hosts",
+      "metadata": {
+        "channel": "gift quiz",
+        "persona": "loyalty member",
+        "occasion": "wedding",
+        "budget": "$100 to $200",
+        "recipient": "couple"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Occasion: Wedding\nBudget: $100 to $200\nFor: A couple\nAnything else? They registered for everything already but I want to go off-registry. They host dinner parties constantly.",
+          "time": "2026-09-09T15:30:02Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "serveware"
+          },
+          "time": "2026-09-09T15:30:04Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "serveware",
+            "query": "dinner party hosting",
+            "max_price": 200
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Hand-Thrown Serving Bowl, large",
+                "price": 86,
+                "in_stock": true,
+                "tags": [
+                  "ceramic",
+                  "handmade",
+                  "serving"
+                ]
+              },
+              {
+                "name": "Stoneware Dinner Plates, set of 4",
+                "price": 92,
+                "in_stock": true,
+                "tags": [
+                  "plates",
+                  "dinnerware",
+                  "stoneware"
+                ]
+              },
+              {
+                "name": "Walnut Serving Tray",
+                "price": 74,
+                "in_stock": false,
+                "tags": [
+                  "serving",
+                  "walnut",
+                  "breakfast"
+                ]
+              },
+              {
+                "name": "Olivewood Cheese Board with Two Knives",
+                "price": 58,
+                "in_stock": true,
+                "tags": [
+                  "cheese",
+                  "serving",
+                  "olivewood"
+                ]
+              },
+              {
+                "name": "Copper Mule Mugs, set of 2",
+                "price": 52,
+                "in_stock": true,
+                "tags": [
+                  "copper",
+                  "cocktails",
+                  "bar"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-09T15:30:05Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Going off-registry is a lovely touch. Each of these is made for a table that hosts often, and any two land in your range.",
+        "items": [
+          {
+            "title": "Hand-Thrown Serving Bowl, large",
+            "subtitle": "$86.00 · In stock",
+            "details": {
+              "Price": "$86.00",
+              "Why": "A one-of-a-kind centerpiece"
+            },
+            "reason": "Thrown by hand in our clay studio, so no two bowls are alike."
+          },
+          {
+            "title": "Stoneware Dinner Plates, set of 4",
+            "subtitle": "$92.00 · In stock",
+            "details": {
+              "Price": "$92.00",
+              "Why": "For their next dinner party"
+            },
+            "reason": "Heavy, oven-safe plates in a soft speckled glaze."
+          },
+          {
+            "title": "Olivewood Cheese Board with Two Knives",
+            "subtitle": "$58.00 · In stock",
+            "details": {
+              "Price": "$58.00",
+              "Why": "For the appetizer course"
+            },
+            "reason": "Every board has its own grain, and the two knives cover soft and hard cheeses."
+          }
+        ]
+      },
+      "result": "Added Hand-Thrown Serving Bowl, large and Olivewood Cheese Board with Two Knives to cart ($144.00)"
+    },
+    {
+      "id": "t-0007",
+      "title": "Red Dutch oven for sister's wedding",
+      "metadata": {
+        "channel": "mobile app",
+        "persona": "returning customer",
+        "occasion": "wedding",
+        "budget": "$100 to $200",
+        "recipient": "sibling",
+        "feedback": "thumbs_down"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "My sister is getting married in 2 weeks!! She loves anything red in the kitchen. Thinking a dutch oven? Up to 150",
+          "time": "2026-09-10T10:03:48Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "cookware"
+          },
+          "time": "2026-09-10T10:03:50Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "cookware",
+            "query": "red dutch oven",
+            "max_price": 150
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Ember",
+                "price": 148,
+                "in_stock": false,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "red",
+                  "soups",
+                  "braising"
+                ]
+              },
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Slate",
+                "price": 148,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "soups",
+                  "braising"
+                ]
+              },
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Sage",
+                "price": 148,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "soups",
+                  "braising"
+                ]
+              },
+              {
+                "name": "Clay Tagine, 2.5 qt",
+                "price": 84,
+                "in_stock": true,
+                "tags": [
+                  "clay",
+                  "slow cooking",
+                  "stews"
+                ]
+              },
+              {
+                "name": "Tri-Ply Stainless Skillet, 10 in",
+                "price": 95,
+                "in_stock": true,
+                "tags": [
+                  "stainless",
+                  "everyday",
+                  "induction"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-10T10:03:51Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "A red Dutch oven is a gift she'll use for decades! Here's our Ember red, plus one more idea in case you want options.",
+        "items": [
+          {
+            "title": "Enameled Dutch Oven, 5.5 qt, Ember",
+            "subtitle": "$148.00 · In stock",
+            "details": {
+              "Price": "$148.00",
+              "Why": "Her favorite color"
+            },
+            "reason": "A deep red enamel that goes from stovetop to oven to table."
+          },
+          {
+            "title": "Clay Tagine, 2.5 qt",
+            "subtitle": "$84.00 · In stock",
+            "details": {
+              "Price": "$84.00",
+              "Why": "A showpiece for slow cooking"
+            },
+            "reason": "The cone-shaped lid keeps stews moist, and it looks beautiful on the table."
+          }
+        ]
+      },
+      "result": "Added Enameled Dutch Oven, 5.5 qt, Ember to cart. Cart showed: This item is out of stock."
+    },
+    {
+      "id": "t-0008",
+      "title": "Team housewarming gift, cocktail fan",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "first visit",
+        "occasion": "housewarming",
+        "budget": "Not given",
+        "recipient": "coworker"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "hi, our team is doing a group gift for a coworker who just bought a condo. she's really into cocktails and having people over",
+          "time": "2026-09-10T13:12:19Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "serveware"
+          },
+          "time": "2026-09-10T13:12:21Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "serveware",
+            "query": "cocktails entertaining"
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Copper Mule Mugs, set of 2",
+                "price": 52,
+                "in_stock": true,
+                "tags": [
+                  "copper",
+                  "cocktails",
+                  "bar"
+                ]
+              },
+              {
+                "name": "Olivewood Cheese Board with Two Knives",
+                "price": 58,
+                "in_stock": true,
+                "tags": [
+                  "cheese",
+                  "serving",
+                  "olivewood"
+                ]
+              },
+              {
+                "name": "Ceramic Olive Dish",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "olives",
+                  "small plates"
+                ]
+              },
+              {
+                "name": "Marble Salt Cellar",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "salt",
+                  "marble"
+                ]
+              },
+              {
+                "name": "Walnut Serving Tray",
+                "price": 74,
+                "in_stock": false,
+                "tags": [
+                  "serving",
+                  "walnut",
+                  "breakfast"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-10T13:12:22Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "A group gift for a host who loves cocktails, fun! These three work well together or on their own.",
+        "items": [
+          {
+            "title": "Copper Mule Mugs, set of 2",
+            "subtitle": "$52.00 · In stock",
+            "details": {
+              "Price": "$52.00",
+              "Why": "For her cocktail nights"
+            },
+            "reason": "Keeps drinks icy cold, and they look great on a bar cart."
+          },
+          {
+            "title": "Olivewood Cheese Board with Two Knives",
+            "subtitle": "$58.00 · In stock",
+            "details": {
+              "Price": "$58.00",
+              "Why": "For having people over"
+            },
+            "reason": "Snacks for guests while the drinks get made."
+          },
+          {
+            "title": "Ceramic Olive Dish",
+            "subtitle": "$22.00 · In stock",
+            "details": {
+              "Price": "$22.00",
+              "Why": "A small add-on"
+            },
+            "reason": "Two wells: one for olives, one for the pits."
+          }
+        ]
+      },
+      "result": "Added Copper Mule Mugs, set of 2 and Olivewood Cheese Board with Two Knives to cart ($110.00)"
+    },
+    {
+      "id": "t-0009",
+      "title": "Mom's birthday, tea lover, no mugs",
+      "metadata": {
+        "channel": "gift quiz",
+        "persona": "returning customer",
+        "occasion": "birthday",
+        "budget": "$25 to $50",
+        "recipient": "parent"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Occasion: Birthday\nBudget: $25 to $50\nFor: My mom\nAnything else? She drinks tea all day and loves pretty things. NO more mugs please, she has about 40 of them",
+          "time": "2026-09-10T17:55:07Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "coffee-and-tea"
+          },
+          "time": "2026-09-10T17:55:09Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "coffee-and-tea",
+            "query": "tea",
+            "max_price": 50
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Matcha Set (bowl, whisk, scoop)",
+                "price": 42,
+                "in_stock": true,
+                "tags": [
+                  "tea",
+                  "matcha"
+                ]
+              },
+              {
+                "name": "Loose Leaf Tea Infuser Mug",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "tea",
+                  "mug"
+                ]
+              },
+              {
+                "name": "Glass Cold Brew Pitcher",
+                "price": 32,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "cold brew",
+                  "iced tea"
+                ]
+              },
+              {
+                "name": "Speckled Stoneware Mugs, set of 4",
+                "price": 48,
+                "in_stock": true,
+                "tags": [
+                  "mugs",
+                  "stoneware"
+                ]
+              },
+              {
+                "name": "Stovetop Espresso Maker, 6 cup",
+                "price": 44,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "espresso"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-10T17:55:10Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "For an all-day tea drinker, here are three pretty picks under $50.",
+        "items": [
+          {
+            "title": "Matcha Set (bowl, whisk, scoop)",
+            "subtitle": "$42.00 · In stock",
+            "details": {
+              "Price": "$42.00",
+              "Why": "Something new to try"
+            },
+            "reason": "A handmade bowl and bamboo whisk for a calm cup of matcha."
+          },
+          {
+            "title": "Loose Leaf Tea Infuser Mug",
+            "subtitle": "$24.00 · In stock",
+            "details": {
+              "Price": "$24.00",
+              "Why": "For all-day tea"
+            },
+            "reason": "The steel basket lifts out, so she can brew loose tea right in her cup."
+          },
+          {
+            "title": "Glass Cold Brew Pitcher",
+            "subtitle": "$32.00 · In stock",
+            "details": {
+              "Price": "$32.00",
+              "Why": "For iced tea season"
+            },
+            "reason": "Brews a full pitcher of iced tea overnight in the fridge."
+          }
+        ]
+      },
+      "result": "Added Matcha Set (bowl, whisk, scoop) to cart ($42.00)"
+    },
+    {
+      "id": "t-0010",
+      "title": "10th anniversary, husband bakes bread",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "loyalty member",
+        "occasion": "anniversary",
+        "budget": "$100 to $200",
+        "recipient": "partner",
+        "feedback": "thumbs_up"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "10 year anniversary coming up (apparently tin or aluminum is the traditional gift?). My husband bakes bread every Sunday. Hoping to spend $100 to $150",
+          "time": "2026-09-11T09:41:26Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "bakeware"
+          },
+          "time": "2026-09-11T09:41:28Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "bakeware",
+            "query": "bread aluminum",
+            "max_price": 150
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Stoneware Bread Cloche",
+                "price": 72,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sourdough",
+                  "clay"
+                ]
+              },
+              {
+                "name": "Pullman Loaf Pan with Lid",
+                "price": 32,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sandwich loaf",
+                  "aluminized steel"
+                ]
+              },
+              {
+                "name": "Half Sheet Pans, set of 2",
+                "price": 36,
+                "in_stock": true,
+                "tags": [
+                  "cookies",
+                  "roasting",
+                  "aluminum"
+                ]
+              },
+              {
+                "name": "Wreath Bundt Pan",
+                "price": 44,
+                "in_stock": false,
+                "tags": [
+                  "cake",
+                  "cast aluminum",
+                  "holiday"
+                ]
+              },
+              {
+                "name": "Banneton Proofing Baskets, set of 2",
+                "price": 34,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sourdough",
+                  "proofing"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-11T09:41:29Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Happy 10th! All three together come to $140, and two of them even fit the tin and aluminum tradition.",
+        "items": [
+          {
+            "title": "Stoneware Bread Cloche",
+            "subtitle": "$72.00 · In stock",
+            "details": {
+              "Price": "$72.00",
+              "Why": "For his Sunday loaves"
+            },
+            "reason": "Traps steam like a bakery oven for a crackly crust."
+          },
+          {
+            "title": "Pullman Loaf Pan with Lid",
+            "subtitle": "$32.00 · In stock",
+            "details": {
+              "Price": "$32.00",
+              "Why": "Nods to the aluminum theme"
+            },
+            "reason": "Aluminized steel that bakes a perfectly square sandwich loaf."
+          },
+          {
+            "title": "Half Sheet Pans, set of 2",
+            "subtitle": "$36.00 · In stock",
+            "details": {
+              "Price": "$36.00",
+              "Why": "Also aluminum"
+            },
+            "reason": "Heavy pans that won't warp, for rolls, focaccia, and everything else."
+          }
+        ]
+      },
+      "result": "Added Stoneware Bread Cloche and Pullman Loaf Pan with Lid to cart ($104.00)"
+    },
+    {
+      "id": "t-0011",
+      "title": "Gift for someone who likes to cook",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "first visit",
+        "occasion": "birthday",
+        "budget": "$25 to $50",
+        "recipient": "coworker"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "looking for a gift for someone who likes to cook",
+          "time": "2026-09-11T14:26:51Z"
+        },
+        {
+          "role": "assistant",
+          "content": "I can help with that! Who's the gift for, and what do they like to cook most?",
+          "time": "2026-09-11T14:26:59Z"
+        },
+        {
+          "role": "user",
+          "content": "my boss, her birthday is monday. she makes a lot of italian food. dont want to spend more than 40 tho",
+          "time": "2026-09-11T14:28:24Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "tools"
+          },
+          "time": "2026-09-11T14:28:26Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "tools",
+            "query": "italian pasta"
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Hand-Crank Pasta Machine",
+                "price": 79,
+                "in_stock": true,
+                "tags": [
+                  "pasta",
+                  "fresh pasta"
+                ]
+              },
+              {
+                "name": "Ravioli Stamp Set",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "pasta",
+                  "ravioli"
+                ]
+              },
+              {
+                "name": "Pasta Drying Rack",
+                "price": 26,
+                "in_stock": false,
+                "tags": [
+                  "pasta"
+                ]
+              },
+              {
+                "name": "Fine Rasp Grater",
+                "price": 18,
+                "in_stock": true,
+                "tags": [
+                  "zester",
+                  "cheese",
+                  "citrus"
+                ]
+              },
+              {
+                "name": "Granite Mortar and Pestle",
+                "price": 44,
+                "in_stock": true,
+                "tags": [
+                  "spices",
+                  "pesto"
+                ]
+              },
+              {
+                "name": "Olivewood Spoon Set of 3",
+                "price": 34,
+                "in_stock": true,
+                "tags": [
+                  "utensils",
+                  "olivewood"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-11T14:28:27Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "An Italian home cook, perfect. Here are three picks for her kitchen.",
+        "items": [
+          {
+            "title": "Hand-Crank Pasta Machine",
+            "subtitle": "$79.00 · In stock",
+            "details": {
+              "Price": "$79.00",
+              "Why": "For fresh pasta nights"
+            },
+            "reason": "Rolls dough from thick lasagna sheets to thin angel hair."
+          },
+          {
+            "title": "Ravioli Stamp Set",
+            "subtitle": "$22.00 · In stock",
+            "details": {
+              "Price": "$22.00",
+              "Why": "A fun weekend project"
+            },
+            "reason": "Cuts and seals ravioli in one press."
+          },
+          {
+            "title": "Fine Rasp Grater",
+            "subtitle": "$18.00 · In stock",
+            "details": {
+              "Price": "$18.00",
+              "Why": "For a snowfall of parmesan"
+            },
+            "reason": "Also zests lemons for pasta and desserts."
+          }
+        ]
+      },
+      "result": "Added Ravioli Stamp Set to cart ($22.00)"
+    },
+    {
+      "id": "t-0012",
+      "title": "Housewarming for a soup and stew couple, $150",
+      "metadata": {
+        "channel": "mobile app",
+        "persona": "returning customer",
+        "occasion": "housewarming",
+        "budget": "$100 to $200",
+        "recipient": "sibling"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "brother & his wife just moved in. they cook a ton of soups and stews, esp now that it's getting colder. budget $150",
+          "time": "2026-09-11T20:10:14Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "cookware"
+          },
+          "time": "2026-09-11T20:10:16Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "cookware",
+            "query": "soup stew",
+            "max_price": 150
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Slate",
+                "price": 148,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "soups",
+                  "braising"
+                ]
+              },
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Ember",
+                "price": 148,
+                "in_stock": false,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "red",
+                  "soups",
+                  "braising"
+                ]
+              },
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Sage",
+                "price": 148,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "soups",
+                  "braising"
+                ]
+              },
+              {
+                "name": "Clay Tagine, 2.5 qt",
+                "price": 84,
+                "in_stock": true,
+                "tags": [
+                  "clay",
+                  "slow cooking",
+                  "stews"
+                ]
+              },
+              {
+                "name": "Pasta Pot with Strainer Insert, 8 qt",
+                "price": 88,
+                "in_stock": true,
+                "tags": [
+                  "pasta",
+                  "stainless",
+                  "soups"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-11T20:10:17Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Soup season is here! A good Dutch oven is the gift they'll use most, so here are a couple of options.",
+        "items": [
+          {
+            "title": "Enameled Dutch Oven, 5.5 qt, Slate",
+            "subtitle": "$148.00 · In stock",
+            "details": {
+              "Price": "$148.00",
+              "Why": "Made for soups and stews"
+            },
+            "reason": "Holds heat for hours, and it fits a double batch of chili."
+          },
+          {
+            "title": "Enameled Dutch Oven, 5.5 qt, Ember",
+            "subtitle": "$148.00 · Out of stock",
+            "details": {
+              "Price": "$148.00",
+              "Why": "Same pot, warmer color"
+            },
+            "reason": "If they'd like a pop of color, the red finish is a showstopper."
+          },
+          {
+            "title": "Clay Tagine, 2.5 qt",
+            "subtitle": "$84.00 · In stock",
+            "details": {
+              "Price": "$84.00",
+              "Why": "For slow-cooked stews"
+            },
+            "reason": "The cone lid keeps stews tender and moist."
+          }
+        ]
+      },
+      "result": "Added Enameled Dutch Oven, 5.5 qt, Slate to cart ($148.00)"
+    },
+    {
+      "id": "t-0013",
+      "title": "Teacher thank you under $25",
+      "metadata": {
+        "channel": "gift quiz",
+        "persona": "first visit",
+        "occasion": "thank you",
+        "budget": "Under $25",
+        "recipient": "teacher"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Occasion: Thank you\nBudget: Under $25\nFor: My kid's teacher\nAnything else? She mentioned she loves baking with her own kids",
+          "time": "2026-09-12T10:18:39Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "bakeware"
+          },
+          "time": "2026-09-12T10:18:41Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "bakeware",
+            "query": "baking",
+            "max_price": 25
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Silicone Baking Mats, set of 2",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "cookies",
+                  "reusable"
+                ]
+              },
+              {
+                "name": "Bread Lame and Bench Scraper Set",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sourdough",
+                  "scoring"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-12T10:18:42Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "What a thoughtful thank you! Both of these are under $25 and easy to use with kids.",
+        "items": [
+          {
+            "title": "Silicone Baking Mats, set of 2",
+            "subtitle": "$24.00 · In stock",
+            "details": {
+              "Price": "$24.00",
+              "Why": "For cookie days with her kids"
+            },
+            "reason": "Nothing sticks, and cleanup is a quick rinse."
+          },
+          {
+            "title": "Bread Lame and Bench Scraper Set",
+            "subtitle": "$22.00 · In stock",
+            "details": {
+              "Price": "$22.00",
+              "Why": "Handy for any dough"
+            },
+            "reason": "The scraper cuts cookie dough and cleans the counter in one pass."
+          }
+        ]
+      },
+      "result": "Added Silicone Baking Mats, set of 2 to cart ($24.00)"
+    },
+    {
+      "id": "t-0014",
+      "title": "Anniversary, new pour-over coffee fan",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "returning customer",
+        "occasion": "anniversary",
+        "budget": "$50 to $100",
+        "recipient": "partner"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "my husband just got into pour over coffee and he is very serious about it now lol. anniversary gift under 100?",
+          "time": "2026-09-12T13:33:02Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "coffee-and-tea"
+          },
+          "time": "2026-09-12T13:33:04Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "coffee-and-tea",
+            "query": "pour-over coffee",
+            "max_price": 100
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Hand Burr Coffee Grinder",
+                "price": 64,
+                "in_stock": false,
+                "tags": [
+                  "coffee",
+                  "grinder"
+                ]
+              },
+              {
+                "name": "Gooseneck Kettle, 1 L, copper finish",
+                "price": 78,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "pour-over",
+                  "kettle",
+                  "copper"
+                ]
+              },
+              {
+                "name": "Ceramic Pour-Over Dripper with 100 Filters",
+                "price": 26,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "pour-over"
+                ]
+              },
+              {
+                "name": "Glass Cold Brew Pitcher",
+                "price": 32,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "cold brew",
+                  "iced tea"
+                ]
+              },
+              {
+                "name": "Stovetop Espresso Maker, 6 cup",
+                "price": 44,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "espresso"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-12T13:33:05Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Fresh-ground beans are the biggest upgrade for a pour-over fan, so I'd start with a grinder.",
+        "items": [
+          {
+            "title": "Hand Burr Coffee Grinder",
+            "subtitle": "$64.00 · Out of stock",
+            "details": {
+              "Price": "$64.00",
+              "Why": "The biggest upgrade"
+            },
+            "reason": "An even grind makes every cup taste cleaner."
+          },
+          {
+            "title": "Gooseneck Kettle, 1 L, copper finish",
+            "subtitle": "$78.00 · In stock",
+            "details": {
+              "Price": "$78.00",
+              "Why": "For a steady pour"
+            },
+            "reason": "The slim spout gives him full control over the pour."
+          },
+          {
+            "title": "Ceramic Pour-Over Dripper with 100 Filters",
+            "subtitle": "$26.00 · In stock",
+            "details": {
+              "Price": "$26.00",
+              "Why": "A spare for travel"
+            },
+            "reason": "Light enough to pack for weekends away."
+          }
+        ]
+      },
+      "result": "Added Gooseneck Kettle, 1 L, copper finish to cart ($78.00)"
+    },
+    {
+      "id": "t-0015",
+      "title": "Self gift: upgrade from a nonstick pan",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "loyalty member",
+        "occasion": "just because",
+        "budget": "$50 to $100",
+        "recipient": "self",
+        "feedback": "thumbs_up"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "ok this one's for me lol. I make stir fry like 4 nights a week in a sad nonstick pan. what should I get? under $100",
+          "time": "2026-09-12T18:47:55Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "cookware"
+          },
+          "time": "2026-09-12T18:47:57Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "cookware",
+            "query": "stir fry wok",
+            "max_price": 100
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Carbon Steel Wok, 14 in",
+                "price": 68,
+                "in_stock": true,
+                "tags": [
+                  "wok",
+                  "stir fry",
+                  "carbon steel"
+                ]
+              },
+              {
+                "name": "Tri-Ply Stainless Skillet, 10 in",
+                "price": 95,
+                "in_stock": true,
+                "tags": [
+                  "stainless",
+                  "everyday",
+                  "induction"
+                ]
+              },
+              {
+                "name": "Cast Iron Skillet, 12 in",
+                "price": 54,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "searing",
+                  "everyday"
+                ]
+              },
+              {
+                "name": "Nonstick Crepe Pan, 10 in",
+                "price": 46,
+                "in_stock": false,
+                "tags": [
+                  "crepes",
+                  "breakfast",
+                  "nonstick"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-12T18:47:58Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Treat yourself! For stir fry four nights a week, a carbon steel wok is the real upgrade.",
+        "items": [
+          {
+            "title": "Carbon Steel Wok, 14 in",
+            "subtitle": "$68.00 · In stock",
+            "details": {
+              "Price": "$68.00",
+              "Why": "Made for stir fry"
+            },
+            "reason": "Gets screaming hot and builds a slick seasoning the more you cook."
+          },
+          {
+            "title": "Tri-Ply Stainless Skillet, 10 in",
+            "subtitle": "$95.00 · In stock",
+            "details": {
+              "Price": "$95.00",
+              "Why": "For everything else"
+            },
+            "reason": "Great for searing, and it goes in the dishwasher."
+          }
+        ]
+      },
+      "result": "Added Carbon Steel Wok, 14 in to cart ($68.00)"
+    },
+    {
+      "id": "t-0016",
+      "title": "Birthday gift, recipient unclear",
+      "metadata": {
+        "channel": "mobile app",
+        "persona": "first visit",
+        "occasion": "birthday",
+        "budget": "$25 to $50",
+        "recipient": "grandparent"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "whats a good gift",
+          "time": "2026-09-13T09:05:12Z"
+        },
+        {
+          "role": "assistant",
+          "content": "Happy to help you find one! Who's it for, and is there anything they love to cook or eat?",
+          "time": "2026-09-13T09:05:17Z"
+        },
+        {
+          "role": "user",
+          "content": "my grandpa, he still makes pancakes for the whole family every sunday. it's his birthday. around 50",
+          "time": "2026-09-13T09:06:57Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "cookware"
+          },
+          "time": "2026-09-13T09:06:59Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "cookware",
+            "query": "pancakes breakfast",
+            "max_price": 50
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Cast Iron Griddle, reversible",
+                "price": 49,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "pancakes",
+                  "breakfast"
+                ]
+              },
+              {
+                "name": "Nonstick Crepe Pan, 10 in",
+                "price": 46,
+                "in_stock": false,
+                "tags": [
+                  "crepes",
+                  "breakfast",
+                  "nonstick"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-13T09:07:00Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "What a great tradition! This one is made for a big Sunday pancake breakfast.",
+        "items": [
+          {
+            "title": "Cast Iron Griddle, reversible",
+            "subtitle": "$49.00 · In stock",
+            "details": {
+              "Price": "$49.00",
+              "Why": "Room for six pancakes at once"
+            },
+            "reason": "Covers two burners, so he can feed the whole family in fewer batches."
+          }
+        ]
+      },
+      "result": "Added Cast Iron Griddle, reversible to cart ($49.00)"
+    },
+    {
+      "id": "t-0017",
+      "title": "Baker with celiac, pies and cakes, under $60",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "returning customer",
+        "occasion": "just because",
+        "budget": "$50 to $100",
+        "recipient": "sibling"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "My sister in law bakes constantly but she has celiac so nothing bread related please. She mostly does pies and cakes. Under $60?",
+          "time": "2026-09-13T12:20:44Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "bakeware"
+          },
+          "time": "2026-09-13T12:20:46Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "bakeware",
+            "query": "pie cake",
+            "max_price": 60
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Fluted Ceramic Pie Dish, 9.5 in",
+                "price": 38,
+                "in_stock": true,
+                "tags": [
+                  "pie",
+                  "ceramic",
+                  "fall baking"
+                ]
+              },
+              {
+                "name": "Springform Pan, 9 in",
+                "price": 30,
+                "in_stock": true,
+                "tags": [
+                  "cake",
+                  "cheesecake"
+                ]
+              },
+              {
+                "name": "Wreath Bundt Pan",
+                "price": 44,
+                "in_stock": false,
+                "tags": [
+                  "cake",
+                  "cast aluminum",
+                  "holiday"
+                ]
+              },
+              {
+                "name": "Madeleine Pan, 12 shells",
+                "price": 28,
+                "in_stock": true,
+                "tags": [
+                  "cake",
+                  "french",
+                  "cookies"
+                ]
+              },
+              {
+                "name": "Pullman Loaf Pan with Lid",
+                "price": 32,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sandwich loaf",
+                  "aluminized steel"
+                ]
+              },
+              {
+                "name": "Ceramic Ramekins, set of 6",
+                "price": 36,
+                "in_stock": true,
+                "tags": [
+                  "custard",
+                  "souffle",
+                  "ceramic"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-13T12:20:47Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "A pie and cake baker, love it. Here are three pans she'll use all fall.",
+        "items": [
+          {
+            "title": "Fluted Ceramic Pie Dish, 9.5 in",
+            "subtitle": "$38.00 · In stock",
+            "details": {
+              "Price": "$38.00",
+              "Why": "For her pies"
+            },
+            "reason": "Deep enough for a tall apple pie, and pretty enough to serve from."
+          },
+          {
+            "title": "Springform Pan, 9 in",
+            "subtitle": "$30.00 · In stock",
+            "details": {
+              "Price": "$30.00",
+              "Why": "For cheesecakes and tortes"
+            },
+            "reason": "The side unlatches, so cakes come out clean every time."
+          },
+          {
+            "title": "Pullman Loaf Pan with Lid",
+            "subtitle": "$32.00 · In stock",
+            "details": {
+              "Price": "$32.00",
+              "Why": "For weekend baking"
+            },
+            "reason": "Bakes a perfectly square sandwich loaf, and the lid keeps the top flat."
+          }
+        ]
+      },
+      "result": "Added Fluted Ceramic Pie Dish, 9.5 in to cart ($38.00)"
+    },
+    {
+      "id": "t-0018",
+      "title": "Retirement gift for a gardener",
+      "metadata": {
+        "channel": "gift quiz",
+        "persona": "first visit",
+        "occasion": "retirement",
+        "budget": "$50 to $100",
+        "recipient": "coworker"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Occasion: Retirement\nBudget: $50 to $100\nFor: A coworker\nAnything else? Ray is retiring after 31 years. He talks about his vegetable garden nonstop and says he wants to cook more.",
+          "time": "2026-09-13T16:02:31Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "tools"
+          },
+          "time": "2026-09-13T16:02:33Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "tools",
+            "query": "garden herbs cooking",
+            "max_price": 100
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Granite Mortar and Pestle",
+                "price": 44,
+                "in_stock": true,
+                "tags": [
+                  "spices",
+                  "pesto"
+                ]
+              },
+              {
+                "name": "Herb Keeper",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "herbs",
+                  "storage"
+                ]
+              },
+              {
+                "name": "Olivewood Spoon Set of 3",
+                "price": 34,
+                "in_stock": true,
+                "tags": [
+                  "utensils",
+                  "olivewood"
+                ]
+              },
+              {
+                "name": "Beechwood Salt and Pepper Mills",
+                "price": 48,
+                "in_stock": true,
+                "tags": [
+                  "salt",
+                  "pepper",
+                  "grinder"
+                ]
+              },
+              {
+                "name": "Fine Rasp Grater",
+                "price": 18,
+                "in_stock": true,
+                "tags": [
+                  "zester",
+                  "cheese",
+                  "citrus"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-13T16:02:34Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Congrats to Ray! These turn his garden harvest into dinner, and all three together come to $100.",
+        "items": [
+          {
+            "title": "Granite Mortar and Pestle",
+            "subtitle": "$44.00 · In stock",
+            "details": {
+              "Price": "$44.00",
+              "Why": "For pesto from his own basil"
+            },
+            "reason": "Heavy granite that crushes herbs and garlic in seconds."
+          },
+          {
+            "title": "Herb Keeper",
+            "subtitle": "$22.00 · In stock",
+            "details": {
+              "Price": "$22.00",
+              "Why": "Keeps his harvest fresh"
+            },
+            "reason": "Keeps cut herbs fresh in the fridge for up to two weeks."
+          },
+          {
+            "title": "Olivewood Spoon Set of 3",
+            "subtitle": "$34.00 · In stock",
+            "details": {
+              "Price": "$34.00",
+              "Why": "For all that new cooking"
+            },
+            "reason": "Smooth olivewood that won't scratch his pans."
+          }
+        ]
+      },
+      "result": "Added Granite Mortar and Pestle and Herb Keeper to cart ($66.00)"
+    },
+    {
+      "id": "t-0019",
+      "title": "Wedding gift after the registry sold out",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "loyalty member",
+        "occasion": "wedding",
+        "budget": "$50 to $100",
+        "recipient": "couple"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Friends' wedding is in October and everything on their registry is already gone. Budget is $100, could stretch a little if it's really good. They both love to cook.",
+          "time": "2026-09-14T10:30:09Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "cookware"
+          },
+          "time": "2026-09-14T10:30:11Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "cookware",
+            "query": "cooking couple",
+            "max_price": 150
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Sage",
+                "price": 148,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "soups",
+                  "braising"
+                ]
+              },
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Slate",
+                "price": 148,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "soups",
+                  "braising"
+                ]
+              },
+              {
+                "name": "Tri-Ply Stainless Skillet, 10 in",
+                "price": 95,
+                "in_stock": true,
+                "tags": [
+                  "stainless",
+                  "everyday",
+                  "induction"
+                ]
+              },
+              {
+                "name": "Pasta Pot with Strainer Insert, 8 qt",
+                "price": 88,
+                "in_stock": true,
+                "tags": [
+                  "pasta",
+                  "stainless",
+                  "soups"
+                ]
+              },
+              {
+                "name": "Clay Tagine, 2.5 qt",
+                "price": 84,
+                "in_stock": true,
+                "tags": [
+                  "clay",
+                  "slow cooking",
+                  "stews"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-14T10:30:12Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Two cooks will get years out of any of these. The first is a stretch, but it's the one they'll pass down.",
+        "items": [
+          {
+            "title": "Enameled Dutch Oven, 5.5 qt, Sage",
+            "subtitle": "$148.00 · In stock",
+            "details": {
+              "Price": "$148.00",
+              "Why": "An heirloom piece"
+            },
+            "reason": "Worth the stretch: it goes from stovetop to oven to table."
+          },
+          {
+            "title": "Tri-Ply Stainless Skillet, 10 in",
+            "subtitle": "$95.00 · In stock",
+            "details": {
+              "Price": "$95.00",
+              "Why": "An everyday workhorse"
+            },
+            "reason": "Sears like a restaurant pan and cleans up in the dishwasher."
+          },
+          {
+            "title": "Clay Tagine, 2.5 qt",
+            "subtitle": "$84.00 · In stock",
+            "details": {
+              "Price": "$84.00",
+              "Why": "For slow Sunday dinners"
+            },
+            "reason": "A beautiful pot for stews that goes right to the table."
+          }
+        ]
+      },
+      "result": "Added Tri-Ply Stainless Skillet, 10 in to cart ($95.00)"
+    },
+    {
+      "id": "t-0020",
+      "title": "Host gift, friend doesn't drink",
+      "metadata": {
+        "channel": "mobile app",
+        "persona": "returning customer",
+        "occasion": "host gift",
+        "budget": "$25 to $50",
+        "recipient": "friend"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "dinner party at my friend's on saturday. she doesn't drink so no wine stuff. something nice around $30 to $40?",
+          "time": "2026-09-14T14:48:27Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "serveware"
+          },
+          "time": "2026-09-14T14:48:29Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "serveware",
+            "query": "host gift",
+            "max_price": 40
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Hand-Thrown Small Bowls, set of 4",
+                "price": 38,
+                "in_stock": true,
+                "tags": [
+                  "ceramic",
+                  "handmade",
+                  "small bowls"
+                ]
+              },
+              {
+                "name": "Linen-Lined Bread Basket",
+                "price": 30,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "serving",
+                  "brunch"
+                ]
+              },
+              {
+                "name": "Olivewood Salad Servers",
+                "price": 26,
+                "in_stock": true,
+                "tags": [
+                  "salad",
+                  "olivewood"
+                ]
+              },
+              {
+                "name": "Ceramic Butter Crock",
+                "price": 28,
+                "in_stock": true,
+                "tags": [
+                  "butter",
+                  "ceramic"
+                ]
+              },
+              {
+                "name": "Marble Salt Cellar",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "salt",
+                  "marble"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-14T14:48:30Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Here are three host gifts she'll use long after the party, no wine required.",
+        "items": [
+          {
+            "title": "Hand-Thrown Small Bowls, set of 4",
+            "subtitle": "$38.00 · In stock",
+            "details": {
+              "Price": "$38.00",
+              "Why": "Handmade and useful"
+            },
+            "reason": "Just right for dips, nuts, or dessert."
+          },
+          {
+            "title": "Linen-Lined Bread Basket",
+            "subtitle": "$30.00 · In stock",
+            "details": {
+              "Price": "$30.00",
+              "Why": "For the dinner table"
+            },
+            "reason": "Keeps rolls warm, and the linen liner washes easily."
+          },
+          {
+            "title": "Olivewood Salad Servers",
+            "subtitle": "$26.00 · In stock",
+            "details": {
+              "Price": "$26.00",
+              "Why": "An easy pick"
+            },
+            "reason": "Every host needs a good pair, and these look lovely on the table."
+          }
+        ]
+      },
+      "result": "Added Hand-Thrown Small Bowls, set of 4 to cart ($38.00)"
+    },
+    {
+      "id": "t-0021",
+      "title": "Roommate birthday, into matcha",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "first visit",
+        "occasion": "birthday",
+        "budget": "$25 to $50",
+        "recipient": "friend"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "roommate's bday is next week and she's been super into matcha lately. like $45?",
+          "time": "2026-09-15T11:15:50Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "serveware"
+          },
+          "time": "2026-09-15T11:15:52Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "serveware",
+            "query": "matcha bowl",
+            "max_price": 45
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Hand-Thrown Small Bowls, set of 4",
+                "price": 38,
+                "in_stock": true,
+                "tags": [
+                  "ceramic",
+                  "handmade",
+                  "small bowls"
+                ]
+              },
+              {
+                "name": "Ceramic Olive Dish",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "olives",
+                  "small plates"
+                ]
+              },
+              {
+                "name": "Ceramic Butter Crock",
+                "price": 28,
+                "in_stock": true,
+                "tags": [
+                  "butter",
+                  "ceramic"
+                ]
+              },
+              {
+                "name": "Marble Salt Cellar",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "salt",
+                  "marble"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-15T11:15:53Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "A matcha fan! These handmade pieces fit right into her tea routine.",
+        "items": [
+          {
+            "title": "Hand-Thrown Small Bowls, set of 4",
+            "subtitle": "$38.00 · In stock",
+            "details": {
+              "Price": "$38.00",
+              "Why": "For her matcha habit"
+            },
+            "reason": "Handmade bowls sized just right for whisking a cup of matcha."
+          },
+          {
+            "title": "Ceramic Olive Dish",
+            "subtitle": "$22.00 · In stock",
+            "details": {
+              "Price": "$22.00",
+              "Why": "For tea-time snacks"
+            },
+            "reason": "A cute little dish for cookies or mochi with her tea."
+          }
+        ]
+      },
+      "result": "Left without adding anything"
+    },
+    {
+      "id": "t-0022",
+      "title": "Tiny studio housewarming under $25",
+      "metadata": {
+        "channel": "gift quiz",
+        "persona": "returning customer",
+        "occasion": "housewarming",
+        "budget": "Under $25",
+        "recipient": "friend"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Occasion: Housewarming\nBudget: Under $25\nFor: A friend\nAnything else? Just moved into a tiny studio. Loves cooking but has zero counter space",
+          "time": "2026-09-15T15:40:13Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "tools"
+          },
+          "time": "2026-09-15T15:40:15Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "tools",
+            "query": "small space",
+            "max_price": 25
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Fine Rasp Grater",
+                "price": 18,
+                "in_stock": true,
+                "tags": [
+                  "zester",
+                  "cheese",
+                  "citrus"
+                ]
+              },
+              {
+                "name": "Herb Keeper",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "herbs",
+                  "storage"
+                ]
+              },
+              {
+                "name": "Ravioli Stamp Set",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "pasta",
+                  "ravioli"
+                ]
+              },
+              {
+                "name": "Chain Mail Scrubber",
+                "price": 16,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "cleaning"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-15T15:40:16Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Small kitchen, big cook. Both of these take up almost no room.",
+        "items": [
+          {
+            "title": "Fine Rasp Grater",
+            "subtitle": "$18.00 · In stock",
+            "details": {
+              "Price": "$18.00",
+              "Why": "Tiny tool, big payoff"
+            },
+            "reason": "Zests, grates cheese, and minces garlic, then slips into a drawer."
+          },
+          {
+            "title": "Herb Keeper",
+            "subtitle": "$22.00 · In stock",
+            "details": {
+              "Price": "$22.00",
+              "Why": "Lives in the fridge door"
+            },
+            "reason": "Keeps herbs fresh for two weeks without touching the counter."
+          }
+        ]
+      },
+      "result": "Added Fine Rasp Grater to cart ($18.00)"
+    },
+    {
+      "id": "t-0023",
+      "title": "Sister's birthday, fresh pasta, about $120",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "returning customer",
+        "occasion": "birthday",
+        "budget": "$100 to $200",
+        "recipient": "sibling",
+        "feedback": "thumbs_up"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "my sister just got really into making fresh pasta. her birthday is next week, budget around $120",
+          "time": "2026-09-16T09:12:36Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "tools"
+          },
+          "time": "2026-09-16T09:12:38Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "tools",
+            "query": "fresh pasta",
+            "max_price": 120
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Hand-Crank Pasta Machine",
+                "price": 79,
+                "in_stock": true,
+                "tags": [
+                  "pasta",
+                  "fresh pasta"
+                ]
+              },
+              {
+                "name": "Ravioli Stamp Set",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "pasta",
+                  "ravioli"
+                ]
+              },
+              {
+                "name": "Pasta Drying Rack",
+                "price": 26,
+                "in_stock": false,
+                "tags": [
+                  "pasta"
+                ]
+              },
+              {
+                "name": "Fine Rasp Grater",
+                "price": 18,
+                "in_stock": true,
+                "tags": [
+                  "zester",
+                  "cheese",
+                  "citrus"
+                ]
+              },
+              {
+                "name": "Olivewood Spoon Set of 3",
+                "price": 34,
+                "in_stock": true,
+                "tags": [
+                  "utensils",
+                  "olivewood"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-16T09:12:39Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "A fresh pasta starter kit! All three together come to $119.",
+        "items": [
+          {
+            "title": "Hand-Crank Pasta Machine",
+            "subtitle": "$79.00 · In stock",
+            "details": {
+              "Price": "$79.00",
+              "Why": "The heart of pasta night"
+            },
+            "reason": "Rolls sheets from thick lasagna to thin angel hair."
+          },
+          {
+            "title": "Ravioli Stamp Set",
+            "subtitle": "$22.00 · In stock",
+            "details": {
+              "Price": "$22.00",
+              "Why": "Her next project"
+            },
+            "reason": "Cuts and seals ravioli in one press."
+          },
+          {
+            "title": "Fine Rasp Grater",
+            "subtitle": "$18.00 · In stock",
+            "details": {
+              "Price": "$18.00",
+              "Why": "To finish every plate"
+            },
+            "reason": "For fluffy parmesan over her fresh noodles."
+          }
+        ]
+      },
+      "result": "Added Hand-Crank Pasta Machine, Ravioli Stamp Set, and Fine Rasp Grater to cart ($119.00)"
+    },
+    {
+      "id": "t-0024",
+      "title": "Thank you gift, recipient unclear",
+      "metadata": {
+        "channel": "mobile app",
+        "persona": "first visit",
+        "occasion": "thank you",
+        "budget": "$25 to $50",
+        "recipient": "other",
+        "feedback": "thumbs_up"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "I need a thank you gift",
+          "time": "2026-09-16T13:25:58Z"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Who's it for, and do they like to cook, bake, or host?",
+          "time": "2026-09-16T13:26:03Z"
+        },
+        {
+          "role": "user",
+          "content": "the nurse who took care of my mom after her surgery. no idea what she's into, sorry. under 50",
+          "time": "2026-09-16T13:27:39Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "linens"
+          },
+          "time": "2026-09-16T13:27:41Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "linens",
+            "query": "thank you gift",
+            "max_price": 50
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Linen Tea Towels, set of 3",
+                "price": 32,
+                "in_stock": true,
+                "tags": [
+                  "towels",
+                  "linen"
+                ]
+              },
+              {
+                "name": "Linen Napkins, set of 4",
+                "price": 36,
+                "in_stock": true,
+                "tags": [
+                  "napkins",
+                  "linen",
+                  "table"
+                ]
+              },
+              {
+                "name": "Quilted Oven Mitts, pair",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "oven mitts",
+                  "baking"
+                ]
+              },
+              {
+                "name": "Linen Table Runner",
+                "price": 42,
+                "in_stock": false,
+                "tags": [
+                  "table",
+                  "linen"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-16T13:27:42Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "What a kind thing to do. These are useful in any kitchen, whatever she likes to cook.",
+        "items": [
+          {
+            "title": "Linen Tea Towels, set of 3",
+            "subtitle": "$32.00 · In stock",
+            "details": {
+              "Price": "$32.00",
+              "Why": "Useful for anyone"
+            },
+            "reason": "Soft stonewashed linen that gets better with every wash."
+          },
+          {
+            "title": "Linen Napkins, set of 4",
+            "subtitle": "$36.00 · In stock",
+            "details": {
+              "Price": "$36.00",
+              "Why": "A small everyday luxury"
+            },
+            "reason": "Makes a weeknight dinner feel a little special."
+          },
+          {
+            "title": "Quilted Oven Mitts, pair",
+            "subtitle": "$24.00 · In stock",
+            "details": {
+              "Price": "$24.00",
+              "Why": "Safe, practical pick"
+            },
+            "reason": "Thick quilting that protects up to 450 degrees."
+          }
+        ]
+      },
+      "result": "Added Linen Tea Towels, set of 3 to cart ($32.00)"
+    },
+    {
+      "id": "t-0025",
+      "title": "Asks if the store sells air fryers",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "loyalty member",
+        "occasion": "birthday",
+        "budget": "Not given",
+        "recipient": "partner",
+        "feedback": "thumbs_down"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Does Copper & Clay sell air fryers? My wife keeps hinting she wants one for her birthday",
+          "time": "2026-09-16T19:58:21Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "cookware"
+          },
+          "time": "2026-09-16T19:58:23Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "cookware",
+            "query": "air fryer"
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Cast Iron Skillet, 12 in",
+                "price": 54,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "searing",
+                  "everyday"
+                ]
+              },
+              {
+                "name": "Carbon Steel Wok, 14 in",
+                "price": 68,
+                "in_stock": true,
+                "tags": [
+                  "wok",
+                  "stir fry",
+                  "carbon steel"
+                ]
+              },
+              {
+                "name": "Tri-Ply Stainless Skillet, 10 in",
+                "price": 95,
+                "in_stock": true,
+                "tags": [
+                  "stainless",
+                  "everyday",
+                  "induction"
+                ]
+              },
+              {
+                "name": "Cast Iron Grill Pan, 11 in",
+                "price": 58,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "grilling"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-16T19:58:24Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "We don't carry air fryers, sorry! If she loves crispy food, these get you close in a regular oven or on the stove.",
+        "items": [
+          {
+            "title": "Cast Iron Skillet, 12 in",
+            "subtitle": "$54.00 · In stock",
+            "details": {
+              "Price": "$54.00",
+              "Why": "Crispy without the gadget"
+            },
+            "reason": "Roasts potatoes and wings with a real crust in a hot oven."
+          },
+          {
+            "title": "Carbon Steel Wok, 14 in",
+            "subtitle": "$68.00 · In stock",
+            "details": {
+              "Price": "$68.00",
+              "Why": "For quick, crispy stir fry"
+            },
+            "reason": "Heats fast for a crisp sear on vegetables."
+          }
+        ]
+      },
+      "result": "Left without adding anything"
+    },
+    {
+      "id": "t-0026",
+      "title": "Farewell gift for an office baker",
+      "metadata": {
+        "channel": "gift quiz",
+        "persona": "returning customer",
+        "occasion": "farewell",
+        "budget": "$50 to $100",
+        "recipient": "coworker"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Occasion: Farewell\nBudget: $50 to $100\nFor: A coworker\nAnything else? Maya bakes for the whole office every Friday. She's moving to Denver next month.",
+          "time": "2026-09-17T10:44:04Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "linens"
+          },
+          "time": "2026-09-17T10:44:06Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "linens",
+            "query": "baking apron",
+            "max_price": 100
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Waxed Canvas Apron, rust",
+                "price": 58,
+                "in_stock": true,
+                "tags": [
+                  "apron",
+                  "canvas"
+                ]
+              },
+              {
+                "name": "Waxed Canvas Apron, forest",
+                "price": 58,
+                "in_stock": true,
+                "tags": [
+                  "apron",
+                  "canvas"
+                ]
+              },
+              {
+                "name": "Quilted Oven Mitts, pair",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "oven mitts",
+                  "baking"
+                ]
+              },
+              {
+                "name": "Linen Tea Towels, set of 3",
+                "price": 32,
+                "in_stock": true,
+                "tags": [
+                  "towels",
+                  "linen"
+                ]
+              },
+              {
+                "name": "Kids' Apron and Chef Hat",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "kids",
+                  "apron"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-17T10:44:07Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "A proper send-off for your Friday baker! She will think of the office every time she uses these.",
+        "items": [
+          {
+            "title": "Waxed Canvas Apron, rust",
+            "subtitle": "$58.00 · In stock",
+            "details": {
+              "Price": "$58.00",
+              "Why": "For her Friday bakes"
+            },
+            "reason": "Tough waxed canvas with deep pockets and leather straps."
+          },
+          {
+            "title": "Quilted Oven Mitts, pair",
+            "subtitle": "$24.00 · In stock",
+            "details": {
+              "Price": "$24.00",
+              "Why": "Every baker needs good mitts"
+            },
+            "reason": "Thick quilting for pulling hot trays from the oven."
+          },
+          {
+            "title": "Waxed Canvas Apron, forest",
+            "subtitle": "$58.00 · In stock",
+            "details": {
+              "Price": "$58.00",
+              "Why": "If rust isn't her color"
+            },
+            "reason": "The same apron in a deep green that hides flour well."
+          }
+        ]
+      },
+      "result": "Added Waxed Canvas Apron, rust to cart ($58.00)"
+    },
+    {
+      "id": "t-0027",
+      "title": "Grandma who bakes bread, request in Spanish",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "first visit",
+        "occasion": "birthday",
+        "budget": "$25 to $50",
+        "recipient": "grandparent"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Hola! Busco un regalo para mi abuela, cumple 80 años y le encanta hacer pan casero. Unos 40 dólares máximo.",
+          "time": "2026-09-17T13:09:47Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "bakeware"
+          },
+          "time": "2026-09-17T13:09:49Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "bakeware",
+            "query": "pan casero bread",
+            "max_price": 40
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Banneton Proofing Baskets, set of 2",
+                "price": 34,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sourdough",
+                  "proofing"
+                ]
+              },
+              {
+                "name": "Pullman Loaf Pan with Lid",
+                "price": 32,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sandwich loaf",
+                  "aluminized steel"
+                ]
+              },
+              {
+                "name": "Bread Lame and Bench Scraper Set",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sourdough",
+                  "scoring"
+                ]
+              },
+              {
+                "name": "Half Sheet Pans, set of 2",
+                "price": 36,
+                "in_stock": true,
+                "tags": [
+                  "cookies",
+                  "roasting",
+                  "aluminum"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-17T13:09:50Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "¡Qué lindo regalo! Estas tres opciones cuestan menos de $40 y son perfectas para alguien que hace pan en casa.",
+        "items": [
+          {
+            "title": "Banneton Proofing Baskets, set of 2",
+            "subtitle": "$34.00 · Disponible",
+            "details": {
+              "Price": "$34.00",
+              "Why": "Para su pan de cada semana"
+            },
+            "reason": "Dan forma a la masa mientras leva y dejan el clásico dibujo en espiral."
+          },
+          {
+            "title": "Pullman Loaf Pan with Lid",
+            "subtitle": "$32.00 · Disponible",
+            "details": {
+              "Price": "$32.00",
+              "Why": "Pan de molde perfecto"
+            },
+            "reason": "Hornea un pan de molde cuadrado, ideal para sándwiches."
+          },
+          {
+            "title": "Bread Lame and Bench Scraper Set",
+            "subtitle": "$22.00 · Disponible",
+            "details": {
+              "Price": "$22.00",
+              "Why": "Un detalle práctico"
+            },
+            "reason": "Para hacer cortes en la masa y limpiar la mesa después."
+          }
+        ]
+      },
+      "result": "Added Banneton Proofing Baskets, set of 2 to cart ($34.00)"
+    },
+    {
+      "id": "t-0028",
+      "title": "Anniversary gift, wife dislikes copper",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "returning customer",
+        "occasion": "anniversary",
+        "budget": "$100 to $200",
+        "recipient": "partner"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Anniversary gift for my wife. She cooks basically every night but she HATES copper, says it's a pain to keep shiny. Budget up to $200.",
+          "time": "2026-09-17T18:31:15Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "cookware"
+          },
+          "time": "2026-09-17T18:31:17Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "cookware",
+            "query": "everyday cooking",
+            "max_price": 200
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Slate",
+                "price": 148,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "soups",
+                  "braising"
+                ]
+              },
+              {
+                "name": "Tri-Ply Stainless Skillet, 10 in",
+                "price": 95,
+                "in_stock": true,
+                "tags": [
+                  "stainless",
+                  "everyday",
+                  "induction"
+                ]
+              },
+              {
+                "name": "Copper Saucier, 2 qt",
+                "price": 189,
+                "in_stock": true,
+                "tags": [
+                  "copper",
+                  "sauces",
+                  "heirloom"
+                ]
+              },
+              {
+                "name": "Copper Butter Warmer, 16 oz",
+                "price": 62,
+                "in_stock": true,
+                "tags": [
+                  "copper",
+                  "butter",
+                  "sauces"
+                ]
+              },
+              {
+                "name": "Carbon Steel Wok, 14 in",
+                "price": 68,
+                "in_stock": true,
+                "tags": [
+                  "wok",
+                  "stir fry",
+                  "carbon steel"
+                ]
+              },
+              {
+                "name": "Clay Tagine, 2.5 qt",
+                "price": 84,
+                "in_stock": true,
+                "tags": [
+                  "clay",
+                  "slow cooking",
+                  "stews"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-17T18:31:18Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "For someone who cooks every night, these are the pieces she'll reach for most.",
+        "items": [
+          {
+            "title": "Enameled Dutch Oven, 5.5 qt, Slate",
+            "subtitle": "$148.00 · In stock",
+            "details": {
+              "Price": "$148.00",
+              "Why": "Her nightly workhorse"
+            },
+            "reason": "Braises, soups, and bread, all in one pot that cleans up easily."
+          },
+          {
+            "title": "Tri-Ply Stainless Skillet, 10 in",
+            "subtitle": "$95.00 · In stock",
+            "details": {
+              "Price": "$95.00",
+              "Why": "Low-fuss and dishwasher safe"
+            },
+            "reason": "Sears evenly and needs no special care."
+          },
+          {
+            "title": "Copper Butter Warmer, 16 oz",
+            "subtitle": "$62.00 · In stock",
+            "details": {
+              "Price": "$62.00",
+              "Why": "A small everyday luxury"
+            },
+            "reason": "Melts butter and warms sauces in a minute."
+          }
+        ]
+      },
+      "result": "Added Enameled Dutch Oven, 5.5 qt, Slate to cart ($148.00)"
+    },
+    {
+      "id": "t-0029",
+      "title": "Brunch host gift, biscuit maker",
+      "metadata": {
+        "channel": "mobile app",
+        "persona": "returning customer",
+        "occasion": "host gift",
+        "budget": "$25 to $50",
+        "recipient": "friend"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "going to brunch at my friend's place sunday, she makes the best biscuits. want to bring something, ~$35",
+          "time": "2026-09-18T09:50:32Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "serveware"
+          },
+          "time": "2026-09-18T09:50:34Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "serveware",
+            "query": "brunch biscuits",
+            "max_price": 35
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Linen-Lined Bread Basket",
+                "price": 30,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "serving",
+                  "brunch"
+                ]
+              },
+              {
+                "name": "Ceramic Butter Crock",
+                "price": 28,
+                "in_stock": true,
+                "tags": [
+                  "butter",
+                  "ceramic"
+                ]
+              },
+              {
+                "name": "Marble Salt Cellar",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "salt",
+                  "marble"
+                ]
+              },
+              {
+                "name": "Olivewood Salad Servers",
+                "price": 26,
+                "in_stock": true,
+                "tags": [
+                  "salad",
+                  "olivewood"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-18T09:50:35Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "For the biscuit queen, here are two picks that belong on her brunch table.",
+        "items": [
+          {
+            "title": "Linen-Lined Bread Basket",
+            "subtitle": "$30.00 · In stock",
+            "details": {
+              "Price": "$30.00",
+              "Why": "Keeps her biscuits warm"
+            },
+            "reason": "The linen liner holds the heat and lifts out to wash."
+          },
+          {
+            "title": "Ceramic Butter Crock",
+            "subtitle": "$28.00 · In stock",
+            "details": {
+              "Price": "$28.00",
+              "Why": "Soft butter for every biscuit"
+            },
+            "reason": "Keeps butter spreadable on the counter."
+          }
+        ]
+      },
+      "result": "Added Linen-Lined Bread Basket to cart ($30.00)"
+    },
+    {
+      "id": "t-0030",
+      "title": "Staff test session after deploy",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "staff",
+        "occasion": "just because",
+        "budget": "Not given",
+        "recipient": "other"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "test: checking category routing after this morning's deploy, pls ignore (Dana, CX)",
+          "time": "2026-09-18T11:02:00Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "gift-sets"
+          },
+          "time": "2026-09-18T11:02:02Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "gift-sets",
+            "query": "test"
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Sourdough Starter Kit (cloche, baskets, lame)",
+                "price": 118,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sourdough",
+                  "set"
+                ]
+              },
+              {
+                "name": "Pour-Over Coffee Set (kettle, dripper, 2 mugs)",
+                "price": 119,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "pour-over",
+                  "set"
+                ]
+              },
+              {
+                "name": "Cast Iron Starter Set (12 in skillet, care kit)",
+                "price": 76,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "set"
+                ]
+              },
+              {
+                "name": "Cheese Night Set (board, knives, olive dish)",
+                "price": 74,
+                "in_stock": true,
+                "tags": [
+                  "cheese",
+                  "serving",
+                  "set"
+                ]
+              },
+              {
+                "name": "Tea Lover's Set (teapot, infuser mug, tea towel)",
+                "price": 84,
+                "in_stock": true,
+                "tags": [
+                  "tea",
+                  "set"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-18T11:02:03Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Here are a few of our most-loved gift sets!",
+        "items": [
+          {
+            "title": "Sourdough Starter Kit (cloche, baskets, lame)",
+            "subtitle": "$118.00 · In stock",
+            "details": {
+              "Price": "$118.00",
+              "Why": "A bestseller"
+            },
+            "reason": "Everything a new bread baker needs in one box."
+          },
+          {
+            "title": "Pour-Over Coffee Set (kettle, dripper, 2 mugs)",
+            "subtitle": "$119.00 · In stock",
+            "details": {
+              "Price": "$119.00",
+              "Why": "For coffee lovers"
+            },
+            "reason": "Kettle, dripper, and two mugs, ready to brew."
+          },
+          {
+            "title": "Cast Iron Starter Set (12 in skillet, care kit)",
+            "subtitle": "$76.00 · In stock",
+            "details": {
+              "Price": "$76.00",
+              "Why": "A great first pan"
+            },
+            "reason": "A 12 in skillet plus everything to keep it seasoned."
+          }
+        ]
+      }
+    },
+    {
+      "id": "t-0031",
+      "title": "Retirement gift for a tea drinker",
+      "metadata": {
+        "channel": "gift quiz",
+        "persona": "loyalty member",
+        "occasion": "retirement",
+        "budget": "$25 to $50",
+        "recipient": "coworker"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Occasion: Retirement\nBudget: $25 to $50\nFor: A coworker\nAnything else? Linda has run our front office for 30 years and drinks tea all day. The whole team is signing a card.",
+          "time": "2026-09-18T15:24:18Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "coffee-and-tea"
+          },
+          "time": "2026-09-18T15:24:20Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "coffee-and-tea",
+            "query": "tea",
+            "max_price": 50
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Matcha Set (bowl, whisk, scoop)",
+                "price": 42,
+                "in_stock": true,
+                "tags": [
+                  "tea",
+                  "matcha"
+                ]
+              },
+              {
+                "name": "Loose Leaf Tea Infuser Mug",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "tea",
+                  "mug"
+                ]
+              },
+              {
+                "name": "Glass Cold Brew Pitcher",
+                "price": 32,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "cold brew",
+                  "iced tea"
+                ]
+              },
+              {
+                "name": "Speckled Stoneware Mugs, set of 4",
+                "price": 48,
+                "in_stock": true,
+                "tags": [
+                  "mugs",
+                  "stoneware"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-18T15:24:21Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Thirty years deserves a good cup of tea! Two picks under $50.",
+        "items": [
+          {
+            "title": "Loose Leaf Tea Infuser Mug",
+            "subtitle": "$24.00 · In stock",
+            "details": {
+              "Price": "$24.00",
+              "Why": "For her daily tea"
+            },
+            "reason": "Brews loose leaf right in the cup, with a lid to keep it warm."
+          },
+          {
+            "title": "Matcha Set (bowl, whisk, scoop)",
+            "subtitle": "$42.00 · In stock",
+            "details": {
+              "Price": "$42.00",
+              "Why": "Something new for retirement"
+            },
+            "reason": "A calm new morning ritual with a handmade bowl and whisk."
+          }
+        ]
+      },
+      "result": "Added Loose Leaf Tea Infuser Mug to cart ($24.00)"
+    },
+    {
+      "id": "t-0032",
+      "title": "12 thank you gifts for a team, under $20 each",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "returning customer",
+        "occasion": "thank you",
+        "budget": "Under $25",
+        "recipient": "coworker",
+        "feedback": "thumbs_up"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "I manage a team of 12 and want to get everyone a small kitchen thing as a thank you after a rough quarter. Under $20 each if possible. They need to arrive by the 30th.",
+          "time": "2026-09-19T10:07:43Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "tools"
+          },
+          "time": "2026-09-19T10:07:45Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "tools",
+            "query": "small gift",
+            "max_price": 20
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Fine Rasp Grater",
+                "price": 18,
+                "in_stock": true,
+                "tags": [
+                  "zester",
+                  "cheese",
+                  "citrus"
+                ]
+              },
+              {
+                "name": "Chain Mail Scrubber",
+                "price": 16,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "cleaning"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-19T10:07:46Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "A thank you for the whole team! Both of these are under $20 and in stock right now.",
+        "items": [
+          {
+            "title": "Fine Rasp Grater",
+            "subtitle": "$18.00 · In stock",
+            "details": {
+              "Price": "$18.00 each ($216.00 for 12)",
+              "Why": "Useful in every kitchen"
+            },
+            "reason": "Zests citrus and grates cheese, a tool people use weekly."
+          },
+          {
+            "title": "Chain Mail Scrubber",
+            "subtitle": "$16.00 · In stock",
+            "details": {
+              "Price": "$16.00 each ($192.00 for 12)",
+              "Why": "For the cast iron fans"
+            },
+            "reason": "Scrubs pans clean without stripping the seasoning."
+          }
+        ]
+      },
+      "result": "Added 12 x Fine Rasp Grater to cart ($216.00)"
+    },
+    {
+      "id": "t-0033",
+      "title": "Gift for someone who has everything",
+      "metadata": {
+        "channel": "mobile app",
+        "persona": "first visit",
+        "occasion": "birthday",
+        "budget": "$50 to $100",
+        "recipient": "parent"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "whats a good gift for someone who has everything",
+          "time": "2026-09-19T13:40:26Z"
+        },
+        {
+          "role": "assistant",
+          "content": "The hardest kind! Who's it for, and do they spend more time cooking, baking, or hosting?",
+          "time": "2026-09-19T13:40:32Z"
+        },
+        {
+          "role": "user",
+          "content": "my father in law, for his birthday. he mostly hosts, big bbq guy, loves a good steak. $75 max",
+          "time": "2026-09-19T13:41:11Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "knives-and-boards"
+          },
+          "time": "2026-09-19T13:41:13Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "knives-and-boards",
+            "query": "steak bbq carving",
+            "max_price": 75
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Maple Cutting Board, 18 x 12 in",
+                "price": 64,
+                "in_stock": true,
+                "tags": [
+                  "cutting board",
+                  "maple",
+                  "everyday"
+                ]
+              },
+              {
+                "name": "Whetstone Kit, 1000/6000 grit",
+                "price": 49,
+                "in_stock": true,
+                "tags": [
+                  "sharpening",
+                  "knife care"
+                ]
+              },
+              {
+                "name": "Bread Knife, 10 in",
+                "price": 58,
+                "in_stock": true,
+                "tags": [
+                  "knife",
+                  "bread",
+                  "serrated"
+                ]
+              },
+              {
+                "name": "Paring Knife Trio",
+                "price": 39,
+                "in_stock": true,
+                "tags": [
+                  "knife",
+                  "paring",
+                  "everyday"
+                ]
+              },
+              {
+                "name": "Magnetic Knife Strip, walnut",
+                "price": 45,
+                "in_stock": false,
+                "tags": [
+                  "knife storage",
+                  "walnut"
+                ]
+              },
+              {
+                "name": "Board Oil and Wax Set",
+                "price": 18,
+                "in_stock": true,
+                "tags": [
+                  "cutting board care"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-19T13:41:14Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "For a host who loves a good steak, here are two picks he probably doesn't have yet.",
+        "items": [
+          {
+            "title": "Maple Cutting Board, 18 x 12 in",
+            "subtitle": "$64.00 · In stock",
+            "details": {
+              "Price": "$64.00",
+              "Why": "Big enough for a whole brisket"
+            },
+            "reason": "A deep juice groove keeps the counter clean while he carves."
+          },
+          {
+            "title": "Whetstone Kit, 1000/6000 grit",
+            "subtitle": "$49.00 · In stock",
+            "details": {
+              "Price": "$49.00",
+              "Why": "Keeps his knives sharp"
+            },
+            "reason": "A sharp knife makes carving easy, and this kit works on every knife he owns."
+          }
+        ]
+      },
+      "result": "Added Maple Cutting Board, 18 x 12 in to cart ($64.00)"
+    },
+    {
+      "id": "t-0034",
+      "title": "Wine and cheese host gift, $50 to $75",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "returning customer",
+        "occasion": "host gift",
+        "budget": "$50 to $100",
+        "recipient": "friend"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Hostess gift for a dinner party next saturday. They're huge wine and cheese people. $50 to $75",
+          "time": "2026-09-19T17:22:09Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "serveware"
+          },
+          "time": "2026-09-19T17:22:11Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "serveware",
+            "query": "wine cheese",
+            "max_price": 75
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Olivewood Cheese Board with Two Knives",
+                "price": 58,
+                "in_stock": true,
+                "tags": [
+                  "cheese",
+                  "serving",
+                  "olivewood"
+                ]
+              },
+              {
+                "name": "Walnut Serving Tray",
+                "price": 74,
+                "in_stock": false,
+                "tags": [
+                  "serving",
+                  "walnut",
+                  "breakfast"
+                ]
+              },
+              {
+                "name": "Ceramic Olive Dish",
+                "price": 22,
+                "in_stock": true,
+                "tags": [
+                  "olives",
+                  "small plates"
+                ]
+              },
+              {
+                "name": "Copper Mule Mugs, set of 2",
+                "price": 52,
+                "in_stock": true,
+                "tags": [
+                  "copper",
+                  "cocktails",
+                  "bar"
+                ]
+              },
+              {
+                "name": "Hand-Thrown Small Bowls, set of 4",
+                "price": 38,
+                "in_stock": true,
+                "tags": [
+                  "ceramic",
+                  "handmade",
+                  "small bowls"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-19T17:22:12Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Wine and cheese people are the easiest to shop for! Here are my three favorites.",
+        "items": [
+          {
+            "title": "Olivewood Cheese Board with Two Knives",
+            "subtitle": "$58.00 · In stock",
+            "details": {
+              "Price": "$58.00",
+              "Why": "Made for a cheese night"
+            },
+            "reason": "Olivewood with a knife for soft cheese and one for hard."
+          },
+          {
+            "title": "Ceramic Olive Dish",
+            "subtitle": "$22.00 · In stock",
+            "details": {
+              "Price": "$22.00",
+              "Why": "Pairs with the board"
+            },
+            "reason": "Two wells: one for olives, one for the pits."
+          },
+          {
+            "title": "Olivewood Cheese Board with Two Knives",
+            "subtitle": "$58.00 · In stock",
+            "details": {
+              "Price": "$58.00",
+              "Why": "Everything for a cheese course"
+            },
+            "reason": "A board and two knives in one gift, ready for their next party."
+          }
+        ]
+      },
+      "result": "Added Olivewood Cheese Board with Two Knives to cart ($58.00)"
+    },
+    {
+      "id": "t-0035",
+      "title": "Coffee snob partner's birthday",
+      "metadata": {
+        "channel": "gift quiz",
+        "persona": "first visit",
+        "occasion": "birthday",
+        "budget": "$50 to $100",
+        "recipient": "partner",
+        "feedback": "thumbs_up"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Occasion: Birthday\nBudget: $50 to $100\nFor: My partner\nAnything else? He's a coffee snob. Already owns a nice grinder and a scale. Not a tea person.",
+          "time": "2026-09-20T09:33:51Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "coffee-and-tea"
+          },
+          "time": "2026-09-20T09:33:53Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "coffee-and-tea",
+            "query": "coffee",
+            "max_price": 100
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Gooseneck Kettle, 1 L, copper finish",
+                "price": 78,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "pour-over",
+                  "kettle",
+                  "copper"
+                ]
+              },
+              {
+                "name": "Stovetop Espresso Maker, 6 cup",
+                "price": 44,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "espresso"
+                ]
+              },
+              {
+                "name": "Glass Cold Brew Pitcher",
+                "price": 32,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "cold brew",
+                  "iced tea"
+                ]
+              },
+              {
+                "name": "Hand Burr Coffee Grinder",
+                "price": 64,
+                "in_stock": false,
+                "tags": [
+                  "coffee",
+                  "grinder"
+                ]
+              },
+              {
+                "name": "Ceramic Pour-Over Dripper with 100 Filters",
+                "price": 26,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "pour-over"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-20T09:33:54Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Since he already has a grinder and a scale, these round out his setup.",
+        "items": [
+          {
+            "title": "Gooseneck Kettle, 1 L, copper finish",
+            "subtitle": "$78.00 · In stock",
+            "details": {
+              "Price": "$78.00",
+              "Why": "Precise pouring"
+            },
+            "reason": "The slim spout gives him full control for pour-over."
+          },
+          {
+            "title": "Stovetop Espresso Maker, 6 cup",
+            "subtitle": "$44.00 · In stock",
+            "details": {
+              "Price": "$44.00",
+              "Why": "A new brew method"
+            },
+            "reason": "Rich, strong coffee on the stove, no machine needed."
+          },
+          {
+            "title": "Glass Cold Brew Pitcher",
+            "subtitle": "$32.00 · In stock",
+            "details": {
+              "Price": "$32.00",
+              "Why": "For warm mornings"
+            },
+            "reason": "Smooth, low-acid cold brew that keeps all week."
+          }
+        ]
+      },
+      "result": "Added Gooseneck Kettle, 1 L, copper finish to cart ($78.00)"
+    },
+    {
+      "id": "t-0036",
+      "title": "Knife storage gift for brother",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "returning customer",
+        "occasion": "birthday",
+        "budget": "$50 to $100",
+        "recipient": "sibling",
+        "feedback": "thumbs_down"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "my brother has really nice knives but keeps them all loose in a drawer lol. birthday gift, $40 to $60?",
+          "time": "2026-09-20T12:18:34Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "knives-and-boards"
+          },
+          "time": "2026-09-20T12:18:36Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "knives-and-boards",
+            "query": "knife storage care",
+            "max_price": 60
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Magnetic Knife Strip, walnut",
+                "price": 45,
+                "in_stock": false,
+                "tags": [
+                  "knife storage",
+                  "walnut"
+                ]
+              },
+              {
+                "name": "Whetstone Kit, 1000/6000 grit",
+                "price": 49,
+                "in_stock": true,
+                "tags": [
+                  "sharpening",
+                  "knife care"
+                ]
+              },
+              {
+                "name": "Board Oil and Wax Set",
+                "price": 18,
+                "in_stock": true,
+                "tags": [
+                  "cutting board care"
+                ]
+              },
+              {
+                "name": "Bread Knife, 10 in",
+                "price": 58,
+                "in_stock": true,
+                "tags": [
+                  "knife",
+                  "bread",
+                  "serrated"
+                ]
+              },
+              {
+                "name": "Paring Knife Trio",
+                "price": 39,
+                "in_stock": true,
+                "tags": [
+                  "knife",
+                  "paring",
+                  "everyday"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-20T12:18:37Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Let's get those knives out of the drawer! The first pick solves it.",
+        "items": [
+          {
+            "title": "Magnetic Knife Strip, walnut",
+            "subtitle": "$45.00 · Out of stock",
+            "details": {
+              "Price": "$45.00",
+              "Why": "Gets his knives out of the drawer"
+            },
+            "reason": "Mounts on the wall and holds up to eight knives."
+          },
+          {
+            "title": "Whetstone Kit, 1000/6000 grit",
+            "subtitle": "$49.00 · In stock",
+            "details": {
+              "Price": "$49.00",
+              "Why": "Keeps nice knives nice"
+            },
+            "reason": "Brings back a sharp edge, even after years in a drawer."
+          }
+        ]
+      },
+      "result": "Left without adding anything"
+    },
+    {
+      "id": "t-0037",
+      "title": "Big housewarming for a couple, $150 to $200",
+      "metadata": {
+        "channel": "mobile app",
+        "persona": "returning customer",
+        "occasion": "housewarming",
+        "budget": "$100 to $200",
+        "recipient": "couple",
+        "feedback": "thumbs_up"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Housewarming for my best friend and her husband, they finally have a real kitchen after years in a tiny apartment!! want to go big, like $150 to $200. she bakes, he's the cook",
+          "time": "2026-09-20T16:45:22Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "gift-sets"
+          },
+          "time": "2026-09-20T16:45:24Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "gift-sets",
+            "query": "baking cooking",
+            "max_price": 200
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Sourdough Starter Kit (cloche, baskets, lame)",
+                "price": 118,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "sourdough",
+                  "set"
+                ]
+              },
+              {
+                "name": "Cast Iron Starter Set (12 in skillet, care kit)",
+                "price": 76,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "set"
+                ]
+              },
+              {
+                "name": "Pour-Over Coffee Set (kettle, dripper, 2 mugs)",
+                "price": 119,
+                "in_stock": true,
+                "tags": [
+                  "coffee",
+                  "pour-over",
+                  "set"
+                ]
+              },
+              {
+                "name": "Pasta Night Set (machine, ravioli stamps, drying rack)",
+                "price": 112,
+                "in_stock": false,
+                "tags": [
+                  "pasta",
+                  "set"
+                ]
+              },
+              {
+                "name": "Cheese Night Set (board, knives, olive dish)",
+                "price": 74,
+                "in_stock": true,
+                "tags": [
+                  "cheese",
+                  "serving",
+                  "set"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-20T16:45:25Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "A real kitchen deserves a real gift! One set for each of them, $194 together.",
+        "items": [
+          {
+            "title": "Sourdough Starter Kit (cloche, baskets, lame)",
+            "subtitle": "$118.00 · In stock",
+            "details": {
+              "Price": "$118.00",
+              "Why": "For her"
+            },
+            "reason": "Everything she needs to bake bakery-style bread at home."
+          },
+          {
+            "title": "Cast Iron Starter Set (12 in skillet, care kit)",
+            "subtitle": "$76.00 · In stock",
+            "details": {
+              "Price": "$76.00",
+              "Why": "For him"
+            },
+            "reason": "A skillet he'll cook in every night, plus the kit to keep it seasoned."
+          }
+        ]
+      },
+      "result": "Added Sourdough Starter Kit (cloche, baskets, lame) and Cast Iron Starter Set (12 in skillet, care kit) to cart ($194.00)"
+    },
+    {
+      "id": "t-0038",
+      "title": "Cutting board for nephew's first apartment",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "first visit",
+        "occasion": "housewarming",
+        "budget": "$50 to $100",
+        "recipient": "other"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Looking for a good cutting board for my nephew. He just moved into his first apartment and is learning to cook. Somewhere between $50 and $80.",
+          "time": "2026-09-21T10:26:17Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "serveware"
+          },
+          "time": "2026-09-21T10:26:19Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "serveware",
+            "query": "cutting board",
+            "max_price": 80
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Olivewood Cheese Board with Two Knives",
+                "price": 58,
+                "in_stock": true,
+                "tags": [
+                  "cheese",
+                  "serving",
+                  "olivewood"
+                ]
+              },
+              {
+                "name": "Walnut Serving Tray",
+                "price": 74,
+                "in_stock": false,
+                "tags": [
+                  "serving",
+                  "walnut",
+                  "breakfast"
+                ]
+              },
+              {
+                "name": "Olivewood Salad Servers",
+                "price": 26,
+                "in_stock": true,
+                "tags": [
+                  "salad",
+                  "olivewood"
+                ]
+              },
+              {
+                "name": "Linen-Lined Bread Basket",
+                "price": 30,
+                "in_stock": true,
+                "tags": [
+                  "bread",
+                  "serving",
+                  "brunch"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-21T10:26:20Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "A great first-apartment gift! Here are two picks for his new kitchen.",
+        "items": [
+          {
+            "title": "Olivewood Cheese Board with Two Knives",
+            "subtitle": "$58.00 · In stock",
+            "details": {
+              "Price": "$58.00",
+              "Why": "A board for his first kitchen"
+            },
+            "reason": "Solid olivewood, and the two knives mean he can slice and serve on one board."
+          },
+          {
+            "title": "Olivewood Salad Servers",
+            "subtitle": "$26.00 · In stock",
+            "details": {
+              "Price": "$26.00",
+              "Why": "For his first dinner party"
+            },
+            "reason": "A matching olivewood set for salads."
+          }
+        ]
+      },
+      "result": "Left without adding anything"
+    },
+    {
+      "id": "t-0039",
+      "title": "25th anniversary, wants a copper pan",
+      "metadata": {
+        "channel": "gift quiz",
+        "persona": "loyalty member",
+        "occasion": "anniversary",
+        "budget": "$200 and up",
+        "recipient": "partner",
+        "feedback": "thumbs_up"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "Occasion: Anniversary\nBudget: $200 and up\nFor: My partner\nAnything else? Our 25th! She's the best cook I know and has wanted a real copper pan forever.",
+          "time": "2026-09-21T14:14:40Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "cookware"
+          },
+          "time": "2026-09-21T14:14:42Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "cookware",
+            "query": "copper pan"
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Copper Saucier, 2 qt",
+                "price": 189,
+                "in_stock": true,
+                "tags": [
+                  "copper",
+                  "sauces",
+                  "heirloom"
+                ]
+              },
+              {
+                "name": "Copper Butter Warmer, 16 oz",
+                "price": 62,
+                "in_stock": true,
+                "tags": [
+                  "copper",
+                  "butter",
+                  "sauces"
+                ]
+              },
+              {
+                "name": "Tri-Ply Stainless Skillet, 10 in",
+                "price": 95,
+                "in_stock": true,
+                "tags": [
+                  "stainless",
+                  "everyday",
+                  "induction"
+                ]
+              },
+              {
+                "name": "Enameled Dutch Oven, 5.5 qt, Slate",
+                "price": 148,
+                "in_stock": true,
+                "tags": [
+                  "cast iron",
+                  "enameled",
+                  "soups",
+                  "braising"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-21T14:14:43Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Happy 25th! Here's the copper pan she's been waiting for, plus a small matching piece.",
+        "items": [
+          {
+            "title": "Copper Saucier, 2 qt",
+            "subtitle": "$189.00 · In stock",
+            "details": {
+              "Price": "$189.00",
+              "Why": "The copper pan she's wanted"
+            },
+            "reason": "Heats evenly for sauces, risotto, and custards, and it will last for generations."
+          },
+          {
+            "title": "Copper Butter Warmer, 16 oz",
+            "subtitle": "$62.00 · In stock",
+            "details": {
+              "Price": "$62.00",
+              "Why": "A matching little piece"
+            },
+            "reason": "Perfect for melted butter and warm sauces."
+          }
+        ]
+      },
+      "result": "Added Copper Saucier, 2 qt and Copper Butter Warmer, 16 oz to cart ($251.00)"
+    },
+    {
+      "id": "t-0040",
+      "title": "Cheer-up gift for a stress baker",
+      "metadata": {
+        "channel": "web chat",
+        "persona": "returning customer",
+        "occasion": "just because",
+        "budget": "$25 to $50",
+        "recipient": "friend"
+      },
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are the gift finder for Copper & Clay Kitchen, an online kitchenware shop. Help the shopper choose a gift from our catalog.\n1. If you can't tell who the gift is for or what they enjoy, ask one short question first. Never ask more than one.\n2. Call route_request with the single best category: cookware, bakeware, knives-and-boards, coffee-and-tea, serveware, tools, linens, or gift-sets.\n3. Call search_catalog with that category, a short query, and max_price when the shopper gives a budget.\n4. Recommend up to 3 items from the search results. Stay within the shopper's budget. Respect anything the shopper says the recipient dislikes.\n5. Reply in the shopper's language. Give each pick a one-line reason, and keep the intro to one or two friendly sentences."
+        },
+        {
+          "role": "user",
+          "content": "ok so my best friend has had the worst month (breakup, then her car died, then her cat got sick but he's ok now) and I want to send her a little something to cheer her up. She's been stress baking cookies nonstop, which, same. Her one cookie sheet is warped and sad. Budget is like $40 to $50?",
+          "time": "2026-09-21T18:55:03Z"
+        }
+      ],
+      "steps": [
+        {
+          "type": "handoff",
+          "name": "route_request",
+          "input": {
+            "category": "bakeware"
+          },
+          "time": "2026-09-21T18:55:05Z"
+        },
+        {
+          "type": "tool",
+          "name": "search_catalog",
+          "input": {
+            "category": "bakeware",
+            "query": "cookies",
+            "max_price": 50
+          },
+          "output": {
+            "items": [
+              {
+                "name": "Half Sheet Pans, set of 2",
+                "price": 36,
+                "in_stock": true,
+                "tags": [
+                  "cookies",
+                  "roasting",
+                  "aluminum"
+                ]
+              },
+              {
+                "name": "Silicone Baking Mats, set of 2",
+                "price": 24,
+                "in_stock": true,
+                "tags": [
+                  "cookies",
+                  "reusable"
+                ]
+              },
+              {
+                "name": "Madeleine Pan, 12 shells",
+                "price": 28,
+                "in_stock": true,
+                "tags": [
+                  "cake",
+                  "french",
+                  "cookies"
+                ]
+              },
+              {
+                "name": "Wreath Bundt Pan",
+                "price": 44,
+                "in_stock": false,
+                "tags": [
+                  "cake",
+                  "cast aluminum",
+                  "holiday"
+                ]
+              }
+            ]
+          },
+          "time": "2026-09-21T18:55:06Z"
+        }
+      ],
+      "output": {
+        "type": "list",
+        "intro": "Sorry she has had such a rough month! New pans make all that stress baking a lot more fun.",
+        "items": [
+          {
+            "title": "Half Sheet Pans, set of 2",
+            "subtitle": "$36.00 · In stock",
+            "details": {
+              "Price": "$36.00",
+              "Why": "Replaces the warped sheet"
+            },
+            "reason": "Heavy aluminum that bakes evenly and won't buckle in a hot oven."
+          },
+          {
+            "title": "Silicone Baking Mats, set of 2",
+            "subtitle": "$24.00 · In stock",
+            "details": {
+              "Price": "$24.00",
+              "Why": "Easy cleanup"
+            },
+            "reason": "Cookies slide right off, so she spends less time scrubbing."
+          },
+          {
+            "title": "Madeleine Pan, 12 shells",
+            "subtitle": "$28.00 · In stock",
+            "details": {
+              "Price": "$28.00",
+              "Why": "Something fun and new"
+            },
+            "reason": "Little French butter cakes, a cheerful break from cookies."
+          }
+        ]
+      },
+      "result": "Added Half Sheet Pans, set of 2 to cart ($36.00)"
+    }
+  ],
+  "reviews": {},
+  "labels": {},
+  "critiques": {},
+  "closeCalls": {},
+  "modes": [],
+  "checks": [],
+  "splits": {},
+  "suggestions": [],
+  "batch": {
+    "createdAt": "2026-09-22T16:00:00Z",
+    "strategy": "mix",
+    "items": [
+      {
+        "traceId": "t-0006",
+        "reason": "wedding, $100 to $200, long conversation"
+      },
+      {
+        "traceId": "t-0009",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0035",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0020",
+        "reason": "host gift, $25 to $50, medium conversation"
+      },
+      {
+        "traceId": "t-0034",
+        "reason": "host gift, $50 to $100, medium conversation"
+      },
+      {
+        "traceId": "t-0039",
+        "reason": "anniversary, $200 and up, short conversation"
+      },
+      {
+        "traceId": "t-0033",
+        "reason": "birthday, $50 to $100, medium conversation"
+      },
+      {
+        "traceId": "t-0026",
+        "reason": "farewell, $50 to $100, long conversation"
+      },
+      {
+        "traceId": "t-0012",
+        "reason": "housewarming, $100 to $200, long conversation"
+      },
+      {
+        "traceId": "t-0027",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0028",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0030",
+        "reason": "just because, Not given, medium conversation"
+      },
+      {
+        "traceId": "t-0031",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0032",
+        "reason": "thank you, Under $25, short conversation"
+      },
+      {
+        "traceId": "t-0002",
+        "reason": "Random pick"
+      },
+      {
+        "traceId": "t-0038",
+        "reason": "housewarming, $50 to $100, short conversation"
+      },
+      {
+        "traceId": "t-0014",
+        "reason": "anniversary, $50 to $100, medium conversation"
+      },
+      {
+        "traceId": "t-0040",
+        "reason": "just because, $25 to $50, long conversation"
+      },
+      {
+        "traceId": "t-0018",
+        "reason": "retirement, $50 to $100, long conversation"
+      },
+      {
+        "traceId": "t-0003",
+        "reason": "birthday, $25 to $50, long conversation"
+      }
+    ]
+  },
+  "settings": {
+    "seed": 7
+  }
+}

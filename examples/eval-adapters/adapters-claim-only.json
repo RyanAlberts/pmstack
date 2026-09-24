@@ -1,5 +1,0 @@
-{
-  "setup": { "command": ["node", "./setup.mjs"], "timeoutMs": 5000 },
-  "target": { "command": ["node", "./simulated-target.mjs", "--claim-only"], "timeoutMs": 5000 },
-  "observe": { "command": ["node", "./observe.mjs"], "timeoutMs": 5000 }
-}

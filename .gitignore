@@ -1,7 +1,10 @@
 # pmstack source repo .gitignore
-# Note: outputs/ and evals/results/ are intentionally NOT ignored —
-# they hold canonical example artifacts and historical eval scores.
-# Per-file ignores below if a specific file should not be checked in.
+
+# Editor and OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
 
 # Python
 __pycache__/
@@ -11,22 +14,10 @@ __pycache__/
 .venv/
 venv/
 
-# Editor/OS
-.DS_Store
-.idea/
-.vscode/
-*.swp
-
 # Local Claude Code state that should never leak into a public repo
 .claude/settings.local.json
 .claude/projects/
 .claude/worktrees/
-
-# Per-run eval execution artifacts (the parent outputs/ stays tracked for canonical examples)
-outputs/eval-runs/
-
-# Local research retrievals and discarded design exploration
-outputs/research-2026-09-12/
 
 # Credentials
 .env
@@ -34,3 +25,26 @@ outputs/research-2026-09-12/
 *.pem
 *.key
 credentials.json
+
+# Browser tests: Playwright installs and results
+tests/e2e/node_modules/
+tests/e2e/test-results/
+
+# Eval Studio run files in any folder: the write lock and the note about a running server
+**/pmstack/.lock
+**/pmstack/.studio.json
+
+# Made when you run the README's quickstart (node bin/pmstack.mjs studio examples/quickstart)
+examples/quickstart/pmstack/project.json
+examples/quickstart/pmstack/suggestions.json
+
+# Made by the folder-mode tests
+tests/fixtures/folder/pmstack/
+
+# Made when you run the README command line examples from the repo root
+/quickstart.json
+/clinic.json
+/report.md
+/report-funnel.svg
+/regression.jsonl
+/checks.json

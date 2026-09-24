@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
-# pmstack installer — copies CLAUDE.md, skills, templates, and slash commands into a target project.
+# pmstack setup: installs the pmstack skills and the pmstack command-line tool.
+#
 # Usage:
-#   ./setup                       # install into current dir (must be a project root)
-#   ./setup /path/to/project      # install into a specific project dir
-#   ./setup --global              # install commands + skills to ~/.claude (available in every session)
-#   ./setup --dry-run             # show what would be copied
+#   ./setup /path/to/project   install into that project
+#   ./setup                    install into the current folder
+#   ./setup --global           install once for every project, in your home folder
+#   ./setup --dry-run          show what would be copied, copy nothing
+#   ./setup -h                 show this help
+#
+# Project install: skills go to <project>/.claude/skills/, the tool to <project>/.pmstack/
+# Global install:  skills go to ~/.claude/skills/, the tool to ~/.pmstack/
+#
+# Running setup again replaces pmstack's own files and leaves everything else alone.
+# It never touches CLAUDE.md. The tool needs Node 20 or newer and nothing else.
 set -euo pipefail
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -17,7 +25,7 @@ for arg in "$@"; do
     --global) GLOBAL=1 ;;
     --dry-run) DRY_RUN=1 ;;
     -h|--help)
-      # Print the leading comment block (lines 2..first non-# line) so help never drifts from the comment.
+      # Print the leading comment block so the help never drifts from it.
       awk 'NR==1{next} /^#/{sub(/^# ?/,""); print; next} {exit}' "$0"
       exit 0
       ;;
@@ -25,7 +33,7 @@ for arg in "$@"; do
       if [[ -d "$arg" ]]; then
         TARGET="$(cd "$arg" && pwd)"
       else
-        echo "Unknown arg or missing dir: $arg" >&2
+        echo "Not a flag or an existing folder: $arg (run ./setup -h for help)" >&2
         exit 1
       fi
       ;;
@@ -33,155 +41,83 @@ for arg in "$@"; do
 done
 
 if [[ "$GLOBAL" == "1" ]]; then
-  TARGET="$HOME/.claude"
-  # Global install: commands live at ~/.claude/commands and Anthropic Skills at ~/.claude/skills (no nested .claude).
-  COMMANDS_DIR="$TARGET/commands"
-  AGENT_SKILLS_DIR="$TARGET/skills"
-  echo "→ Installing pmstack globally to $TARGET"
+  SKILLS_DIR="$HOME/.claude/skills"
+  RUNTIME_DIR="$HOME/.pmstack"
+  echo "Installing pmstack for every project (your home folder)"
 else
-  # Project install: commands live at <project>/.claude/commands.
-  # Note: pmstack uses skills/ in project mode for the per-command skill source files.
-  # Anthropic Agent Skills install to .claude/skills/ in project mode (Claude Code reads both).
-  COMMANDS_DIR="$TARGET/.claude/commands"
-  AGENT_SKILLS_DIR="$TARGET/.claude/skills"
-  echo "→ Installing pmstack into $TARGET"
+  # Installing into the pmstack folder itself would only add clutter to the clone.
+  if [[ "$TARGET" == "$SRC" ]]; then
+    echo "This is the pmstack folder itself. Pass a project folder (./setup /path/to/project) or --global." >&2
+    exit 1
+  fi
+  SKILLS_DIR="$TARGET/.claude/skills"
+  RUNTIME_DIR="$TARGET/.pmstack"
+  echo "Installing pmstack into $TARGET"
 fi
+if [[ "$DRY_RUN" == "1" ]]; then echo "(dry run: nothing will be copied)"; fi
 
 run() {
   echo "  $*"
   if [[ "$DRY_RUN" == "0" ]]; then "$@"; fi
 }
 
-run mkdir -p "$COMMANDS_DIR" "$AGENT_SKILLS_DIR" "$TARGET/skills" "$TARGET/templates" "$TARGET/outputs" "$TARGET/bin" "$TARGET/docs" "$TARGET/evals/golden" "$TARGET/examples/golden"
-
-# Slash commands — required for /eval, /prd, etc. to work. The list is the
-# directory itself, so a new command can never silently miss the installer.
-for f in "$SRC"/.claude/commands/*.md; do
-  run cp "$f" "$COMMANDS_DIR/$(basename "$f")"
+# Skills: every skills/<name>/ folder, copied whole. skills/README.md stays behind.
+skill_dirs=()
+for d in "$SRC"/skills/*/; do
+  if [[ -f "$d/SKILL.md" ]]; then skill_dirs+=("$d"); fi
 done
-
-# Skills + templates — referenced by the commands. All flat files, not just
-# *.md: commands also reference skills/_graph.yaml.
-for f in "$SRC"/skills/*; do
-  [[ -f "$f" ]] && run cp "$f" "$TARGET/skills/$(basename "$f")"
-done
-for f in "$SRC"/templates/*; do
-  run cp "$f" "$TARGET/templates/$(basename "$f")"
-done
-
-# Anthropic Agent Skills — cross-platform (web/mobile/desktop/API/CLI).
-for d in "$SRC"/claude-skills/*/; do
-  [[ -d "$d" ]] || continue
+if [[ "${#skill_dirs[@]}" == "0" ]]; then
+  echo "No skills found in $SRC/skills/. Is this a complete copy of pmstack?" >&2
+  exit 1
+fi
+for d in "${skill_dirs[@]}"; do
   name="$(basename "$d")"
-  run mkdir -p "$AGENT_SKILLS_DIR/$name"
-  for f in "$d"*; do
-    [[ -f "$f" ]] && run cp "$f" "$AGENT_SKILLS_DIR/$name/$(basename "$f")"
-  done
+  run mkdir -p "$SKILLS_DIR/$name"
+  run cp -R "$d." "$SKILLS_DIR/$name/"
 done
 
-# bin/ — runner script for /run-eval. Required for actual eval execution.
-for f in "$SRC"/bin/*; do
-  [[ -f "$f" ]] && run cp "$f" "$TARGET/bin/$(basename "$f")"
-  [[ -f "$f" ]] && run chmod +x "$TARGET/bin/$(basename "$f")"
-done
-
-# evals/ — runner.py + regression-check.py + golden baseline + suite definition.
-run mkdir -p "$TARGET/evals"
-for f in "$SRC"/evals/runner.py "$SRC"/evals/regression-check.py "$SRC"/evals/pmstack-self.yaml "$SRC"/evals/README.md; do
-  [[ -f "$f" ]] && run cp "$f" "$TARGET/evals/$(basename "$f")"
-done
-[[ -f "$SRC/evals/runner.py" ]] && run chmod +x "$TARGET/evals/runner.py"
-[[ -f "$SRC/evals/regression-check.py" ]] && run chmod +x "$TARGET/evals/regression-check.py"
-for f in "$SRC"/evals/golden/*; do
-  [[ -f "$f" ]] && run cp "$f" "$TARGET/evals/golden/$(basename "$f")"
-done
-
-# examples/golden/ — anchor outputs index.
-for f in "$SRC"/examples/golden/*; do
-  [[ -f "$f" ]] && run cp "$f" "$TARGET/examples/golden/$(basename "$f")"
-done
-
-# examples/walkthrough-code-review/ — /onboarding walks this artifact set
-# (commands reference @examples/walkthrough-code-review/), so it ships too.
-while IFS= read -r -d '' f; do
-  rel="${f#"$SRC"/}"
-  run mkdir -p "$TARGET/$(dirname "$rel")"
-  run cp "$f" "$TARGET/$rel"
-done < <(find "$SRC/examples/walkthrough-code-review" -type f -print0)
-
-# docs/ — learn-by-doing guides for PMs new to evals etc.
-for f in "$SRC"/docs/*; do
-  [[ -f "$f" ]] && run cp "$f" "$TARGET/docs/$(basename "$f")"
-done
-
-# Global install: commands and skills reference @skills/..., @templates/...,
-# `bin/run-eval.py` etc. relative to a project root. Claude Code resolves
-# @-references against the *current working directory*, so from any other
-# folder they silently fail to load. Rewrite them to absolute ~/.claude paths
-# at install time. (Project installs keep relative refs — they resolve from
-# the project root, which is where you run claude.)
-if [[ "$GLOBAL" == "1" ]]; then
-  rewrite_refs() {
-    sed -e "s|@skills/|@$TARGET/skills/|g" \
-        -e "s|@templates/|@$TARGET/templates/|g" \
-        -e "s|@evals/|@$TARGET/evals/|g" \
-        -e "s|@examples/|@$TARGET/examples/|g" \
-        -e "s|\`bin/run-eval.py|\`$TARGET/bin/run-eval.py|g" \
-        -e "s|python3 evals/runner.py|python3 $TARGET/evals/runner.py|g" \
-        -e "s|python3 evals/regression-check.py|python3 $TARGET/evals/regression-check.py|g" \
-        "$1" > "$1.pmstack-rewrite" && mv "$1.pmstack-rewrite" "$1"
-  }
-  echo "  rewriting relative @-references to $TARGET/... in installed commands + skills"
-  if [[ "$DRY_RUN" == "0" ]]; then
-    for f in "$COMMANDS_DIR"/*.md "$TARGET"/skills/*.md; do
-      [[ -f "$f" ]] && rewrite_refs "$f"
-    done
-  fi
-fi
-
-# CLAUDE.md — only at project scope, never overwrite.
-if [[ "$GLOBAL" == "0" ]]; then
-  if [[ -f "$TARGET/CLAUDE.md" ]]; then
-    echo "  ⚠  CLAUDE.md already exists at $TARGET — leaving it alone."
-    echo "     Merge in pmstack's CLAUDE.md by hand if you want the PM persona."
+# Runtime: the tool and the studio it serves, keeping the bin/ and docs/ layout
+# because bin/pmstack.mjs imports ../docs/studio/lib/. A missing piece is
+# reported at the end instead of stopping the install.
+MISSING=""
+copy_runtime() {
+  local rel="$1"
+  if [[ -d "$SRC/$rel" ]]; then
+    run mkdir -p "$RUNTIME_DIR/$rel"
+    run cp -R "$SRC/$rel/." "$RUNTIME_DIR/$rel/"
+  elif [[ -f "$SRC/$rel" ]]; then
+    run mkdir -p "$RUNTIME_DIR/$(dirname "$rel")"
+    run cp "$SRC/$rel" "$RUNTIME_DIR/$rel"
   else
-    run cp "$SRC/CLAUDE.md" "$TARGET/CLAUDE.md"
+    MISSING+="  $rel"$'\n'
   fi
-fi
-
-# .gitignore — keep user-generated PM artifacts out of git history by default.
-# Project scope only. Append idempotently — never clobber existing rules.
-if [[ "$GLOBAL" == "0" ]]; then
-  GI="$TARGET/.gitignore"
-  MARKER="# >>> pmstack >>>"
-  if [[ -f "$GI" ]] && grep -q "$MARKER" "$GI" 2>/dev/null; then
-    echo "  ⓘ  .gitignore already has pmstack block — leaving alone."
-  else
-    if [[ "$DRY_RUN" == "0" ]]; then
-      {
-        [[ -f "$GI" ]] && echo ""
-        echo "$MARKER"
-        echo "# Generated by pmstack ./setup. Edit if you want different rules."
-        echo "outputs/"
-        echo "evals/results/"
-        echo "# <<< pmstack <<<"
-      } >> "$GI"
-    fi
-    echo "  appended pmstack block to $GI"
-  fi
-fi
+}
+copy_runtime bin/pmstack.mjs
+copy_runtime docs/studio
+copy_runtime docs/assets/visuals
+copy_runtime templates/tool-calls
 
 echo ""
-echo "✓ pmstack installed."
+if [[ -n "$MISSING" ]]; then
+  echo "Not found in $SRC, so not copied:"
+  printf '%s' "$MISSING"
+  echo "The skills still work without these: they send you to https://ryanalberts.github.io/pmstack/studio/ instead."
+  echo "To add them later, update your pmstack copy and run setup again."
+  echo ""
+fi
+
+if [[ "$DRY_RUN" == "1" ]]; then
+  echo "Dry run finished. Run again without --dry-run to install."
+  exit 0
+fi
+
+echo "pmstack is installed."
+echo "  Skills: $SKILLS_DIR/pmstack-*"
+if [[ -f "$RUNTIME_DIR/bin/pmstack.mjs" ]]; then echo "  Tool:   $RUNTIME_DIR/bin/pmstack.mjs"; fi
 echo ""
-echo "Try it:"
-echo "  claude"
-echo "  > /prd \"Customers say onboarding takes 3 days\""
-echo "  > /sprint \"Customers want pricing transparency\""
-echo "  > /compare Cursor Windsurf"
-echo "  > /eval Claude Ultraplan"
-echo "  > /run-eval outputs/eval-<feature>-<date>.yaml"
-echo "  > /eval-self                     # score pmstack itself"
-echo ""
-echo "Anthropic Agent Skills installed (work in Claude.ai web/mobile + API too):"
-echo "  Upload claude-skills/<name>/ folders to a Claude.ai Project."
+echo "Next:"
+echo "  In Claude Code, run /pmstack-start"
+if [[ -f "$RUNTIME_DIR/bin/pmstack.mjs" ]]; then
+  echo "  Or open Eval Studio on a folder of traces:"
+  echo "    node \"$RUNTIME_DIR/bin/pmstack.mjs\" studio /path/to/folder --open"
+fi

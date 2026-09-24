@@ -1,0 +1,129 @@
+/* Eval Studio design tokens (SPEC 5.4).
+   Shape: light on :root, dark for "Auto" when the system prefers dark,
+   and dark again when the reader picks Dark. Views use these variables only. */
+
+:root {
+  color-scheme: light;
+
+  --bg: #F7F6F2;
+  --surface: #FFFFFF;
+  --surface-2: #F0EEE8;
+  --ink: #16191D;
+  --ink-2: #4A525C;
+  --ink-3: #646B73;
+  --line: #E2DFD8;
+  --accent: #3A56D4;
+  --accent-soft: #E7EBFB;
+  --good: #1B7851;
+  --good-soft: #E3F2EA;
+  --bad: #BE3E29;
+  --bad-soft: #FBE7E2;
+  --warn: #965F00;
+  --warn-soft: #FBF0DC;
+  --ai: #7A4FD1;
+  --ai-soft: #F1EAFD;
+
+  /* Text on filled accent, good, and bad surfaces. */
+  --on-accent: #FFFFFF;
+  --on-good: #FFFFFF;
+  --on-bad: #FFFFFF;
+  --scrim: rgba(22, 25, 29, 0.32);
+
+  /* Elevation: soft shadows in light, borders only in dark. */
+  --shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 4px 16px rgba(0, 0, 0, .04);
+  --shadow-pop: 0 2px 6px rgba(0, 0, 0, .08), 0 12px 32px rgba(0, 0, 0, .10);
+  --card-border: transparent;
+
+  /* Type */
+  --font-sans: "Instrument Sans", ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --text-xs: 13px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 28px;
+  --text-2xl: 44px;
+
+  /* Shape and space */
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Motion */
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --dur-fast: 120ms;
+  --dur: 150ms;
+  --dur-slow: 180ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --bg: #0F1216;
+    --surface: #171B21;
+    --surface-2: #1E232A;
+    --ink: #E9EBEE;
+    --ink-2: #A9B1BB;
+    --ink-3: #8A929D;
+    --line: #2A3038;
+    --accent: #8AA2FF;
+    --accent-soft: #1F2747;
+    --good: #4CC38A;
+    --good-soft: #14301F;
+    --bad: #FF7A63;
+    --bad-soft: #3A1D18;
+    --warn: #F0B34A;
+    --warn-soft: #33260F;
+    --ai: #B79CFF;
+    --ai-soft: #2A2140;
+
+    --on-accent: #0F1216;
+    --on-good: #0F1216;
+    --on-bad: #0F1216;
+    --scrim: rgba(0, 0, 0, 0.55);
+
+    --shadow: none;
+    --shadow-pop: none;
+    --card-border: var(--line);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0F1216;
+  --surface: #171B21;
+  --surface-2: #1E232A;
+  --ink: #E9EBEE;
+  --ink-2: #A9B1BB;
+  --ink-3: #8A929D;
+  --line: #2A3038;
+  --accent: #8AA2FF;
+  --accent-soft: #1F2747;
+  --good: #4CC38A;
+  --good-soft: #14301F;
+  --bad: #FF7A63;
+  --bad-soft: #3A1D18;
+  --warn: #F0B34A;
+  --warn-soft: #33260F;
+  --ai: #B79CFF;
+  --ai-soft: #2A2140;
+
+  --on-accent: #0F1216;
+  --on-good: #0F1216;
+  --on-bad: #0F1216;
+  --scrim: rgba(0, 0, 0, 0.55);
+
+  --shadow: none;
+  --shadow-pop: none;
+  --card-border: var(--line);
+}

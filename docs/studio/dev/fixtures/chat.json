@@ -1,0 +1,119 @@
+{
+  "id": "t-0003",
+  "title": "Move Tuesday cleaning later in the week",
+  "metadata": {
+    "channel": "sms",
+    "persona": "existing patient",
+    "version": "Before the fix",
+    "patient_id": "pt-23308",
+    "location": "riverside",
+    "appointment_type": "cleaning"
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are the booking assistant for Maple Dental (Riverside, Northgate, and Old Town offices). Help patients book, move, or cancel appointments by text, web chat, or phone. Look up the patient with get_patient first and don't ask for details they already gave. Only offer times that find_slots returns. Before you book, move, or cancel, confirm the day, time, provider, and office and wait for a yes. If the patient asks for a person, call transfer_to_staff. For swelling, bleeding, or severe pain, transfer right away. Keep replies short and warm."
+    },
+    {
+      "role": "user",
+      "content": "hey need to move my cleaning on tues the 22nd to later that week",
+      "time": "2026-09-09T19:21:40Z"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_1najw",
+          "name": "get_patient",
+          "arguments": {
+            "phone": "+15550143376"
+          }
+        }
+      ],
+      "time": "2026-09-09T19:21:42Z"
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_1najw",
+      "name": "get_patient",
+      "content": "{\"found\":true,\"patient_id\":\"pt-23308\",\"name\":\"Keisha Barnes\",\"date_of_birth\":\"1991-10-28\",\"phone\":\"+15550143376\",\"preferred_location\":\"riverside\",\"last_visit\":\"2026-03-19\",\"last_cleaning\":\"2026-03-19\",\"balance_due\":0,\"dependents\":[],\"upcoming\":[{\"appointment_id\":\"apt-58213\",\"type\":\"cleaning\",\"date\":\"2026-09-22\",\"time\":\"09:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"}]}",
+      "time": "2026-09-09T19:21:43Z"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_w5tlx",
+          "name": "find_slots",
+          "arguments": {
+            "appointment_type": "cleaning",
+            "provider": "jolene-tran",
+            "date_from": "2026-09-23",
+            "date_to": "2026-09-25",
+            "limit": 10
+          }
+        }
+      ],
+      "time": "2026-09-09T19:21:44Z"
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_w5tlx",
+      "name": "find_slots",
+      "content": "{\"appointment_type\":\"cleaning\",\"slots\":[{\"date\":\"2026-09-23\",\"time\":\"13:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"},{\"date\":\"2026-09-23\",\"time\":\"15:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"},{\"date\":\"2026-09-24\",\"time\":\"13:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"},{\"date\":\"2026-09-24\",\"time\":\"14:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"},{\"date\":\"2026-09-25\",\"time\":\"08:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"},{\"date\":\"2026-09-25\",\"time\":\"11:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"},{\"date\":\"2026-09-25\",\"time\":\"13:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"},{\"date\":\"2026-09-25\",\"time\":\"14:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"},{\"date\":\"2026-09-25\",\"time\":\"15:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"}]}",
+      "time": "2026-09-09T19:21:45Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Sure Keisha. Jolene has Wed Sept 23 at 3:00 PM, Thu Sept 24 at 2:00 PM, or Fri Sept 25 at 11:00 AM. Any of those work?",
+      "time": "2026-09-09T19:21:48Z"
+    },
+    {
+      "role": "user",
+      "content": "thursday",
+      "time": "2026-09-09T19:23:24Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Move you to Thursday Sept 24 at 2:00 PM with Jolene?",
+      "time": "2026-09-09T19:23:27Z"
+    },
+    {
+      "role": "user",
+      "content": "yes",
+      "time": "2026-09-09T19:23:48Z"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_513bp",
+          "name": "reschedule_appointment",
+          "arguments": {
+            "appointment_id": "apt-58213",
+            "date": "2026-09-24",
+            "time": "14:00",
+            "provider": "jolene-tran",
+            "location": "riverside"
+          }
+        }
+      ],
+      "time": "2026-09-09T19:23:50Z"
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_513bp",
+      "name": "reschedule_appointment",
+      "content": "{\"ok\":true,\"appointment_id\":\"apt-58213\",\"old\":{\"date\":\"2026-09-22\",\"time\":\"09:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"},\"new\":{\"date\":\"2026-09-24\",\"time\":\"14:00\",\"provider\":\"jolene-tran\",\"location\":\"riverside\"}}",
+      "time": "2026-09-09T19:23:51Z"
+    },
+    {
+      "role": "assistant",
+      "content": "**New time:** Thursday, Sept 24 at 2:00 PM\n- Provider: Jolene Tran\n- Location: Riverside\nSee you then!",
+      "time": "2026-09-09T19:23:54Z"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "format": "pmstack.policy/1",
+  "name": "Your agent's tool policy",
+  "note": [
+    "Starter policy. Replace every name that starts with your_ with a real tool name from your traces. To list them, run: node bin/pmstack.mjs policy traces.jsonl --list-tools",
+    "tools: list every tool the agent may use. Mark it read if it only looks things up, or write if it changes something for the user. With onlyListedTools set to true, any tool you leave out breaks the policy.",
+    "confirm: true makes the agent ask first: the user's next message must say yes (one of confirmationPatterns) before a write runs. Keep it on every write tool that changes something for the user.",
+    "verify-first: set before to the tool that checks who the user is, and list every tool that must wait for it.",
+    "no-card-numbers: stops card numbers from reaching any tool. Keep it.",
+    "Add a why to every rule you write, in plain words. It is shown next to each violation.",
+    "For more rule types (limits, approvals, allowed values, one account only, channel rules), copy from policy.json. For the questions to ask your policy owner, see policy-requirements-checklist.md. Keep or delete this note."
+  ],
+  "onlyListedTools": true,
+  "confirmationPatterns": ["\\byes\\b", "\\bconfirm", "go ahead", "please do", "sounds good", "do it", "that works"],
+  "tools": {
+    "your_identity_tool": { "access": "read" },
+    "your_read_tool": { "access": "read" },
+    "your_write_tool": { "access": "write", "confirm": true }
+  },
+  "rules": [
+    {
+      "id": "verify-first",
+      "type": "requires-before",
+      "tools": ["your_read_tool", "your_write_tool"],
+      "before": "your_identity_tool",
+      "why": "Check who the user is before reading or changing their account."
+    },
+    {
+      "id": "no-card-numbers",
+      "type": "arg-not-match",
+      "tools": "*",
+      "pattern": "\\b(?:\\d[ -]?){13,16}\\b",
+      "why": "Never pass card numbers to tools. Tool logs are not secure enough for payment details."
+    }
+  ]
+}

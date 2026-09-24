@@ -1,0 +1,5 @@
+[
+  {"input":"What is the refund window?","output":"30 days."},
+  {"id":42,"question":"Do you ship to Canada?","answer":"Yes, in 5 to 8 days."},
+  "Plain text trace"
+]

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eval Studio</title>
+<meta name="description" content="Find how your AI product fails. Then prove it's fixed. Read real traces, name the failure modes, and turn the ones that matter into checks you can trust.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('pmstack-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/renderers.css">
+<link rel="stylesheet" href="styles/welcome.css">
+<link rel="stylesheet" href="styles/setup.css">
+<link rel="stylesheet" href="styles/review.css">
+<link rel="stylesheet" href="styles/modes.css">
+<link rel="stylesheet" href="styles/funnel.css">
+<link rel="stylesheet" href="styles/checks.css">
+<link rel="stylesheet" href="styles/report.css">
+<script type="importmap">{"imports":{"preact":"./vendor/preact.module.js","preact/hooks":"./vendor/hooks.module.js","htm":"./vendor/htm.module.js","pmstack/ui":"./ui.mjs","pmstack/renderers/common":"./renderers/common.mjs"}}</script>
+<script type="module" src="app.mjs?v=2.0.0" onerror="document.getElementById('boot-line').textContent='Eval Studio could not load. Check your connection, then reload the page.'"></script>
+</head>
+<body>
+<div id="app"><div class="boot"><p class="boot-line" id="boot-line">Loading Eval Studio...</p></div></div>
+<noscript><p class="boot-line">Eval Studio needs JavaScript to run.</p></noscript>
+</body>
+</html>

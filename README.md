@@ -1,121 +1,230 @@
 # pmstack
 
-## Your job is to define success.
+**Find how your AI product fails. Then prove it's fixed.**
 
-An AI agent can sound convincing and still produce the wrong result. Evaluations make your product expectations testable: what should happen, under which conditions, and what evidence would prove it?
+pmstack helps product managers read real traces (one full conversation or task, with every step the AI took), name the failure modes and success modes at each stage, and turn the ones that matter into checks you can trust. It follows the error discovery method taught by Hamel Husain and Shreya Shankar.
 
-pmstack helps product managers design and run those evaluations. Start with the framework, adapt a clearly labeled example to your own use case, then connect your model or agent to the harness.
+**[Open Eval Studio](https://ryanalberts.github.io/pmstack/studio/)** · [Try the dental booking sample](https://ryanalberts.github.io/pmstack/studio/#/open/clinic-booking) · [Use it with Claude Code](#try-it-in-60-seconds)
 
-**[Open the evaluation studio →](https://ryanalberts.github.io/pmstack/workspace/)** · [Learn the framework](docs/eval-framework.md) · [Run a working example](examples/eval-adapters/README.md)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/visuals/funnel-dark.svg">
+  <img src="docs/assets/visuals/funnel-light.svg" alt="The funnel of an AI experience for a dental booking assistant. 100 reviewed conversations move left to right through five stages: understand the request, hand off when needed, check the calendar, book or change, reply to the patient. At each stage, failing conversations drop out under a named failure mode, such as 7 that ignored requests for a person, and green chips show success modes, such as repeating the booking back. A bottom row shows the check that catches each failure mode. 64 of 100 reach a good outcome.">
+</picture>
 
-[![The pmstack evaluation framework](docs/workspace/preview.png)](https://ryanalberts.github.io/pmstack/workspace/)
+Green chips are success modes to keep working. Red ribbons are failure modes leaving the funnel, each counted once at the first stage that went wrong. The bottom row is the check that now catches each one: a code check (a rule a computer can test) or an AI judge (a prompt that asks a model for pass or fail).
 
-## The framework comes first
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screens/review-dark.png">
+  <img src="docs/assets/screens/review-light.png" alt="Eval Studio's Review traces tab on the dental booking sample. A text message reply shows raw ** symbols around Parking and Hours. The reviewer has pressed Problem, written that the text shows raw symbols around words, and picked the stage Reply to the patient.">
+</picture>
 
-The terminology follows [Anthropic’s guide to agent evaluations](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents). The PM supplies the judgment: customer value, meaningful challenges, acceptable tradeoffs, and the standard for a good outcome.
+Review each trace the way your customer saw it. Here the text message shows raw `**` symbols, so the reviewer presses 2 for Problem and writes what went wrong.
 
-| Element | What it means | The PM’s decision |
-| --- | --- | --- |
-| Task | One test case with inputs and success criteria. | Is the request clear, challenging, and valuable to a customer? |
-| Environment and context | The tools, starting state, information, permissions, and memory available. | What must match real use, and what must stay fixed for a fair comparison? |
-| Trial | One attempt at a task. | How many attempts reveal useful variation without confusing retries with reliability? |
-| Transcript | The available record of outputs, tool interactions, and intermediate events. | What evidence will explain a failure? |
-| Outcome | The final state after the attempt. | Did the work happen, beyond the agent claiming it did? |
-| Grader | Code, a model, or a person assessing a part of the result. | What evidence and scoring rule capture success without rewarding a shortcut? |
-| Evaluation suite | Tasks grouped around a capability or quality bar. | Does the mix cover both correct action and correct restraint? |
-| Evaluation harness | Infrastructure that runs trials, gathers evidence, grades, and reports. | Can you distinguish target failure from a broken evaluation? |
-| Agent harness | The runtime that gives a model tools, context, and memory. | Which complete system are you evaluating and versioning? |
+## Try it in 60 seconds
 
-A reference solution shows one acceptable result. Use it to test the grader, not to mandate one arbitrary path. Model graders need calibration against human judgment. Missing evidence remains unknown.
+**In your browser.** [Open Eval Studio](https://ryanalberts.github.io/pmstack/studio/) and pick the dental booking sample. Press 1 (Good) or 2 (Problem) on a few traces and write what went wrong. There is nothing to install, and every tab already has data to explore.
 
-## Build your own evaluation, step by step
+<details>
+<summary>Watch a 30-second tour</summary>
 
-The studio guides you through six decisions:
+<img src="docs/assets/screens/demo.gif" alt="A 30-second tour of Eval Studio: open the dental booking sample, mark one trace Good, mark one Problem with a note, a stage, and a failure mode, then see the Failure modes tab and the Funnel.">
 
-1. **Define success.** Identify the customer, job, target, and quality bar. Choose capability discovery or regression protection.
-2. **Design tasks.** Write unambiguous requests, context, customer value, and reference evidence. Include neighboring cases where the same action would be wrong.
-3. **Set the environment.** Choose pinned or live dependencies, reset behavior, tools, permissions, and memory boundaries.
-4. **Choose graders.** Edit code checks or judgment rubrics. Try the reference and an unsupported “done” against your rules.
-5. **Plan the trials.** Set repetition, balanced or production-weighted sampling, and a pass threshold. Keep critical failures out of the average.
-6. **Run and learn.** Export the suite, run your target, import evidence, inspect transcripts, record human grades, and diagnose the failure before changing the agent.
+</details>
 
-The browser authors and reviews evaluations. It does not secretly call models, execute local commands, or turn a prepared example into a claimed agent run. JSON keeps suites and results portable; Markdown carries the review to your team.
-
-## Examples are examples
-
-Every library starter contains **illustrative tasks and proposed reference evidence**. They explain the structure; they are not measured performance of a named product.
-
-| Example | Target | Distinction it tests |
-| --- | --- | --- |
-| Build a Model Context Protocol (MCP) server | Coding agent | Working tool behavior and error handling, beyond a successful-looking implementation. |
-| Resolve a troubleshooting ticket | Conversational agent | Restore service when safe; preserve work and escalate when a shortcut could harm the customer. |
-| Chief of staff: arrange a flight | Long-running agent | Satisfy itinerary constraints while respecting approval and changed prices. |
-| Grok Bot: memory across sessions | Long-running teammate | Retain stable preferences, apply corrections, and separate users’ context. |
-| Produce a research brief | Research agent | Supported claims and useful synthesis, including conflicting evidence. |
-| Extract facts | Single-response model | Return supplied facts without inventing missing information. |
-| Prepare an expense draft | Computer-use agent | Correct application state without unauthorized submission. |
-
-[Browse the library in the studio](https://ryanalberts.github.io/pmstack/workspace/) or inspect [the source templates](docs/workspace/eval-library.json). Long-running teammates use the same framework, with additional session and memory requirements. No live Grok Bot integration is claimed.
-
-## Run the harness now
-
-Use Node.js 20 or later from a repository checkout. No packages are required.
+**On your computer.** You need Node 20 or newer, nothing else:
 
 ```sh
-git clone https://github.com/RyanAlberts/pmstack.git
-cd pmstack
-
-node bin/eval-harness.mjs validate examples/eval-adapters/suite.json
-node bin/eval-harness.mjs run examples/eval-adapters/suite.json \
-  --adapter examples/eval-adapters/adapters.json \
-  --output /tmp/pmstack-first-run
-node bin/eval-harness.mjs report /tmp/pmstack-first-run/run.json
+git clone https://github.com/RyanAlberts/pmstack && cd pmstack && node bin/pmstack.mjs studio examples/quickstart --open
 ```
 
-This is an **offline simulation of a support agent**, intended to verify the harness. It runs two tasks three times. Setup creates fresh state, the simulated target acts, and a separate observer checks the persisted result.
+Point it at your own folder the same way. Your reviews save next to your traces, in a `pmstack/` folder.
 
-Then run the [claim-only variant](examples/eval-adapters/README.md#prove-that-a-success-claim-is-insufficient). It says “resolved” without doing the work. Three trials fail because the outcome is wrong. The failure is intentional and useful.
+**In Claude Code.** Add the plugin, then start:
 
-Choose a new output directory for each run. The harness refuses to overwrite evidence.
-
-## Connect your own target
-
-The [adapter contract](docs/eval-adapters.md) accepts ordinary programs exchanging JSON. It can wrap a model API, agent runtime, coding environment, browser system, or session sequence. Compatibility requires an adapter for that system; it does not mean every provider is preconnected.
-
-Executable commands live in a separately reviewed adapter file, never in a downloaded suite. The target receives public task context, not evaluator reference answers. A separate observer supplies outcome evidence. Code graders run locally; model and human grader adapters supply scores and reasons, or an explicit unknown. Human reviewers can also enter grades in the studio and export a reviewed run.
-
-The runner retains individual trials, transcripts, observed state, grader results, stage errors, and aggregate reports. Temporary working directories separate ordinary state; they are not an operating-system sandbox. External services and persistent memory must be reset by the adapter.
-
-## Interpret results without fooling yourself
-
-- Required checks must pass. Partial credit explains progress but cannot erase a failed requirement.
-- Critical task failures block a passing suite, even above the average threshold.
-- Missing judgments, missing trials, and infrastructure failures keep the result incomplete.
-- Per-task results, case slices, equal-task averages, and usage-weighted averages serve different decisions.
-- `pass@k` estimates at least one success in *k* attempts; `pass^k` estimates success on every attempt. The report labels their independence assumptions and small-sample limits.
-- Imported results are unsigned evidence. The harness recomputes grades rather than trusting claimed pass labels, but cannot authenticate an uploaded record’s origin.
-
-Improve the agent when it missed a fair expectation. Improve the evaluation when its task, environment, reference, or grader was wrong. A higher score after relaxing a grader is not evidence of a better agent.
-
-## Use the PM skills alongside the framework
-
-`/eval` now designs the JSON suite used by this harness. The existing research, product brief, requirements, metrics, and review skills remain available in [the skill catalog](CLAUDE.md#available-skills).
-
-For Claude Code:
-
-```text
+```
 /plugin marketplace add RyanAlberts/pmstack
 /plugin install pmstack@pmstack
+/pmstack:start
 ```
 
-For other tools, use [the plain-text skill guides](docs/using-other-tools.md). The framework and suite format do not depend on one vendor.
+`/pmstack:start` asks what you have (traces, no traces yet, an agent that uses tools, evals someone else built) and runs the right skill.
 
-The older Python `/run-eval` path and YAML artifacts remain for compatibility. They use a different schema; see [the legacy limits](docs/eval-adapters.md#legacy-python-runner). Use `bin/eval-harness.mjs` for new JSON suites and repeated trials.
+## How it works
 
-## Maintain the craft
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/visuals/loop-dark.svg">
+  <img src="docs/assets/visuals/loop-light.svg" alt="Error discovery in six steps: read traces, write notes, group into failure modes, count by stage, build checks, then test the checks and keep them running. Steps one to three repeat until new failure modes stop appearing. A problem caused by a missing instruction is fixed right away instead of getting a check.">
+</picture>
 
-Start with real manual checks and failures. Inspect disagreements. Add useful challenge cases as the suite becomes easy. Keep established tasks as regression protection. Use production monitoring and customer research alongside offline evaluations.
+| Step | What you do | Where in Eval Studio |
+|---|---|---|
+| 1. Read traces | See each trace the way your customer saw it. | Review traces |
+| 2. Write notes | Note the first thing that went wrong, in plain words. | Review traces |
+| 3. Group into failure modes | Sort your notes into a short list of named problems, and name what went well as success modes. | Failure modes |
+| 4. Count by stage | See where each failure mode starts and how often, then decide: fix it now, build a check, or keep watching. | Funnel |
+| 5. Build checks | Turn each failure mode worth tracking into a code check or an AI judge. | Checks |
+| 6. Test, then keep running | Make sure each check agrees with your labels, then run it on every change. | Checks, Report |
 
-Our proposed 40% PM evaluation practice is a philosophy, not an industry statistic. The goal is better definitions of success and better product decisions, not hours spent assigning scores.
+Metrics picked before anyone reads traces measure the wrong things: a helpfulness score can't see a booking assistant that offers a time that is already taken. A polite, well-written reply can still lose the sale, and only reading the trace shows it. So you read first, and every check you build tracks a failure your customers hit. The method is Hamel Husain and Shreya Shankar's, and [Learn the method](#learn-the-method) links their guides.
 
-[Local setup](docs/workspace/README.md) · [Demo and sharing guide](docs/workspace/DEMO.md) · [Verification](docs/workspace/VERIFICATION.md) · [MIT license](LICENSE)
+## Every product is a different funnel
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/visuals/patterns-dark.svg">
+  <img src="docs/assets/visuals/patterns-light.svg" alt="Six ways AI products are built, drawn on the same stages from understand to answer, with a red mark where failures usually start in each.">
+</picture>
+
+Pick how your AI works (one call with tools, a step by step chain, sort and route, planner and workers, a draft and critique loop, or an agent) and pmstack starts you with stages that fit. [How your AI works](guides/agent-patterns.md) shows where failures usually start in each and what to check first.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screens/views-dark.png">
+  <img src="docs/assets/screens/views-light.png" alt="Four views of traces from different sample products: an outreach email with From and To rows, a policy answer with numbered sources, a ranked list of gift picks with prices, and an agent's steps with tool inputs and outputs.">
+</picture>
+
+One studio, very different products: an email writer, a policy answer bot with sources, a gift finder, and an agent's step list.
+
+Eval Studio draws text messages, web chat, phone calls, emails, documents, answers with sources, agent steps, code reviews, form fields, and ranked lists, and when none of those fits, **Build your own view** lets you pick the fields to show ([product setup guide](guides/experience-config.md)).
+
+## Checks for agents that use tools
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/visuals/tool-calls-dark.svg">
+  <img src="docs/assets/visuals/tool-calls-light.svg" alt="Three questions for every tool call, shown on one example. A customer asks for a credit after an outage. The agent calls issue_credit with amount 80, the tool returns status pending_approval, and the agent replies: Done! $80 is off your next bill. Policy fails because a credit over $50 needs a supervisor. Relevance asks whether it was the right tool with the right details. Output grounding fails because a pending credit is shown as done.">
+</picture>
+
+When your agent looks things up or changes things for your customer, ask three questions of every tool call:
+
+1. **Policy: Is this call allowed?** Your company's rules for which tools the agent may use, when, and with what details.
+2. **Relevance: Is it the right call for what the customer asked?** Right tool, right details, no calls the request didn't need, none it skipped.
+3. **Output grounding: Does the reply match what the tool returned?** No contradicted values, no invented facts, no dropped qualifiers (pending shown as done), no success claimed after a failed call.
+
+Policy rules are requirements your company already knows, so you write them down first, then read traces for the rules nobody wrote down. Relevance and output grounding problems show up when you read traces: confirm them in your own, then start from the ready-made [templates](templates/tool-calls/).
+
+| In Claude Code | What it does |
+|---|---|
+| `/pmstack:tool-policy` | Turns your company's requirements into a policy file, tests it on past traces, and shows how to block a bad call before it runs. |
+| `/pmstack:tool-relevance` | Builds an intent map (for each kind of request, the tools it needs, may use, and must never use) or an AI judge for the right call. |
+| `/pmstack:tool-grounding` | Adds two code checks for the reply (a number no tool returned, success claimed after a failed call), then an AI judge for reworded facts. |
+
+Try them on the [support agent sample](https://ryanalberts.github.io/pmstack/studio/#/open/support-agent), and read the [tool call checks guide](guides/tool-call-evals.md).
+
+## Inside the method
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/visuals/notes-to-modes-dark.svg">
+  <img src="docs/assets/visuals/notes-to-modes-light.svg" alt="Ten review notes sorted into three failure modes, one success mode, and a Not a product problem pile, then ranked by how often and how badly each hurts. Ignoring requests for a person ranks first even though stray symbols in texts is more common.">
+</picture>
+
+**From notes to failure modes.** Grouping turns a pile of notes into a short list of failure modes, named in your customer's words. Then pmstack ranks them by traces times severity (Blocks counts 3, Hurts 2, Annoys 1). In the dental booking sample, stray symbols in texts is the most common failure mode at 9 conversations, but ignoring requests for a person ranks first: 7 conversations, and each one blocks the patient.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/visuals/judge-trust-dark.svg">
+  <img src="docs/assets/visuals/judge-trust-light.svg" alt="Can you trust your AI judge? Measured on 75 labeled conversations kept aside until the end, the judge caught 23 of 25 real failures (92%) and agreed on 47 of 50 good conversations (94%). On 400 new conversations it flagged 18%. Correcting for its known mistakes, the likely true failure rate is 14%, with a 95% range of 4% to 21%.">
+</picture>
+
+**Can you trust your AI judge?** A judge is a prompt, so it makes mistakes, and you measure them before you trust its numbers. pmstack sets part of your labels aside as a final test and reports two numbers: how many real failures the judge catches, and how many good traces it leaves alone. In this example the judge catches 23 of 25 real failures and leaves 47 of 50 good ones alone. It flags 18% of 400 new conversations, and after correcting for its known mistakes, the likely true failure rate is 14%.
+
+## What's inside
+
+### Eval Studio
+
+A web app with six tabs. It runs [on the web](https://ryanalberts.github.io/pmstack/studio/), or on your computer with `node bin/pmstack.mjs studio <folder>`.
+
+| Tab | What you do there | Steps |
+|---|---|---|
+| 1 Set up | Load your traces and choose how your product looks. | Before you start |
+| 2 Review traces | Read each trace, mark Good or Problem, and write what went wrong. | 1, 2 |
+| 3 Failure modes | Group your notes into named failure modes and success modes. | 3 |
+| 4 Funnel | See the stage where each failing trace went wrong first, and what to fix first. | 4 |
+| 5 Checks | Turn the failure modes that matter into checks, and confirm they agree with you. | 5, 6 |
+| 6 Report | Share what you found and hand checks to your engineers. | 6 |
+
+Six sample products come with it: a dental booking assistant, an outreach email writer, a policy answer bot, a gift finder, a pull request reviewer, and an internet provider's support agent.
+
+### Skills
+
+Twelve skills for Claude Code and any agent that reads skills. [skills/README.md](skills/README.md) shows how to install them in Codex, Cursor, Gemini CLI, and Claude on the web.
+
+| Skill | Use it when | In Claude Code |
+|---|---|---|
+| [`pmstack-start`](skills/pmstack-start/SKILL.md) | You are not sure where to begin | `/pmstack:start` |
+| [`pmstack-error-discovery`](skills/pmstack-error-discovery/SKILL.md) | You have traces and want to find how the product fails | `/pmstack:error-discovery` |
+| [`pmstack-synthetic-traces`](skills/pmstack-synthetic-traces/SKILL.md) | You have no real traces yet | `/pmstack:synthetic-traces` |
+| [`pmstack-write-judge`](skills/pmstack-write-judge/SKILL.md) | A failure mode needs an AI judge | `/pmstack:write-judge` |
+| [`pmstack-validate-judge`](skills/pmstack-validate-judge/SKILL.md) | You need to know whether a judge agrees with you | `/pmstack:validate-judge` |
+| [`pmstack-evaluate-rag`](skills/pmstack-evaluate-rag/SKILL.md) | Your product answers questions by searching documents | `/pmstack:evaluate-rag` |
+| [`pmstack-custom-view`](skills/pmstack-custom-view/SKILL.md) | Your traces don't look the way your customer saw them | `/pmstack:custom-view` |
+| [`pmstack-eval-audit`](skills/pmstack-eval-audit/SKILL.md) | You inherited evals and want to know if the numbers hold up | `/pmstack:eval-audit` |
+| [`pmstack-regression-checks`](skills/pmstack-regression-checks/SKILL.md) | You want checks on every code change and in production | `/pmstack:regression-checks` |
+| [`pmstack-tool-policy`](skills/pmstack-tool-policy/SKILL.md) | Your agent's tool calls must follow company rules | `/pmstack:tool-policy` |
+| [`pmstack-tool-relevance`](skills/pmstack-tool-relevance/SKILL.md) | Your agent picks the wrong tool or the wrong details | `/pmstack:tool-relevance` |
+| [`pmstack-tool-grounding`](skills/pmstack-tool-grounding/SKILL.md) | Your agent's replies don't match its tool results | `/pmstack:tool-grounding` |
+
+### Command line
+
+`bin/pmstack.mjs` runs on Node 20 or newer with nothing to install. Each line below works on the samples right after you clone:
+
+```sh
+# Make a project file from a trace file, without opening the studio
+node bin/pmstack.mjs import examples/quickstart/traces.jsonl --out quickstart.json
+
+# Run the code checks on every trace (exits 1 when a trace fails, so a build can stop on it)
+node bin/pmstack.mjs check docs/studio/samples/clinic-booking.json
+
+# How often a check agrees with your labels
+node bin/pmstack.mjs agreement docs/studio/samples/clinic-booking.json --check ck-stray-symbols
+
+# Run an AI judge with your own model command (here Claude Code's), on a copy of the sample
+cp docs/studio/samples/clinic-booking.json clinic.json
+node bin/pmstack.mjs judge clinic.json --check ck-person-judge --cmd "claude -p --model {model}" --limit 10
+
+# Check every tool call against your company's rules
+node bin/pmstack.mjs policy docs/studio/samples/support-agent.json --policy templates/tool-calls/policy.json
+
+# Write the report (with a funnel picture) and the regression set for your engineers
+node bin/pmstack.mjs report docs/studio/samples/clinic-booking.json --out report.md
+node bin/pmstack.mjs regression-set docs/studio/samples/clinic-booking.json --out regression.jsonl
+```
+
+`node bin/pmstack.mjs --help` lists every command, and the [command line guide](guides/cli.md) covers each option.
+
+## Your data stays on your computer
+
+Eval Studio on the web keeps your traces and reviews in your browser's storage, and nothing is uploaded. On your computer, `pmstack studio` listens only on 127.0.0.1 and saves plain files in a `pmstack/` folder next to your traces. AI help runs only when you start it: you paste a prompt into an AI assistant your company approves, or run a judge with your own model command.
+
+## Make it fit your product
+
+- [The method, step by step](guides/method.md): the six steps in depth, with examples from the samples.
+- [Trace format](guides/trace-format.md): every file shape pmstack reads, trace ids, and mapping your own fields.
+- [Product setup](guides/experience-config.md): views, stages, which steps belong to each stage, a view per channel, and custom views.
+- [Checks and AI judges](guides/checks-and-judges.md): code checks, judges, labels, the final test, and running checks on every change.
+- [Tool call checks](guides/tool-call-evals.md): policy, relevance, and output grounding, with every rule type.
+- [How your AI works](guides/agent-patterns.md): eight patterns, where failures start in each, and what to check first.
+- [Command line](guides/cli.md): every command, option, and exit code.
+
+## Learn the method
+
+pmstack puts into practice what Hamel Husain and Shreya Shankar teach. Go to the source:
+
+- [Building eval systems that improve your AI product](https://www.lennysnewsletter.com/p/building-eval-systems-that-improve-your-ai-product), their guide in Lenny's Newsletter.
+- [Advanced evals: How to find (and fix) hidden AI failures in your product](https://www.lennysnewsletter.com/p/advanced-evals-how-to-find-and-fix), the follow-up on error discovery.
+- [AI Evals For Engineers & PMs](https://maven.com/parlance-labs/evals), their course.
+- [Evals FAQ](https://hamel.dev/blog/posts/evals-faq/), their answers to the questions teams ask most.
+- [evals-skills](https://github.com/ai-evals-course/evals-skills), their skills for coding agents.
+- [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents), Anthropic's guide, where the pattern names come from.
+
+pmstack is independent and not affiliated with them.
+
+## Upgrading from pmstack 1.x
+
+pmstack 2.0 is rebuilt around error discovery. The earlier PM commands (`/prd`, `/weekly`, `/competitive`, `/metrics`, `/brief`, `/eval`, `/run-eval`, and others), the evaluation harness, and the evaluation workspace were retired in 2.0. Get them from the `v1.2.0` tag:
+
+```sh
+git clone --branch v1.2.0 https://github.com/RyanAlberts/pmstack pmstack-1.2
+```
+
+The [changelog](CHANGELOG.md) lists what changed and where each retired piece went.
+
+## License
+
+MIT. See [LICENSE](LICENSE), and [credits](guides/credits.md) for the work pmstack builds on.
