@@ -1,5 +1,5 @@
 ---
-description: Find the right next step for evaluating your AI product
+description: "Pick where to start: real traces, no traces yet, an agent that uses tools, or evals you inherited"
 argument-hint: "[what you are working on]"
 ---
 

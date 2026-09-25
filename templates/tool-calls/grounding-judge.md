@@ -18,7 +18,7 @@ An AI judge prompt for the output grounding question: **Does the reply match wha
 
 4. **Give the judge the tool results and the reply,** plus what the customer said so it knows what was asked. When traces are long, leave out the agent's instructions and the steps before the last request.
 5. **Pin an exact model version**, for example `claude-haiku-4-5-20251001`, so the judge doesn't change under you.
-6. **Test it against your own labels before you trust it.** Run it on your tuning set, read every disagreement, then fix the prompt or your label. Stop when it catches real failures and agrees on good traces at 90% or better each (80% at the least). Then run the final test once. `/pmstack:validate-judge` walks you through it.
+6. **Test it against your own labels before you trust it.** Run it on your tuning set, read every disagreement, then fix the prompt or your label. Stop when it catches real failures and agrees on good traces at 90% or better each (80% at the least). Then run the final test once. `/pmstack:test-judge` walks you through it.
 
 In Eval Studio, the Checks tab builds this prompt for you: Tool call checks, Output grounding, "Use the AI judge template". Use this file when you run judges in your own tools.
 

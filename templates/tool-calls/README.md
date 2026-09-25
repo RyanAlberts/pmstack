@@ -88,4 +88,4 @@ A guardrail that blocks good requests is a bug your customers feel. Run the poli
 ## Learn more
 
 - [Tool call checks guide](../../guides/tool-call-evals.md): every rule type with examples, and how the checks fit error discovery.
-- `/pmstack:validate-judge`: prove an AI judge agrees with you before you rely on it.
+- `/pmstack:test-judge`: prove an AI judge agrees with you before you rely on it.

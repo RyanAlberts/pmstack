@@ -166,7 +166,7 @@ test('welcome renders the tagline, the funnel, the samples, and the six steps', 
   await expect(page.locator('.welcome-step')).toHaveCount(6);
   await expect(page.locator('.welcome-step').first()).toContainText('Set up: load your traces and choose how your product looks.');
   await page.getByRole('button', { name: 'No traces yet?' }).click();
-  await expect(page.locator('#welcome-notraces')).toContainText('/pmstack:synthetic-traces');
+  await expect(page.locator('#welcome-notraces')).toContainText('/pmstack:make-traces');
 });
 
 // ---------------------------------------------------------------------------

@@ -1,9 +1,9 @@
 ---
-name: pmstack-error-discovery
-description: Runs error discovery on an AI product's traces with a person reviewing in Eval Studio. Finds or creates a trace file, sets up a pmstack project (how traces look, the product's stages, filters), starts the local studio, watches reviews as they arrive, suggests likely failures, groupings, and the next traces to read for the reviewer to accept or dismiss, reports coverage and when new failure modes stop appearing, and helps rank failure modes by stage and severity. Use when someone has traces, logs, or conversation exports from an AI feature and wants to find how it fails, asks for error analysis or error discovery, wants to review traces with an agent's help, or needs to start saving traces from an app.
+name: pmstack-find-failures
+description: "Finds how an AI product fails, with a person reviewing real traces in Eval Studio. Finds or creates a trace file, sets up a pmstack project (how traces look, the product's stages, filters), starts the local studio, watches reviews as they come in, and suggests likely problems, groupings, and the next traces to read for the reviewer to accept or dismiss. Reports coverage and when new failure modes stop appearing, and helps rank failure modes by stage and severity. Use when someone has traces, logs, or conversation exports from an AI feature and wants to know how it fails, asks for an error analysis, wants help reviewing traces, or needs to start saving traces from an app."
 ---
 
-# Error discovery with Eval Studio
+# Find how your AI product fails, with Eval Studio
 
 The reviewer reads traces and writes notes. You organize: set up the project, keep Eval Studio running, watch reviews arrive, and suggest failure modes, flags, and the next traces to read. The reviewer accepts or dismisses every suggestion. Work through the phases in order. Before and after each phase, tell the reviewer in one line what you did and what comes next.
 
@@ -58,7 +58,7 @@ Set `FOLDER` to the directory that holds the trace file; the project lives in `$
    > A. Add trace logging to the app, then collect real sessions (recommended when the product has users)
    > B. Generate test conversations now (recommended before launch)
 
-   On B, load `pmstack-synthetic-traces`. On A, give this brief to the coding agent that owns the app (you, when you have its code):
+   On B, load `pmstack-make-traces`. On A, give this brief to the coding agent that owns the app (you, when you have its code):
 
    > Save every AI session in this app as one trace. A trace holds the user's input, the system instructions, every model call, every tool call with its arguments and result, any documents retrieved, and the final output the user saw. Keep any logging the app already sends to a tracing vendor. Also append one JSON object per session, on one line, to `traces/traces.jsonl`, with `id`, `metadata` (channel such as sms, web, or voice; persona; user feedback; app version), `messages` (role, content, tool calls with name and arguments, tool results), `steps` for work outside the chat (retrieved documents with id, title, and text), and `output` when the result is not a chat reply (an email, an answer with citations, a list). Leave out passwords, payment details, and government ids.
 
@@ -185,7 +185,7 @@ Priority is traces x severity weight (Blocks 3, Hurts 2, Annoys 1); ties go to t
 2. "Did the AI's instructions ask for this?" Answer from evidence first: find the instruction in the traces' system messages or in the app's prompt file, quote it, then ask the reviewer to confirm Yes, No, or Not sure. No suggests **Fix it now**: add the instruction first, and build a check only if it keeps failing after the fix or it is critical. Yes suggests **Build a check**. A rare, mild failure mode suggests **Keep watching**.
 3. Multi-turn failure modes: ask the product the same thing in one turn. Maple Dental offered a taken Friday slot on turn 4, after the patient changed days; send the fresh message "Is Friday at 2 PM open for a cleaning?" Still fails: a knowledge or look-up problem (the calendar tool or its data). Passes: a conversation problem (it lost track of earlier turns). Run it yourself when the app runs locally; otherwise give the reviewer the one message to try. Record the result in the mode's `impact` field once the studio has stopped.
 
-Hand off in one line each: Build a check with an AI judge: `pmstack-write-judge` (code checks are built in the Checks tab). An answer bot whose failures start at the look-up stage: `pmstack-evaluate-rag`. Fixes shipped: `pmstack-regression-checks`.
+Hand off in one line each: Build a check with an AI judge: `pmstack-build-judge` (code checks are built in the Checks tab). An answer bot whose failures start at the look-up stage: `pmstack-check-sources`. Fixes shipped: `pmstack-regression-checks`.
 
 ## Runs without a person
 

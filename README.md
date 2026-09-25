@@ -149,13 +149,13 @@ Twelve skills for Claude Code and any agent that reads skills. [skills/README.md
 | Skill | Use it when | In Claude Code |
 |---|---|---|
 | [`pmstack-start`](skills/pmstack-start/SKILL.md) | You are not sure where to begin | `/pmstack:start` |
-| [`pmstack-error-discovery`](skills/pmstack-error-discovery/SKILL.md) | You have traces and want to find how the product fails | `/pmstack:error-discovery` |
-| [`pmstack-synthetic-traces`](skills/pmstack-synthetic-traces/SKILL.md) | You have no real traces yet | `/pmstack:synthetic-traces` |
-| [`pmstack-write-judge`](skills/pmstack-write-judge/SKILL.md) | A failure mode needs an AI judge | `/pmstack:write-judge` |
-| [`pmstack-validate-judge`](skills/pmstack-validate-judge/SKILL.md) | You need to know whether a judge agrees with you | `/pmstack:validate-judge` |
-| [`pmstack-evaluate-rag`](skills/pmstack-evaluate-rag/SKILL.md) | Your product answers questions by searching documents | `/pmstack:evaluate-rag` |
+| [`pmstack-find-failures`](skills/pmstack-find-failures/SKILL.md) | You have traces and want to find how the product fails | `/pmstack:find-failures` |
+| [`pmstack-make-traces`](skills/pmstack-make-traces/SKILL.md) | You have no real traces yet | `/pmstack:make-traces` |
+| [`pmstack-build-judge`](skills/pmstack-build-judge/SKILL.md) | A failure mode needs an AI judge | `/pmstack:build-judge` |
+| [`pmstack-test-judge`](skills/pmstack-test-judge/SKILL.md) | You need to know whether a judge agrees with you | `/pmstack:test-judge` |
+| [`pmstack-check-sources`](skills/pmstack-check-sources/SKILL.md) | Your product answers questions by searching documents | `/pmstack:check-sources` |
 | [`pmstack-custom-view`](skills/pmstack-custom-view/SKILL.md) | Your traces don't look the way your customer saw them | `/pmstack:custom-view` |
-| [`pmstack-eval-audit`](skills/pmstack-eval-audit/SKILL.md) | You inherited evals and want to know if the numbers hold up | `/pmstack:eval-audit` |
+| [`pmstack-evals-checkup`](skills/pmstack-evals-checkup/SKILL.md) | You inherited evals and want to know if the numbers hold up | `/pmstack:evals-checkup` |
 | [`pmstack-regression-checks`](skills/pmstack-regression-checks/SKILL.md) | You want checks on every code change and in production | `/pmstack:regression-checks` |
 | [`pmstack-tool-policy`](skills/pmstack-tool-policy/SKILL.md) | Your agent's tool calls must follow company rules | `/pmstack:tool-policy` |
 | [`pmstack-tool-relevance`](skills/pmstack-tool-relevance/SKILL.md) | Your agent picks the wrong tool or the wrong details | `/pmstack:tool-relevance` |

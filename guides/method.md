@@ -25,7 +25,7 @@ This guide walks through the six steps with the Maple Dental booking assistant, 
 
 ## Before you start
 
-**Get real traces.** Export one row per conversation or task from your logging tool: the messages, the tool calls and results, and details such as the channel or the kind of customer. A spreadsheet export works. The [trace format guide](trace-format.md) lists every shape pmstack reads. With no traces yet, `/pmstack:synthetic-traces` in Claude Code writes realistic test requests, runs them through your product, and saves the results as traces.
+**Get real traces.** Export one row per conversation or task from your logging tool: the messages, the tool calls and results, and details such as the channel or the kind of customer. A spreadsheet export works. The [trace format guide](trace-format.md) lists every shape pmstack reads. With no traces yet, `/pmstack:make-traces` in Claude Code writes realistic test requests, runs them through your product, and saves the results as traces.
 
 **Pick one reviewer.** One person whose judgment sets the bar: usually the product manager, or the domain expert who knows what a good answer looks like (a dentist's front desk lead, a benefits specialist). A committee argues about every trace. One reviewer decides, and others can check the labels later.
 
@@ -66,9 +66,9 @@ The weak notes can't be grouped or acted on, and one of them names a cause the r
 
 Good traces get an optional note too ("Two mornings, no wall of options, read it all back."). Those notes become success modes.
 
-Pick where it first went wrong if you can: a stage chip, or hover a step in the trace and click "First thing that went wrong". Pick where the problem first shows, not why it happened. The [note rules for agents](../skills/pmstack-error-discovery/reviewing-traces.md) have more examples.
+Pick where it first went wrong if you can: a stage chip, or hover a step in the trace and click "First thing that went wrong". Pick where the problem first shows, not why it happened. The [note rules for agents](../skills/pmstack-find-failures/reviewing-traces.md) have more examples.
 
-**AI help waits for you.** AI suggestions become available after you review 10 traces, and AI grouping after 30. Reading traces yourself first keeps your judgment in charge. After that, the AI help drawer gives you a prompt to paste into an AI assistant your company approves, or `/pmstack:error-discovery` in Claude Code watches your reviews and suggests likely failures on traces you haven't read. Suggestions show with a dashed purple border until you accept or dismiss them.
+**AI help waits for you.** AI suggestions become available after you review 10 traces, and AI grouping after 30. Reading traces yourself first keeps your judgment in charge. After that, the AI help drawer gives you a prompt to paste into an AI assistant your company approves, or `/pmstack:find-failures` in Claude Code watches your reviews and suggests likely failures on traces you haven't read. Suggestions show with a dashed purple border until you accept or dismiss them.
 
 ## 3. Group into failure modes
 
@@ -136,7 +136,7 @@ Start with the question "Can a simple rule decide this?"
 - **Code check** (a rule a computer can test). "No formatting symbols in text messages" is a pattern match on the AI's replies, limited to traces where the channel is sms. It is free, fast, and gives the same answer every time.
 - **AI judge** (a prompt that asks a model to decide pass or fail for one failure mode). "Ignores requests for a person" needs judgment: the patient may ask for "someone at the office", "a human", or "call me", and the assistant may say it passed the request on without transferring. A judge reads the trace and answers Pass or Fail with a one-line critique.
 
-One judge covers one failure mode, and it answers Pass or Fail, never a score from 1 to 5. Write a judge after you have at least 20 Problem and 20 Good labels for that failure mode; aim for about 50 of each. The [checks and AI judges guide](checks-and-judges.md) covers both kinds, and `/pmstack:write-judge` writes a judge with you.
+One judge covers one failure mode, and it answers Pass or Fail, never a score from 1 to 5. Write a judge after you have at least 20 Problem and 20 Good labels for that failure mode; aim for about 50 of each. The [checks and AI judges guide](checks-and-judges.md) covers both kinds, and `/pmstack:build-judge` writes a judge with you.
 
 Agents that call tools get three ready-made kinds of checks (policy, relevance, and output grounding). See [Tool call checks](tool-call-evals.md).
 

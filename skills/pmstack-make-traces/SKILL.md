@@ -1,9 +1,9 @@
 ---
-name: pmstack-synthetic-traces
-description: Generates realistic test requests for an AI product that has few or no real traces, runs them through the product, and saves the results as traces ready for error discovery. Starts from three dimensions where failures are expected, checks 20 combinations with the user, writes one request per combination with a separate model call, filters out unrealistic ones, confirms each scenario can happen in the test setup, and tags every trace with its dimension values so Eval Studio can filter by them. Use when a product has not launched, real traces are too few to review, or someone wants to probe a known rare failure before users hit it.
+name: pmstack-make-traces
+description: "Makes realistic test traces for an AI product that has few or no real ones: writes test requests, runs them through the product, and saves the results as traces ready to review in Eval Studio. Starts from three ways the product is likely to fail, checks 20 combinations with the user, writes one request per combination with a separate model call, drops unrealistic ones, confirms each scenario can happen in the test setup, and tags every trace with its values so Eval Studio can filter by them. Use when a product has not launched, real traces are too few to review, or someone wants to probe a known rare failure before users hit it."
 ---
 
-# Synthetic traces from dimensions
+# Make test traces
 
 You write the {userLabel}'s side only: requests. The real product writes the replies, its trace logging records them, and the reviewer judges them later in error discovery. The target is about 100 traces. Work through the phases in order and tell the user in one line what each phase did.
 
@@ -24,9 +24,9 @@ If none is found, the finished trace file can still be loaded in Eval Studio in 
 
 **Questions**: when the user must choose, give 2 to 5 lettered options in plain words. When one option is better, put it first, marked "(recommended)" with its reason. Accept a single letter. When the files already answer a question, state what you found and continue.
 
-## Phase 1: Check that synthetic traces fit
+## Phase 1: Check that test traces fit
 
-- 100 or more real, varied traces already exist: use them instead and load `pmstack-error-discovery`.
+- 100 or more real, varied traces already exist: use them instead and load `pmstack-find-failures`.
 - Synthetic traces fit before launch, when real traces are too few, and for probing a known rare failure.
 - Tell the user once: synthetic traces show what can fail, not how often it fails in production, and they are weakest for specialist documents (medical records, legal filings) and for low-resource languages or dialects, where real examples serve better.
 
@@ -101,7 +101,7 @@ Check each combination with code where you can (call the tool or query the test 
 
 ## Phase 8: Run the requests through the product
 
-1. Send each request as the {userLabel}'s first message through the real product (a local server, staging, or the team's test script) with trace logging on; the trace format is in `pmstack-error-discovery`, Phase 1. Make the run script reuse the request's `id` as the trace `id`. Follow-up turns need a simulated user, which is harder to make realistic, so start with first turns.
+1. Send each request as the {userLabel}'s first message through the real product (a local server, staging, or the team's test script) with trace logging on; the trace format is in `pmstack-find-failures`, Phase 1. Make the run script reuse the request's `id` as the trace `id`. Follow-up turns need a simulated user, which is harder to make realistic, so start with first turns.
 2. Every trace carries its dimension values in `metadata`, plus `"source": "synthetic"`. When the logging cannot add them, merge them after the run:
    ```sh
    node -e '
@@ -124,7 +124,7 @@ Done when about 100 traces exist, each with its dimension values in `metadata`.
 1. New project: `node "$PMSTACK" import "$FOLDER/traces.jsonl" --out "$FOLDER/pmstack/project.json" --name "Maple Dental booking assistant"`. Existing project: add `--append` (traces already there are skipped).
 2. Add the dimension names to `experience.filters` (edit `project.json` while no studio is running, or use Set up in Eval Studio), so the reviewer can check whether a failure clusters in one kind of scenario.
 3. Run `node "$PMSTACK" validate "$FOLDER/pmstack/project.json"` until it exits 0.
-4. Load `pmstack-error-discovery` and continue from its Phase 2, skipping step 2 (the project already exists): read the traces in step 1, then correct `experience` from step 3 on.
+4. Load `pmstack-find-failures` and continue from its Phase 2, skipping step 2 (the project already exists): read the traces in step 1, then correct `experience` from step 3 on.
 
 ## Never
 

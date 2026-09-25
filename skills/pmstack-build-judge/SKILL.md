@@ -1,11 +1,11 @@
 ---
-name: pmstack-write-judge
-description: Writes an AI judge (a prompt that asks a model for Pass or Fail, also called LLM-as-judge) for one failure mode found in error discovery, and saves it as a check in the pmstack project. Checks the prerequisites (at least 20 Problem and 20 Good labels, no simple rule that could decide it, the product's instructions already ask for the behavior), turns the failure mode's definition into Pass and Fail rules, picks 2 to 4 examples from the examples split only, puts the critique before the result, limits what the judge sees, pins an exact model version, and runs it on the tuning set. Use when a failure mode is marked Build a check and needs judgment a simple rule cannot make, or when someone asks to write, draft, or improve a judge prompt.
+name: pmstack-build-judge
+description: "Builds an AI judge (a prompt that asks a model for Pass or Fail) for one failure mode found while reviewing traces, and saves it as a check in the pmstack project. Checks the prerequisites (at least 20 Problem and 20 Good labels, no simple rule that could decide it, the product's instructions already ask for the behavior), turns the failure mode's definition into Pass and Fail rules, picks 2 to 4 examples from the examples split only, puts the critique before the result, limits what the judge sees, pins an exact model version, and runs it on the tuning set. Use when a failure mode is marked Build a check and needs judgment a simple rule cannot make, or when someone asks to write, draft, or improve a judge prompt."
 ---
 
-# Write an AI judge for one failure mode
+# Build an AI judge for one failure mode
 
-An AI judge is a prompt that reads one trace and answers Pass or Fail for exactly one failure mode, writing its critique before its result. This skill writes the judge, saves it as a check, and runs it on the tuning set. `pmstack-validate-judge` then reads the disagreements and runs the final test. Work through the phases in order and tell the user in one line what each phase did.
+An AI judge is a prompt that reads one trace and answers Pass or Fail for exactly one failure mode, writing its critique before its result. This skill writes the judge, saves it as a check, and runs it on the tuning set. `pmstack-test-judge` then reads the disagreements and runs the final test. Work through the phases in order and tell the user in one line what each phase did.
 
 Words used here:
 - **Trace**: one full conversation or task. **{userLabel}**: the project's user word, from `experience.userLabel` (patient, customer, employee).
@@ -53,7 +53,7 @@ Candidates are failure modes with decision `check` and no check yet, highest pri
 
 | Prerequisite | How to check | When it is missing |
 |---|---|---|
-| The failure mode came from error discovery and has a "Fails when" definition | `modes` in `project.json`, kind `failure` | Load `pmstack-error-discovery` |
+| The failure mode came from error discovery and has a "Fails when" definition | `modes` in `project.json`, kind `failure` | Load `pmstack-find-failures` |
 | The product's instructions ask for this behavior | The mode's `instructed` is `yes`; otherwise read the system instructions and quote the line | Fix the instructions first. Build a judge only if it keeps failing after the fix, or the failure is critical |
 | No simple rule can decide it | The table below | Build a code check in the Checks tab instead |
 | At least 20 Problem and 20 Good labels | `node "$HELPER" "$PROJECT" "$PMSTACK" labels <modeId>` | Label more in the Checks tab ("Label more traces for this failure mode"); aim for about 50 of each |
@@ -127,12 +127,12 @@ node "$PMSTACK" agreement "$PROJECT" --check ck-person-judge --split tuning
 
 Report both numbers in plain words: "Catches real failures: 89% (8 of 9). Agrees on good traces: 95% (21 of 22)." The target is both above 90%, with 80% as the minimum. Always give both: a judge that always says Good scores 100% on the second and 0% on the first.
 
-Then load `pmstack-validate-judge` to read every disagreement, improve the prompt on the tuning set, and run the final test once.
+Then load `pmstack-test-judge` to read every disagreement, improve the prompt on the tuning set, and run the final test once.
 
 ## Never
 
 - Put tuning or final-test traces in the prompt.
-- Run `--split test`: the final test belongs to `pmstack-validate-judge` and runs once.
+- Run `--split test`: the final test belongs to `pmstack-test-judge` and runs once.
 - Cover two failure modes with one judge, or ask the judge for a score.
 - Pin a model alias.
 - Hand-edit `project.json` while the studio runs.

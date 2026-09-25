@@ -383,7 +383,7 @@ test('help, version, and usage errors', async (t) => {
   const dir = tmpDir(t);
   const help = await run([], dir);
   assert.equal(help.code, 0);
-  assert.match(help.out, /^pmstack 2\.0\.0: Find how your AI product fails\. Iterate\. Raw pattern recognition meets Product Sense\./);
+  assert.match(help.out, /^pmstack 2\.1\.0: Find how your AI product fails\. Iterate\. Raw pattern recognition meets Product Sense\./);
   for (const cmd of ['studio', 'import', 'validate', 'check', 'judge', 'agreement', 'estimate', 'retrieval', 'report', 'regression-set', 'checks', 'policy']) {
     const r = await run([cmd, '--help'], dir);
     assert.equal(r.code, 0, cmd);
@@ -393,7 +393,7 @@ test('help, version, and usage errors', async (t) => {
     assert.ok(!/\b(TPR|TNR|LLM|regex|CI)\b/.test(text), `${cmd} help uses plain words`);
   }
   assert.equal((await run(['help', 'judge'], dir)).out.split('\n')[0], (await run(['judge', '-h'], dir)).out.split('\n')[0]);
-  assert.equal((await run(['--version'], dir)).out, 'pmstack 2.0.0\n');
+  assert.equal((await run(['--version'], dir)).out, 'pmstack 2.1.0\n');
   const unknownFlag = await run(['validate', 'x.json', '--fast'], dir);
   assert.equal(unknownFlag.code, 2);
   assert.match(unknownFlag.err, /Unknown option --fast for pmstack validate\.\nUsage: pmstack validate/);

@@ -152,7 +152,7 @@ test('every command shim points to an existing skill, and every skill has a shim
 test('plugin and marketplace manifests point to paths that exist', () => {
   const plugin = JSON.parse(read('.claude-plugin/plugin.json'));
   assert.equal(plugin.name, 'pmstack');
-  assert.equal(plugin.version, '2.0.0');
+  assert.equal(plugin.version, '2.1.0');
   assert.equal(plugin.homepage, 'https://ryanalberts.github.io/pmstack/');
   for (const key of ['skills', 'commands']) {
     assert.equal(typeof plugin[key], 'string', `plugin.json ${key}`);

@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.1.0 (2026-09-24)
+
+### Changed
+
+Six slash commands and their skills have new names, taken from pmstack's own steps and tagline. The skills work the same way.
+
+| Before | Now |
+|---|---|
+| `/pmstack:error-discovery` | `/pmstack:find-failures` |
+| `/pmstack:synthetic-traces` | `/pmstack:make-traces` |
+| `/pmstack:write-judge` | `/pmstack:build-judge` |
+| `/pmstack:validate-judge` | `/pmstack:test-judge` |
+| `/pmstack:evaluate-rag` | `/pmstack:check-sources` |
+| `/pmstack:eval-audit` | `/pmstack:evals-checkup` |
+
+`/pmstack:start`, `/pmstack:custom-view`, `/pmstack:regression-checks`, and the three tool call commands keep their names. If you installed skills with `setup`, run it again; the old `pmstack-*` skill folders can be deleted.
+
+The tagline is now "Find how your AI product fails. Iterate. Raw pattern recognition meets Product Sense."
+
 ## 2.0.0 (2026-09-24)
 
 pmstack 2.0 is rebuilt around error discovery, the method Hamel Husain and Shreya Shankar teach: read real traces, name the failure modes, and turn the ones that matter into checks you can trust. Everything from 1.x is kept at the `v1.2.0` tag.

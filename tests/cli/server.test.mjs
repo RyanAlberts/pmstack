@@ -59,7 +59,7 @@ test('serves the studio with the right types and no caching', async (t) => {
   assert.match(index.headers['content-type'], /^text\/html/);
   assert.equal(index.headers['cache-control'], 'no-store');
   assert.match(index.text, /app\.mjs/);
-  const app = await request(port, { path: '/app.mjs?v=2.0.0' });
+  const app = await request(port, { path: '/app.mjs?v=2.1.0' });
   assert.equal(app.status, 200);
   assert.match(app.headers['content-type'], /^text\/javascript/);
   const css = await request(port, { path: '/styles/tokens.css' });
@@ -161,7 +161,7 @@ test('api/info names the folder, project, trace file, and this command', async (
   assert.equal(info.folder, dir);
   assert.equal(info.projectPath, projectPath);
   assert.equal(info.tracesFile, 'traces.jsonl');
-  assert.equal(info.version, '2.0.0');
+  assert.equal(info.version, '2.1.0');
   assert.equal(info.cliPath, CLI);
   assert.equal(info.revision, 1);
 });

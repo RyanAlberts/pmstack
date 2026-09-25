@@ -1,6 +1,6 @@
 ---
 name: pmstack-regression-checks
-description: Keeps known failures from coming back and keeps watching for new ones. Builds a regression set from a pmstack project, replays it through the product on every code change and runs code checks with pmstack check, samples production traces for a validated judge's likely true failure rate, and schedules fresh error discovery after big changes. Includes a GitHub Actions example. Use when a failure mode is fixed or has a check, when adding AI checks to a build pipeline, or when monitoring AI quality in production.
+description: "Keeps known failures from coming back and keeps watching for new ones. Builds a regression set from a pmstack project, replays it through the product on every code change and runs code checks with pmstack check, samples production traces for a tested judge's likely true failure rate, and schedules a fresh round of trace review after big changes. Includes a GitHub Actions example. Use when a failure mode is fixed or has a check, when adding AI checks to a build pipeline, or when monitoring AI quality in production."
 ---
 
 # Run checks on every change
@@ -111,7 +111,7 @@ jobs:
   regression:
     runs-on: ubuntu-latest
     env:
-      PMSTACK_REF: v2.0.0 # pin a pmstack release tag
+      PMSTACK_REF: v2.1.0 # pin a pmstack release tag
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -138,7 +138,7 @@ Phase 4 is done when the workflow runs on a pull request and passes.
 
 ## Phase 5: Sample production
 
-Use only judges that passed pmstack-validate-judge with a current final test; `estimate` refuses otherwise.
+Use only judges that passed pmstack-test-judge with a current final test; `estimate` refuses otherwise.
 
 1. Ask the PM for a limit per failure mode: the highest failure rate they accept (for example "no more than 3% of patients asking for a person get ignored").
 2. On a schedule, take a random sample of production traces (course notes suggest 1 to 5% of traffic) and write it as `sample.jsonl`. Keep it random; a sample of flagged or complained-about traces describes those traces only.
@@ -161,7 +161,7 @@ After a model switch, a prompt rewrite, a new feature, or an incident, and every
 node "$PMSTACK" import new-traces.jsonl --out pmstack/project.json --append --version "Version 3"
 ```
 
-Then run pmstack-error-discovery on them. The Funnel and Report tabs compare versions. New failure modes get checks, new fixed bugs join the regression set, and Phases 1 and 2 run again.
+Then run pmstack-find-failures on them. The Funnel and Report tabs compare versions. New failure modes get checks, new fixed bugs join the regression set, and Phases 1 and 2 run again.
 
 ## Checks that block a reply
 

@@ -229,7 +229,7 @@ Done when a test in the service shows a known bad call blocked and a known good 
 
 ## Phase 8: Read traces for the rules nobody wrote down
 
-The policy covers what the owner listed. Run `pmstack-error-discovery` on traces with tool calls, and compare the reviewer's Problem notes with the policy: a note that describes a call the company would forbid, on a trace the policy passes, is a missing rule.
+The policy covers what the owner listed. Run `pmstack-find-failures` on traces with tool calls, and compare the reviewer's Problem notes with the policy: a note that describes a call the company would forbid, on a trace the policy passes, is a missing rule.
 
 Northstar: Sam's note on t-0011 reads "Lookup showed the Lakeview outage, back by 6 PM today. It booked a tech for tomorrow anyway." The support lead agreed that agents never book a visit during a known outage. No rule type reads one tool's result to block another tool, so this became its own failure mode, "Sends a technician during a known outage", with the decision "Fix it now": add the instruction to the agent's prompt.
 

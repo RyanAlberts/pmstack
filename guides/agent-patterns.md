@@ -39,7 +39,7 @@ pmstack guesses the pattern from your traces: many repeated tool calls suggest a
 
 **Where failures start:** using tools: the wrong tool, the wrong details, or a skipped look-up. For answer bots that search documents, the look-up: the source the answer needed was never found.
 
-**Check first:** right tool, right details? The [tool call checks](tool-call-evals.md) cover this with policy, relevance, and output grounding. For answer bots, mark the sources each answer needed and measure the look-up on its own (`/pmstack:evaluate-rag`).
+**Check first:** right tool, right details? The [tool call checks](tool-call-evals.md) cover this with policy, relevance, and output grounding. For answer bots, mark the sources each answer needed and measure the look-up on its own (`/pmstack:check-sources`).
 
 ## Step by step chain
 

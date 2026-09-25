@@ -1,6 +1,6 @@
 # Reviewing traces
 
-Reference for `pmstack-error-discovery`: what to tell the reviewer, how good notes read, how to coach, and how to read notes when grouping them. Examples come from the Maple Dental booking assistant (patients book, move, or cancel appointments by text, web chat, or phone).
+Reference for `pmstack-find-failures`: what to tell the reviewer, how good notes read, how to coach, and how to read notes when grouping them. Examples come from the Maple Dental booking assistant (patients book, move, or cancel appointments by text, web chat, or phone).
 
 ## Briefing
 

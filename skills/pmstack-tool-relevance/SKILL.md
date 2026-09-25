@@ -1,6 +1,6 @@
 ---
 name: pmstack-tool-relevance
-description: Checks relevance for an AI agent that calls tools, asking whether each call is the right one for what the user asked. Right tool, right details, no calls the request did not need, none it skipped. Confirms relevance failures in reviewed traces first, builds an intent map from real requests (for each kind of request, the tools it needs, may use, and must never use), runs it as a code check when traces carry an intent label, and otherwise sets up the relevance AI judge template and hands it to judge validation. Use when an agent picks the wrong tool, skips a needed lookup, makes calls nobody asked for, or passes wrong details, or when someone asks to evaluate tool selection, intent to tool mapping, or tool call relevance.
+description: Checks relevance for an AI agent that calls tools, asking whether each call is the right one for what the user asked. Right tool, right details, no calls the request did not need, none it skipped. Confirms relevance failures in reviewed traces first, builds an intent map from real requests (for each kind of request, the tools it needs, may use, and must never use), runs it as a code check when traces carry an intent label, and otherwise sets up the relevance AI judge template and hands it to pmstack-test-judge. Use when an agent picks the wrong tool, skips a needed lookup, makes calls nobody asked for, or passes wrong details, or when someone asks to evaluate tool selection, intent to tool mapping, or tool call relevance.
 ---
 
 # Check that the agent makes the right tool calls
@@ -54,7 +54,7 @@ While it runs, add checks through Eval Studio and leave `project.json` to the st
 
 ## Phase 1: Confirm relevance failures in the traces
 
-Relevance checks start from what the reviewer saw. With no project or no reviews yet, load `pmstack-error-discovery` and come back after at least 30 reviewed traces.
+Relevance checks start from what the reviewer saw. With no project or no reviews yet, load `pmstack-find-failures` and come back after at least 30 reviewed traces.
 
 List the reviewer's Problem notes with their failure modes:
 
@@ -76,7 +76,7 @@ Sam grouped both into the failure mode "Wrong tool for the request" at the stage
 | What the notes show | Next |
 |---|---|
 | Relevance failures, grouped into a failure mode | Phase 2 with that failure mode |
-| Relevance failures with no failure mode yet | Ask the reviewer to group them in the Failure modes tab, or suggest one through `pmstack-error-discovery` (Phase 5) |
+| Relevance failures with no failure mode yet | Ask the reviewer to group them in the Failure modes tab, or suggest one through `pmstack-find-failures` (Phase 5) |
 | No relevance failures | Stop here, and look again after the next round of reviews |
 
 Done when a failure mode built from the reviewer's notes covers the relevance failures, or the reviewer confirms none appear.
@@ -174,12 +174,12 @@ Use it for traces with no intent label and for wrong details. An AI judge is a p
 
 1. Mark the failure mode with the relevance template: in the studio, Tool call checks, Relevance, "Use the AI judge template" (pick the failure mode from Phase 1). With no studio running, the helper's `add` command already did it; on the judge-only path, run `node "$HELPER" "$PROJECT" "$PMSTACK" mark <modeId>`.
 2. pmstack's judge prompt for that failure mode then includes the relevance checklist: the tool serves what the customer asked, its details match what the customer said, every call was needed, every needed call was made, and the agent asks when a required detail is missing. By default the judge sees what the customer and the agent said, plus the tool calls and results.
-3. Load `pmstack-write-judge` for this failure mode. It checks the label counts (at least 20 Problem and 20 Good), picks examples, pins the model, saves the judge, and runs it on the tuning set.
-4. Load `pmstack-validate-judge` to read every disagreement with the reviewer's labels and run the final test once. Trust the judge after both numbers clear 90% (80% at the least).
+3. Load `pmstack-build-judge` for this failure mode. It checks the label counts (at least 20 Problem and 20 Good), picks examples, pins the model, saves the judge, and runs it on the tuning set.
+4. Load `pmstack-test-judge` to read every disagreement with the reviewer's labels and run the final test once. Trust the judge after both numbers clear 90% (80% at the least).
 
 For judges run outside pmstack, `$TEMPLATES/relevance-judge.md` holds the full prompt with placeholders and a filled Northstar examples block: a clear fail (cancel_service for a plan change), a clear pass, and a close call (an extra help center search that changed nothing).
 
-Done when the judge is saved and `pmstack-validate-judge` has started, or the intent map covers every trace and the notes show no wrong-detail failures.
+Done when the judge is saved and `pmstack-test-judge` has started, or the intent map covers every trace and the notes show no wrong-detail failures.
 
 ## Phase 6: Keep it running
 

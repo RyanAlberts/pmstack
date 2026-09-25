@@ -68,4 +68,4 @@ Users' saved projects, custom views, and build scripts depend on these. Change t
 - Author and committer on every commit: `Ryan Alberts <25306145+RyanAlberts@users.noreply.github.com>`. Before the first commit in a session, check `git config user.email` and set it with `git config user.name "Ryan Alberts"` and `git config user.email 25306145+RyanAlberts@users.noreply.github.com` (local scope) if it differs.
 - Push verified, committed work straight to `main`. Open a pull request only when asked.
 - The 1.x PM commands and eval harness live at tag `v1.2.0`.
-- A plain `git push` does not send tags. README, CHANGELOG, and the regression-checks skill (`PMSTACK_REF`) link to the tags `v1.2.0` and `v2.0.0`, so a release pushes its tag too: `git tag v2.0.0 <release commit>`, then `git push origin v1.2.0 v2.0.0`.
+- A plain `git push` does not send tags. README, CHANGELOG, and the regression-checks skill (`PMSTACK_REF`) link to release tags (`v1.2.0`, and the current release pinned in `PMSTACK_REF`), so a release pushes its tag too: `git tag -a v2.1.0 -m "..." <release commit>`, then `git push origin v2.1.0`.

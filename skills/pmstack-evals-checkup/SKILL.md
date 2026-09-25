@@ -1,9 +1,9 @@
 ---
-name: pmstack-eval-audit
-description: "Audits an existing AI evaluation setup against the error discovery method and returns findings ordered by product impact, each with evidence and a fix. Inspects six areas: where the failure modes came from, how checks are designed, whether judges were measured against human labels, who reviews and what they see, how many labels exist, and whether checks stay current. Use when inheriting evals, when a team reports AI quality scores nobody has verified, or before a release decision rests on eval numbers."
+name: pmstack-evals-checkup
+description: "Gives an existing AI eval setup a checkup and returns findings ordered by product impact, each with evidence and a fix. Looks at six areas: where the failure modes came from, how checks are designed, whether judges were measured against human labels, who reviews and what they see, how many labels exist, and whether checks stay current. Use when inheriting evals, when a team reports AI quality scores nobody has verified, or before a release decision rests on eval numbers."
 ---
 
-# Audit an existing eval setup
+# Give an existing eval setup a checkup
 
 An audit inspects the real artifacts (prompts, label files, scripts, dashboards) and reports what would make the team's quality numbers wrong. Every finding points at evidence you read and at one concrete fix.
 
@@ -29,7 +29,7 @@ Collect everything that produces or reports an AI quality number:
 - A connected observability tool, when your agent has one: pull evaluator definitions, recent results, and a sample of traces.
 - Ask the user for what the files cannot show: who labels traces, what they see while labeling, when the last model or prompt change shipped, and which numbers leadership watches.
 
-If there are no evals at all, stop the audit and route: to pmstack-error-discovery when traces exist, to pmstack-synthetic-traces otherwise. Judges, scores, and dashboards come after error discovery has named failure modes.
+If there are no evals at all, stop the audit and route: to pmstack-find-failures when traces exist, to pmstack-make-traces otherwise. Judges, scores, and dashboards come after error discovery has named failure modes.
 
 Phase 1 is done when you hold a list of every check and judge, where its labels come from, and every number the team reports.
 
@@ -97,11 +97,11 @@ Point each fix at the pmstack piece that does it:
 
 | Fix | Where |
 |---|---|
-| Find failure modes from real traces | pmstack-error-discovery |
-| No traces to read yet | pmstack-synthetic-traces |
-| Replace a score or a broad judge with one pass or fail judge per failure mode | pmstack-write-judge |
-| Measure a judge against labels, final test, corrected rate | pmstack-validate-judge |
-| Separate search from answers in an answer bot | pmstack-evaluate-rag |
+| Find failure modes from real traces | pmstack-find-failures |
+| No traces to read yet | pmstack-make-traces |
+| Replace a score or a broad judge with one pass or fail judge per failure mode | pmstack-build-judge |
+| Measure a judge against labels, final test, corrected rate | pmstack-test-judge |
+| Separate search from answers in an answer bot | pmstack-check-sources |
 | Reviewers see raw data | pmstack-custom-view |
 | Regression set, checks on every change, production sampling | pmstack-regression-checks |
 | Code checks versus AI judges | https://github.com/RyanAlberts/pmstack/blob/main/guides/checks-and-judges.md |

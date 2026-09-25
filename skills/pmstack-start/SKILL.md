@@ -1,6 +1,6 @@
 ---
 name: pmstack-start
-description: Starts pmstack, the error discovery method for AI products, and routes to the right pmstack skill. Shows the six steps (read traces, write notes, group into failure modes, count by stage, build checks, test and keep running), looks at what already exists in the folder (traces, a pmstack project, existing evals), asks at most two multiple-choice questions, then loads the matching skill. Use when someone wants help evaluating an AI product or asks about evals, traces, failure modes, AI judges, or checks for an agent's tool calls without naming a specific pmstack skill, or does not know where to start.
+description: "Starts pmstack, which finds how an AI product fails and turns what matters into checks, and routes to the right pmstack skill. Shows the six steps (read traces, write notes, group into failure modes, count by stage, build checks, test and keep running), looks at what already exists in the folder (traces, a pmstack project, existing evals), asks at most two multiple-choice questions, then loads the matching skill. Use when someone wants help evaluating an AI product or asks about evals, traces, failure modes, AI judges, or checks for an agent's tool calls without naming a specific pmstack skill, or does not know where to start."
 ---
 
 # Start with pmstack
@@ -18,12 +18,12 @@ Show this to a user who is new to pmstack, with their user word (patient, employ
 
 | Step | What you do | Eval Studio tab | Skill that helps |
 |---|---|---|---|
-| 1. Read traces | See each trace the way your customer saw it. | Review traces | `pmstack-error-discovery` |
-| 2. Write notes | Note the first thing that went wrong, in plain words. | Review traces | `pmstack-error-discovery` |
-| 3. Group into failure modes | Sort your notes into a short list of named problems, and name what went well as success modes. | Failure modes | `pmstack-error-discovery` |
-| 4. Count by stage | See where each failure mode starts and how often, then decide: fix it now, build a check, or keep watching. | Funnel | `pmstack-error-discovery` |
-| 5. Build checks | Turn each failure mode worth tracking into a code check or an AI judge. | Checks | `pmstack-write-judge`, `pmstack-evaluate-rag`, and for agents that use tools `pmstack-tool-policy`, `pmstack-tool-relevance`, `pmstack-tool-grounding` |
-| 6. Test, then keep running | Make sure each check agrees with your labels, then run it on every change. | Checks, Report | `pmstack-validate-judge`, `pmstack-regression-checks` |
+| 1. Read traces | See each trace the way your customer saw it. | Review traces | `pmstack-find-failures` |
+| 2. Write notes | Note the first thing that went wrong, in plain words. | Review traces | `pmstack-find-failures` |
+| 3. Group into failure modes | Sort your notes into a short list of named problems, and name what went well as success modes. | Failure modes | `pmstack-find-failures` |
+| 4. Count by stage | See where each failure mode starts and how often, then decide: fix it now, build a check, or keep watching. | Funnel | `pmstack-find-failures` |
+| 5. Build checks | Turn each failure mode worth tracking into a code check or an AI judge. | Checks | `pmstack-build-judge`, `pmstack-check-sources`, and for agents that use tools `pmstack-tool-policy`, `pmstack-tool-relevance`, `pmstack-tool-grounding` |
+| 6. Test, then keep running | Make sure each check agrees with your labels, then run it on every change. | Checks, Report | `pmstack-test-judge`, `pmstack-regression-checks` |
 
 A **trace** is one full conversation or task, with every step the AI took and what the customer saw. A **failure mode** is a named, recurring way the product lets the customer down.
 
@@ -57,12 +57,12 @@ Match what you found:
 
 | What you found | Next skill |
 |---|---|
-| Trace files, no pmstack project | `pmstack-error-discovery` |
-| A project with fewer than 100 reviewed traces, no failure modes, or new ones still appearing | `pmstack-error-discovery` (it picks up where the reviewer left off) |
-| Failure modes marked "Build a check" (`decision: "check"`) with no check | `pmstack-write-judge` for judgment calls; a code check in the Checks tab for visible patterns |
-| An AI judge whose final test has not run | `pmstack-validate-judge` |
+| Trace files, no pmstack project | `pmstack-find-failures` |
+| A project with fewer than 100 reviewed traces, no failure modes, or new ones still appearing | `pmstack-find-failures` (it picks up where the reviewer left off) |
+| Failure modes marked "Build a check" (`decision: "check"`) with no check | `pmstack-build-judge` for judgment calls; a code check in the Checks tab for visible patterns |
+| An AI judge whose final test has not run | `pmstack-test-judge` |
 | Checks that agree with the labels, and fixes shipping | `pmstack-regression-checks` |
-| Eval code or judge prompts, no pmstack project | `pmstack-eval-audit` |
+| Eval code or judge prompts, no pmstack project | `pmstack-evals-checkup` |
 | Nothing | Phase 2 |
 
 When one row fits, state what you found in one or two lines and go to Phase 3; the user can redirect you. When the traces hold tool calls, ask the tools question in Phase 2 first, unless the user already said what they want to check.
@@ -102,27 +102,27 @@ An agent that looks things up or changes things through tools gets three Tool ca
 > D. Yes, and I'm not sure what to check yet
 > E. No
 
-Route A to `pmstack-tool-policy`. Route B and C through `pmstack-error-discovery` first, since relevance and grounding problems are confirmed in the traces, then to `pmstack-tool-relevance` or `pmstack-tool-grounding`. Route D and E to `pmstack-error-discovery`.
+Route A to `pmstack-tool-policy`. Route B and C through `pmstack-find-failures` first, since relevance and grounding problems are confirmed in the traces, then to `pmstack-tool-relevance` or `pmstack-tool-grounding`. Route D and E to `pmstack-find-failures`.
 
 ## Phase 3: Route
 
 | Situation | Load |
 |---|---|
-| Has traces to review | `pmstack-error-discovery` |
-| No traces; generate test conversations | `pmstack-synthetic-traces` |
-| No traces; add logging to the app | `pmstack-error-discovery` (its Phase 1 gives the logging brief) |
-| An answer bot that searches documents | `pmstack-error-discovery` first, then `pmstack-evaluate-rag` |
-| Output that looks like none of chat, calls, email, answers with sources, documents, code reviews, form fields, or ranked lists | `pmstack-custom-view`, then `pmstack-error-discovery` |
-| A failure mode ready for an AI judge | `pmstack-write-judge` |
-| A judge to validate | `pmstack-validate-judge` |
-| Existing evals to review | `pmstack-eval-audit` |
+| Has traces to review | `pmstack-find-failures` |
+| No traces; generate test conversations | `pmstack-make-traces` |
+| No traces; add logging to the app | `pmstack-find-failures` (its Phase 1 gives the logging brief) |
+| An answer bot that searches documents | `pmstack-find-failures` first, then `pmstack-check-sources` |
+| Output that looks like none of chat, calls, email, answers with sources, documents, code reviews, form fields, or ranked lists | `pmstack-custom-view`, then `pmstack-find-failures` |
+| A failure mode ready for an AI judge | `pmstack-build-judge` |
+| A judge to validate | `pmstack-test-judge` |
+| Existing evals to review | `pmstack-evals-checkup` |
 | Checks that run on every change | `pmstack-regression-checks` |
 | Company rules for an agent's tool calls | `pmstack-tool-policy` |
-| An agent that picks the wrong tool or passes wrong details | `pmstack-error-discovery` first, then `pmstack-tool-relevance` |
-| An agent whose replies don't match what its tools returned | `pmstack-error-discovery` first, then `pmstack-tool-grounding` |
+| An agent that picks the wrong tool or passes wrong details | `pmstack-find-failures` first, then `pmstack-tool-relevance` |
+| An agent whose replies don't match what its tools returned | `pmstack-find-failures` first, then `pmstack-tool-grounding` |
 
 1. Say which skill and why in one sentence: "You have 212 traces in traces/traces.jsonl and no project yet, so I'm starting error discovery."
-2. Load it. In Claude Code, use the Skill tool (the plugin lists it as `pmstack:pmstack-error-discovery`; the slash command is `/pmstack:error-discovery`). An agent without skill loading reads `<skill-dir>/../pmstack-error-discovery/SKILL.md`, where `<skill-dir>` is this skill's base directory.
+2. Load it. In Claude Code, use the Skill tool (the plugin lists it as `pmstack:pmstack-find-failures`; the slash command is `/pmstack:find-failures`). An agent without skill loading reads `<skill-dir>/../pmstack-find-failures/SKILL.md`, where `<skill-dir>` is this skill's base directory.
 3. Follow the loaded skill from its first phase, in order.
 
 ## Multiple-choice questions

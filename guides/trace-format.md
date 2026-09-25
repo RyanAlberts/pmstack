@@ -213,4 +213,4 @@ The map can set `id`, `title`, `input`, `output`, and `messages`. Set up writes 
 
 ## Record traces from your product
 
-If you don't log traces yet, ask your engineers to append one JSON object per conversation to a `traces/traces.jsonl` file: the messages (with tool calls and results), the final output, and the details you want to filter on. Keep any logging tool you already use; this file is for reading. `/pmstack:error-discovery` in Claude Code can write this change with them.
+If you don't log traces yet, ask your engineers to append one JSON object per conversation to a `traces/traces.jsonl` file: the messages (with tool calls and results), the final output, and the details you want to filter on. Keep any logging tool you already use; this file is for reading. `/pmstack:find-failures` in Claude Code can write this change with them.

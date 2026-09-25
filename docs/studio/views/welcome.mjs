@@ -149,7 +149,7 @@ function NoTraces({ open }) {
       <span class="welcome-notraces-icon" aria-hidden="true"><${Icon} name="code" /></span>
       <div>
         <h3>Generate test conversations</h3>
-        <p>In Claude Code, run <code>/pmstack:synthetic-traces</code> (or <code>/pmstack-synthetic-traces</code> if you installed with setup). It helps you write realistic requests, run them through your product, and save the traces to a file you can open here.</p>
+        <p>In Claude Code, run <code>/pmstack:make-traces</code> (or <code>/pmstack-make-traces</code> if you installed with setup). It helps you write realistic requests, run them through your product, and save the traces to a file you can open here.</p>
       </div>
     </div>
     <p class="hint"><a href=${GUIDE_URL} target="_blank" rel="noopener noreferrer">What should a trace file look like?</a></p>

@@ -5,13 +5,13 @@ Twelve skills that walk an AI agent through error discovery: read real traces, n
 | Skill | Use it when | In Claude Code |
 |---|---|---|
 | `pmstack-start` | You are not sure where to begin | `/pmstack:start` |
-| `pmstack-error-discovery` | You have traces and want to find how the product fails | `/pmstack:error-discovery` |
-| `pmstack-synthetic-traces` | You have no real traces yet | `/pmstack:synthetic-traces` |
-| `pmstack-write-judge` | A failure mode needs an AI judge | `/pmstack:write-judge` |
-| `pmstack-validate-judge` | You need to know whether a judge agrees with you | `/pmstack:validate-judge` |
-| `pmstack-evaluate-rag` | Your product answers questions by searching documents | `/pmstack:evaluate-rag` |
+| `pmstack-find-failures` | You have traces and want to find how the product fails | `/pmstack:find-failures` |
+| `pmstack-make-traces` | You have no real traces yet | `/pmstack:make-traces` |
+| `pmstack-build-judge` | A failure mode needs an AI judge | `/pmstack:build-judge` |
+| `pmstack-test-judge` | You need to know whether a judge agrees with you | `/pmstack:test-judge` |
+| `pmstack-check-sources` | Your product answers questions by searching documents | `/pmstack:check-sources` |
 | `pmstack-custom-view` | Your traces do not look the way your customer saw them | `/pmstack:custom-view` |
-| `pmstack-eval-audit` | You inherited evals and want to know if the numbers hold up | `/pmstack:eval-audit` |
+| `pmstack-evals-checkup` | You inherited evals and want to know if the numbers hold up | `/pmstack:evals-checkup` |
 | `pmstack-regression-checks` | You want checks to run on every code change and in production | `/pmstack:regression-checks` |
 | `pmstack-tool-policy` | Your agent's tool calls must follow company rules (policy: is this call allowed?) | `/pmstack:tool-policy` |
 | `pmstack-tool-relevance` | Your agent picks the wrong tool or details (relevance: is it the right call for what the customer asked?) | `/pmstack:tool-relevance` |
@@ -48,7 +48,7 @@ cd pmstack
 ./setup --dry-run               # show what would be copied
 ```
 
-Setup never touches your `CLAUDE.md`, and running it again replaces pmstack's files with the new ones. Skills installed this way run as `/pmstack-start`, `/pmstack-error-discovery`, and so on.
+Setup never touches your `CLAUDE.md`, and running it again replaces pmstack's files with the new ones. Skills installed this way run as `/pmstack-start`, `/pmstack-find-failures`, and so on.
 
 ## Codex, Cursor, and Gemini CLI
 
@@ -70,7 +70,7 @@ Create the folder first if it does not exist (`mkdir -p`). In Gemini CLI, `gemin
 
 ## Any other agent
 
-Copy the `pmstack-*` folders into the folder your agent reads skills from, or paste a `SKILL.md` into its instructions. Keep each folder whole: `pmstack-error-discovery` includes a second file, `reviewing-traces.md`. Run `./setup --global` once so the skills can find the tool in `~/.pmstack/`.
+Copy the `pmstack-*` folders into the folder your agent reads skills from, or paste a `SKILL.md` into its instructions. Keep each folder whole: `pmstack-find-failures` includes a second file, `reviewing-traces.md`. Run `./setup --global` once so the skills can find the tool in `~/.pmstack/`.
 
 ## Claude on the web (claude.ai)
 

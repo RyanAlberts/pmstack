@@ -1,9 +1,9 @@
 ---
-name: pmstack-validate-judge
-description: Measures whether an AI judge agrees with the reviewer's own labels before anyone trusts its numbers. Runs the judge on the tuning set, reads every disagreement by hand, fixes the prompt or the labels, runs the final test once, and estimates the likely true failure rate with a 95% range. Use after pmstack-write-judge, when a judge's agreement is unknown or out of date, or after a judge's prompt, model, or failure mode definition changes.
+name: pmstack-test-judge
+description: "Tests whether an AI judge agrees with the reviewer's own labels before anyone trusts its numbers. Runs the judge on the tuning set, reads every disagreement by hand, fixes the prompt or the labels, runs the final test once, and estimates the likely true failure rate with a 95% range. Use after pmstack-build-judge, when a judge's agreement is unknown or out of date, or after a judge's prompt, model, or failure mode definition changes."
 ---
 
-# Validate an AI judge
+# Test an AI judge against your labels
 
 An AI judge is a prompt that asks a model to decide pass or fail for one failure mode. Validation compares its verdicts with the reviewer's labels until both agreement numbers clear the bar, then measures it once on traces it has never seen.
 
@@ -74,7 +74,7 @@ console.log(JSON.stringify({
 
 | Finding | Action |
 |---|---|
-| No judge check, or no prompt | Run pmstack-write-judge first. |
+| No judge check, or no prompt | Run pmstack-build-judge first. |
 | `model` empty or a floating alias ("latest", no date) | Ask the user for an exact dated version and set it in the Checks tab. |
 | Fewer than 20 Problem or 20 Good labels | Stop. Ask the reviewer to label more in the Checks tab ("Label more traces for this failure mode"). |
 | Under 60 labels in total | Continue, and tell the user the ranges will be wide. Aim for about 50 of each. |
@@ -183,7 +183,7 @@ node "$PMSTACK" estimate pmstack/project.json --check <check-id> --traces sample
 
 If `estimate` refuses, it names the reason (no final test yet, or the judge or labels changed after it). Fix that reason; never work around it.
 
-## Keep it validated
+## Keep it tested
 
 Validate again, starting at Phase 2 and ending with a fresh final test, after any change to the judge's prompt, model, inputs, or failure mode definition. The Checks tab marks the final test "Out of date" when that happens.
 

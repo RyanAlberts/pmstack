@@ -1,9 +1,9 @@
 ---
-name: pmstack-evaluate-rag
-description: Evaluates an answer bot that searches documents (retrieval-augmented generation, or RAG) by separating the look-up from the answer. Runs error discovery on full traces first, has the reviewer mark the sources each answer needed, measures look-up with Recall@k and mean reciprocal rank, fixes search before the answer step, then builds one judge for answers backed by their sources and another for answers that address the question. Use when a product answers questions from a document collection, knowledge base, help center, or search results, or when its answers cite sources.
+name: pmstack-check-sources
+description: "Checks an answer bot that searches documents by testing the search and the answer separately. Reviews full traces first, has the reviewer mark the sources each answer needed, measures the search with Recall@k and mean reciprocal rank, fixes search before the answer step, then builds one judge for answers backed by their sources and another for answers that address the question. Use when a product answers questions from a document collection, knowledge base, help center, or search results, when its answers cite sources, or when someone mentions RAG."
 ---
 
-# Evaluate an answer bot that searches documents
+# Check an answer bot that searches documents
 
 An answer bot fails in two places: the look-up (the right document never came back) and the answer (the document came back and the answer still went wrong). Measure them separately and fix the look-up first: a model can only answer from the documents it receives.
 
@@ -49,9 +49,9 @@ If the traces lack the search step, stop and help the team log it first: the sea
 
 Phase 1 is done when every sampled trace has a retrieval step with ranked document ids.
 
-## Phase 2: Error discovery on full traces
+## Phase 2: Review full traces first
 
-Run the pmstack-error-discovery skill on these traces with view `answer` and a stage for the look-up (pattern `augmented`: understand, look things up, reply). Metrics come after the reviewer has read traces and named failure modes, never before.
+Run the pmstack-find-failures skill on these traces with view `answer` and a stage for the look-up (pattern `augmented`: understand, look things up, reply). Metrics come after the reviewer has read traces and named failure modes, never before.
 
 During review, the reviewer marks sources in the Answer with sources view:
 
@@ -102,7 +102,7 @@ Propose them as `mode` suggestions in `pmstack/suggestions.json` (read the file,
 
 ```json
 { "suggestions": [
-  { "id": "sg-20260924153000-1", "kind": "mode", "status": "open", "from": "pmstack-evaluate-rag",
+  { "id": "sg-20260924153000-1", "kind": "mode", "status": "open", "from": "pmstack-check-sources",
     "createdAt": "2026-09-24T15:30:00Z",
     "mode": { "name": "Says things its sources do not support", "definition": "Fails when the answer states a fact, number, limit, or rule that none of the returned sources supports, or misreads one.", "stage": "answer", "kind": "failure" },
     "traceIds": ["q-0107", "q-0131"],
@@ -110,7 +110,7 @@ Propose them as `mode` suggestions in `pmstack/suggestions.json` (read the file,
 ] }
 ```
 
-Use the project's real stage id for the answer stage and the trace ids behind the notes. After the reviewer accepts, each failure mode goes through labels, pmstack-write-judge, and pmstack-validate-judge on its own.
+Use the project's real stage id for the answer stage and the trace ids behind the notes. After the reviewer accepts, each failure mode goes through labels, pmstack-build-judge, and pmstack-test-judge on its own.
 
 Phase 5 is done when each answer failure mode the traces showed has a judge in progress or a documented reason to wait.
 

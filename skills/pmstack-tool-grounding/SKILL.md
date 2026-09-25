@@ -1,6 +1,6 @@
 ---
 name: pmstack-tool-grounding
-description: Checks output grounding for an AI agent that calls tools, asking whether the reply matches what the tool returned. Confirms grounding failures in reviewed traces first, adds two code checks (every number in the reply comes from a tool; no success claimed after a failed or pending call), tunes them on what they flag, then sets up the output grounding AI judge template for reworded facts and dropped qualifiers and hands it to judge validation. Use when an agent's replies contradict tool results, report pending actions as done, change times or amounts, or state facts no tool returned, or when someone asks to evaluate faithfulness to tool output or made-up tool results in replies.
+description: Checks output grounding for an AI agent that calls tools, asking whether the reply matches what the tool returned. Confirms grounding failures in reviewed traces first, adds two code checks (every number in the reply comes from a tool; no success claimed after a failed or pending call), tunes them on what they flag, then sets up the output grounding AI judge template for reworded facts and dropped qualifiers and hands it to pmstack-test-judge. Use when an agent's replies contradict tool results, report pending actions as done, change times or amounts, or state facts no tool returned, or when someone asks to evaluate faithfulness to tool output or made-up tool results in replies.
 ---
 
 # Check that replies match what the tools returned
@@ -65,7 +65,7 @@ While it runs, add checks through Eval Studio and leave `project.json` to the st
 
 ## Phase 1: Confirm grounding failures in the traces
 
-Grounding checks start from what the reviewer saw. With no project or no reviews yet, load `pmstack-error-discovery` and come back after at least 30 reviewed traces.
+Grounding checks start from what the reviewer saw. With no project or no reviews yet, load `pmstack-find-failures` and come back after at least 30 reviewed traces.
 
 List the reviewer's Problem notes with their failure modes:
 
@@ -88,7 +88,7 @@ Sam grouped them into the failure mode "Reply doesn't match the tool results" at
 | What the notes show | Next |
 |---|---|
 | Grounding failures, grouped into a failure mode | Phase 2 with that failure mode |
-| Grounding failures with no failure mode yet | Ask the reviewer to group them in the Failure modes tab, or suggest one through `pmstack-error-discovery` (Phase 5) |
+| Grounding failures with no failure mode yet | Ask the reviewer to group them in the Failure modes tab, or suggest one through `pmstack-find-failures` (Phase 5) |
 | No grounding failures | Stop here, and look again after the next round of reviews |
 
 Done when a failure mode built from the reviewer's notes covers the grounding failures, or the reviewer confirms none appear.
@@ -151,12 +151,12 @@ The judge covers what exact matching misses: reworded facts, dropped qualifiers,
 1. Mark the failure mode with the grounding template: in the studio, Tool call checks, Output grounding, "Use the AI judge template" (pick the failure mode from Phase 1). With no studio running, the helper's `add` command in Phase 2 already did it.
 2. pmstack's judge prompt for that failure mode then includes the grounding checklist: every fact in the reply is backed by a tool result, every value matches the tool result, qualifiers are kept, an action is called done only when a tool result shows it done, and the reply keeps every tool result that changes what the customer should do next.
 3. Give the judge the tool results and the reply. The template's default inputs are the tool calls with their results, plus what the customer and the agent said. Leave out the agent's instructions, retrieved documents, and details unless the notes show the judge needs them. The judge sees at most 12,000 characters of a trace, cut from the middle, so fewer inputs keep more of the tool results and the final reply in view.
-4. Load `pmstack-write-judge` for this failure mode. It checks the label counts (at least 20 Problem and 20 Good), picks examples, pins the model, saves the judge, and runs it on the tuning set. Good examples mix the kinds of mistakes: one pending shown as done, one changed value, a clear pass, and a close call where the reply left something out.
-5. Load `pmstack-validate-judge` to read every disagreement with the reviewer's labels and run the final test once. Trust the judge after both numbers clear 90% (80% at the least).
+4. Load `pmstack-build-judge` for this failure mode. It checks the label counts (at least 20 Problem and 20 Good), picks examples, pins the model, saves the judge, and runs it on the tuning set. Good examples mix the kinds of mistakes: one pending shown as done, one changed value, a clear pass, and a close call where the reply left something out.
+5. Load `pmstack-test-judge` to read every disagreement with the reviewer's labels and run the final test once. Trust the judge after both numbers clear 90% (80% at the least).
 
 For judges run outside pmstack, `$TEMPLATES/grounding-judge.md` holds the full prompt with placeholders and a filled Northstar examples block. The Northstar sample already holds a draft judge, `ck-grounding-judge`, with no results yet.
 
-Done when the judge is saved and `pmstack-validate-judge` has started.
+Done when the judge is saved and `pmstack-test-judge` has started.
 
 ## Phase 5: Keep it running
 

@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import * as lib from '../docs/studio/lib/index.mjs';
 
 /** The pmstack version this command reports. */
-export const VERSION = '2.0.0';
+export const VERSION = '2.1.0';
 
 const CLI_PATH = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(CLI_PATH), '..');

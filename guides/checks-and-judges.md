@@ -91,7 +91,7 @@ node bin/pmstack.mjs judge pmstack/project.json --check ck-person-judge --cmd "c
 
 `{model}` becomes the judge's pinned model. pmstack starts the command directly, with no shell, and sends the prompt on its standard input. The [command line guide](cli.md#judge) lists every option.
 
-`/pmstack:write-judge` in Claude Code writes a judge with you, and `/pmstack:validate-judge` measures it.
+`/pmstack:build-judge` in Claude Code writes a judge with you, and `/pmstack:test-judge` measures it.
 
 ## Labels
 
