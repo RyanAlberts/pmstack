@@ -43,7 +43,7 @@ const MIME = {
 // Help text
 
 const HELP = {
-  main: `pmstack ${VERSION}: find how your AI product fails, then prove it's fixed.
+  main: `pmstack ${VERSION}: Find how your AI product fails. Iterate. Raw pattern recognition meets Product Sense.
 
 Usage: node bin/pmstack.mjs <command> [options]
 

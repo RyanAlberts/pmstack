@@ -1286,13 +1286,14 @@ html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:${t.bg}}
 .text{position:absolute;left:72px;top:0;bottom:0;width:560px;display:flex;flex-direction:column;justify-content:center}
 .mark{display:flex;align-items:center;gap:14px;font-weight:700;font-size:28px;color:${t.ink};letter-spacing:-0.01em;margin-bottom:40px}
 .mark svg{width:34px;height:34px}
-h1{margin:0;font:italic 400 60px/1.06 "Instrument Serif",Georgia,serif;color:${t.ink};letter-spacing:-0.01em}
+h1{margin:0;font:italic 400 60px/1.06 "Instrument Serif",Georgia,serif;color:${t.ink};letter-spacing:-0.01em;text-wrap:balance}
+.kicker{display:block;margin-top:18px;font-size:36px;line-height:1.12;color:${t['ink-2']}}
 p{margin:30px 0 0;font-weight:500;font-size:28px;color:${t['ink-2']}}
 .art{position:absolute;left:640px;top:0}
 </style></head><body><div class="card">
 <div class="text">
 <div class="mark"><svg viewBox="0 0 32 32"><rect x="3" y="5" width="26" height="6" rx="3" fill="${t.accent}"/><rect x="7.5" y="13" width="17" height="6" rx="3" fill="${t.accent}"/><rect x="12" y="21" width="8" height="6" rx="3" fill="${t.accent}"/></svg>pmstack</div>
-<h1>Find how your AI product fails. Then prove it's fixed.</h1>
+<h1>Find how your AI product fails.<span class="kicker">Iterate. Raw pattern recognition meets Product Sense.</span></h1>
 <p>Eval Studio for product managers</p>
 </div>
 <div class="art">${art}</div>

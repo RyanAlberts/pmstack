@@ -11,7 +11,8 @@ Find where the user is in the method, name the next skill and why in one sentenc
 
 Show this to a user who is new to pmstack, with their user word (patient, employee, shopper) in place of "customer" when you know it.
 
-**Find how your AI product fails. Then prove it's fixed.**
+**Find how your AI product fails.**  
+**Iterate. Raw pattern recognition meets Product Sense.**
 
 **Read real traces, name the failure modes, and turn the ones that matter into checks you can trust.**
 

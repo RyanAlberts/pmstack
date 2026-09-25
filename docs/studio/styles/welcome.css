@@ -63,12 +63,20 @@
 }
 .welcome-tagline {
   margin: 0 0 var(--space-4);
-  max-width: 19ch;
+  max-width: 21ch;
   font-size: var(--text-2xl);
   line-height: 1.06;
   letter-spacing: -0.02em;
   color: var(--ink);
   text-wrap: balance;
+}
+.welcome-tagline-kicker {
+  display: block;
+  margin-top: 0.3em;
+  font-size: 0.62em;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ink-2);
 }
 .welcome-subhead {
   margin: 0;

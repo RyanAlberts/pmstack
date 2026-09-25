@@ -2,7 +2,7 @@
   "name": "pmstack",
   "displayName": "pmstack: Eval Studio for product managers",
   "version": "2.0.0",
-  "description": "Find how your AI product fails. Then prove it's fixed. Error discovery skills that read real traces, name failure modes and success modes by stage, and turn the ones that matter into code checks and AI judges you can trust, with Eval Studio and a zero-dependency command-line tool.",
+  "description": "Find how your AI product fails. Iterate. Raw pattern recognition meets Product Sense. Error discovery skills that read real traces, name failure modes and success modes by stage, and turn the ones that matter into code checks and AI judges you can trust, with Eval Studio and a zero-dependency command-line tool.",
   "author": {
     "name": "Ryan Alberts",
     "url": "https://github.com/RyanAlberts"

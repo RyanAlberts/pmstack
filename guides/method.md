@@ -1,6 +1,7 @@
 # The method, step by step
 
-**Find how your AI product fails. Then prove it's fixed.**
+**Find how your AI product fails.**  
+**Iterate. Raw pattern recognition meets Product Sense.**
 
 Read real traces, name the failure modes, and turn the ones that matter into checks you can trust.
 

@@ -383,7 +383,7 @@ test('help, version, and usage errors', async (t) => {
   const dir = tmpDir(t);
   const help = await run([], dir);
   assert.equal(help.code, 0);
-  assert.match(help.out, /^pmstack 2\.0\.0: find how your AI product fails, then prove it's fixed\./);
+  assert.match(help.out, /^pmstack 2\.0\.0: Find how your AI product fails\. Iterate\. Raw pattern recognition meets Product Sense\./);
   for (const cmd of ['studio', 'import', 'validate', 'check', 'judge', 'agreement', 'estimate', 'retrieval', 'report', 'regression-set', 'checks', 'policy']) {
     const r = await run([cmd, '--help'], dir);
     assert.equal(r.code, 0, cmd);

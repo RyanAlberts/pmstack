@@ -6,7 +6,8 @@ import { navigate } from '../store.mjs';
 import * as lib from '../lib/index.mjs';
 import { ImportProjectButton, VIEW_ICONS, viewLabel, sampleStateLine, useSampleIndex } from './setup.mjs';
 
-const TAGLINE = "Find how your AI product fails. Then prove it's fixed.";
+const TAGLINE = "Find how your AI product fails.";
+const TAGLINE_KICKER = "Iterate. Raw pattern recognition meets Product Sense.";
 const SUBHEAD = 'Read real conversations and tasks from your product (we call each one a trace), name the failure modes, and turn the ones that matter into checks you can trust.';
 const FILE_LINE = 'You need a file of real traces; a spreadsheet export works. Most people review 20 to 50 traces in about 30 minutes.';
 const FUNNEL_URL = '../assets/visuals/funnel.svg';
@@ -231,7 +232,7 @@ export default function WelcomeView() {
     ${!folder && html`<${Resume} />`}
     <header class="welcome-hero">
       <p class="welcome-eyebrow">Eval Studio</p>
-      <h1 class="welcome-tagline display">${TAGLINE}</h1>
+      <h1 class="welcome-tagline display">${TAGLINE} <span class="welcome-tagline-kicker">${TAGLINE_KICKER}</span></h1>
       <p class="welcome-subhead">${SUBHEAD}</p>
       ${folder
         ? html`<div class="welcome-actions">

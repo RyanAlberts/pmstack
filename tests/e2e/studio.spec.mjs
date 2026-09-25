@@ -146,7 +146,7 @@ async function settleScroll(page) {
 
 test('welcome renders the tagline, the funnel, the samples, and the six steps', async ({ page }) => {
   await page.goto('/studio/');
-  await expect(page.locator('.welcome-tagline')).toHaveText("Find how your AI product fails. Then prove it's fixed.");
+  await expect(page.locator('.welcome-tagline')).toHaveText("Find how your AI product fails. Iterate. Raw pattern recognition meets Product Sense.");
   await expect(page.locator('.welcome-subhead')).toContainText('name the failure modes');
   await expect(page.locator('.welcome-figure-art svg')).toBeVisible();
 

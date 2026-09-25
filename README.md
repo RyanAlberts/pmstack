@@ -1,6 +1,7 @@
 # pmstack
 
-**Find how your AI product fails. Then prove it's fixed.**
+**Find how your AI product fails.**  
+**Iterate. Raw pattern recognition meets Product Sense.**
 
 pmstack helps product managers read real traces (one full conversation or task, with every step the AI took), name the failure modes and success modes at each stage, and turn the ones that matter into checks you can trust. It follows the error discovery method taught by Hamel Husain and Shreya Shankar.
 
